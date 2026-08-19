@@ -1,13 +1,14 @@
-package com.uade.EcommerceUniformes.marketplace.entity;
+// package com.uade.EcommerceUniformes.marketplace.entity;
 
-import lombok.Builder;
-import lombok.Data;
+// import lombok.Builder;
+// import lombok.Data;
 
-@Data
-@Builder
+// @Data
+// @Builder
 
-public class Comentario {
-    private Usuario usuarioComentario;
-    private int calificacion;
-    private String comentarioProducto;
-}
+// public class Comentario {
+
+//     private Producto producto;
+//     private Usuario usuarioComentario;
+//     private String comentarioProducto;
+// }

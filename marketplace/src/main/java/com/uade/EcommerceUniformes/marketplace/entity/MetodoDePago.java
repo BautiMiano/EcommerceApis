@@ -1,7 +1,7 @@
-package com.uade.EcommerceUniformes.marketplace.entity;
+// package com.uade.EcommerceUniformes.marketplace.entity;
 
-public enum MetodoDePago {
-    MERCADOPAGO,
-    TARJETA,
-    TRANSFERENCIA
-}
+// public enum MetodoDePago {
+//     MERCADOPAGO,
+//     TARJETA,
+//     TRANSFERENCIA
+// }

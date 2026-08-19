@@ -1,19 +1,46 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
 
 
 @Data
-@Builder
+@Entity
 public class Usuario {
-    private int id;
-    private String nombreUsuario;
+
+
+
+    public Usuario() {
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column
+    (nullable = false)    private String nombreUsuario;
+
+    @Column(nullable = false)
     private String nombre;
+
+    @Column
     private String apellido;
+
+    @Column(nullable = false)
     private String mail;
+
+    @Column(nullable = false)
     private String contrasena;
-    private Rol rolUsuario;
+
+    @OneToMany(mappedBy = "usuario" )
+    private List<OrdenDeCompra> ordenDeCompras;
+
+   @Enumerated(EnumType.STRING)
+   @Column(nullable = false)
+   private Rol rolUsuario;
 
 }

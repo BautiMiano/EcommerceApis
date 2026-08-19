@@ -1,12 +1,24 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-@Builder
+@Entity
 public class Category {
-    private int id;
+
+    public Category(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Category() {
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
     private String nombre;
 
 
