@@ -1,0 +1,12 @@
+package com.uade.EcommerceUniformes.marketplace.entity;
+
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class Descuento {
+    private int idDescuento;
+    private double porcentaje;
+}
