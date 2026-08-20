@@ -29,7 +29,6 @@ public class OrdenDeCompra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    private Usuario usuarioComprador;
 //    private Date fechaCompra;
 //    private List<Producto> productos;
     @Column
