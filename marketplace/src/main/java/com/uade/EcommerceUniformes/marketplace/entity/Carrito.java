@@ -1,18 +1,22 @@
-package com.uade.EcommerceUniformes.marketplace.entity;
+// package com.uade.EcommerceUniformes.marketplace.entity;
 
 
-import lombok.Builder;
-import lombok.Data;
+// import java.util.List;
 
-import java.util.List;
+// import jakarta.persistence.Entity;
+// import jakarta.persistence.GeneratedValue;
+// import jakarta.persistence.GenerationType;
+// import jakarta.persistence.Id;
+// import lombok.Data;
 
-import jakarta.persistence.Entity;
+// @Data
+// @Entity
+// public class Carrito {
+//     @Id
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//     private int id;
 
-@Data
-@Entity
-public class Carrito {
-    private int id;
-    private Usuario usuario;
-    private List<Producto> productos;
+//     private Usuario usuario;
+//     private List<Producto> productos;
 
-}
+// }

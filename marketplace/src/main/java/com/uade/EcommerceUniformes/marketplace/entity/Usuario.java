@@ -1,10 +1,16 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
 
 
 @Data
@@ -12,7 +18,15 @@ import java.util.List;
 public class Usuario {
 
 
-
+    public Usuario(String nombreUsuario, String nombre, String apellido, String mail, String contrasena, Rol rolUsuario) {
+        this.nombreUsuario = nombreUsuario;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.mail = mail;
+        this.contrasena = contrasena;
+        this.rolUsuario = rolUsuario;
+    }
+    
     public Usuario() {
     }
 
@@ -21,8 +35,8 @@ public class Usuario {
     private Long id;
 
 
-    @Column
-    (nullable = false)    private String nombreUsuario;
+    @Column(nullable = false)    
+    private String nombreUsuario;
 
     @Column(nullable = false)
     private String nombre;
@@ -40,7 +54,7 @@ public class Usuario {
     private List<OrdenDeCompra> ordenDeCompras;
 
    @Enumerated(EnumType.STRING)
-   @Column(nullable = false)
+   @Column
    private Rol rolUsuario;
 
 }

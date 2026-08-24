@@ -1,10 +1,9 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
-import com.uade.EcommerceUniformes.marketplace.entity.Category;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.uade.EcommerceUniformes.marketplace.entity.Category;
 
 public interface CategoryService {
 
