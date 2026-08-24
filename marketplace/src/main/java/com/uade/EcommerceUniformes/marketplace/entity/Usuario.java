@@ -2,6 +2,8 @@ package com.uade.EcommerceUniformes.marketplace.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,14 +49,17 @@ public class Usuario {
     @Column(nullable = false)
     private String mail;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String contrasena;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario" )
     private List<OrdenDeCompra> ordenDeCompras;
 
    @Enumerated(EnumType.STRING)
    @Column
    private Rol rolUsuario;
+
 
 }

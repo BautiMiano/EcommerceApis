@@ -1,14 +1,35 @@
-// package com.uade.EcommerceUniformes.marketplace.entity;
+package com.uade.EcommerceUniformes.marketplace.entity;
 
-// import lombok.Builder;
-// import lombok.Data;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// @Data
-// @Builder
+@Entity
+@Table(name = "comentarios")
+@Data
+@Builder
+@NoArgsConstructor  //estos dos los usamos para que spring boot pueda recibir
+@AllArgsConstructor // peticiones post y asi no tira error
 
-// public class Comentario {
+public class Comentario {
 
-//     private Producto producto;
-//     private Usuario usuarioComentario;
-//     private String comentarioProducto;
-// }
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @Column(nullable=false, length=1000)
+    private String comentarioProducto;
+
+    private int calificacion;
+    
+    @ManyToOne
+    @JoinColumn(name = "producto_id",nullable = false)
+    private Producto producto;
+    
+}
