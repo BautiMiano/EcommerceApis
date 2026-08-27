@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenDeCompraRequest;
 import com.uade.EcommerceUniformes.marketplace.service.OrdenDeCompraService;
 
 
@@ -36,7 +37,7 @@ public class OrdenDeCompraController {
    }
 
    @PostMapping
-   public ResponseEntity<OrdenDeCompra> createOrdenDeCompra(@RequestBody OrdenDeCompra orden) {
+   public ResponseEntity<OrdenDeCompra> createOrdenDeCompra(@RequestBody OrdenDeCompraRequest orden) {
        OrdenDeCompra resultado = ordenDeCompraSerivice.createOrdenDeCompra(orden); 
         return ResponseEntity.
             created(URI.create("ordenDeCompra/" + resultado.getId()))

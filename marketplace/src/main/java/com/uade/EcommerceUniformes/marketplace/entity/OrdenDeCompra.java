@@ -21,13 +21,14 @@ import lombok.Data;
 public class OrdenDeCompra {
 
     public OrdenDeCompra(Usuario usuario, Date fechaCompra,
-            List<Producto> productos, Double total,
+            List<Producto> productos, Double total, MetodoDePago metodoDePago,
             EstadoOrden estado, String comprobante) {
 
         this.usuario = usuario;
         this.fechaCompra = fechaCompra;
         this.productos = productos;
         this.total = total;
+        this.metodoDePago = metodoDePago;
         this.estado = estado;
         this.comprobante = comprobante;
     }
@@ -56,6 +57,10 @@ public class OrdenDeCompra {
     @ManyToOne
     @JoinColumn(name = "usuarioId", nullable = false)
     private Usuario usuario;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MetodoDePago metodoDePago;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

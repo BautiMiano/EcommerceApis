@@ -8,13 +8,23 @@ import org.springframework.stereotype.Service;
 
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenDeCompraRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 
 @Service
 public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
 
     @Autowired
     private OrdenDeCompraRepository ordenDeCompraRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ProductoRepository productoRepository;
 
     public List<OrdenDeCompra> getOrdenesDeCompra() {
         return ordenDeCompraRepository.findAll();
@@ -24,19 +34,43 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
         return ordenDeCompraRepository.findById(ordenId);
     }
 
-    public OrdenDeCompra createOrdenDeCompra(OrdenDeCompra orden) {
+    public OrdenDeCompra createOrdenDeCompra(OrdenDeCompraRequest request) {
+
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Usuario no encontrado con id: " + request.getUsuarioId()));
+
+        List<Producto> productos = productoRepository.findAllById(request.getProductosIds());
+
+        if (productos.size() != request.getProductosIds().size()) {
+            throw new RuntimeException("Uno o más productos no existen");
+        }
 
         double total = 0;
 
-        for (Producto producto : orden.getProductos()){
+        for (Producto producto : productos) {
             total += producto.getPrecio();
         }
+
+        OrdenDeCompra orden = new OrdenDeCompra();
+
+        orden.setUsuario(usuario);
+        orden.setFechaCompra(request.getFechaCompra());
+        orden.setProductos(productos);
         orden.setTotal(total);
+        orden.setEstado(request.getEstado());
+        orden.setComprobante(request.getComprobante());
+        orden.setMetodoDePago(request.getMetodoDePago());
+
         return ordenDeCompraRepository.save(orden);
     }
 
-    public void deleteOrdenDeCompra(Long ordenId){
-        OrdenDeCompra orden = ordenDeCompraRepository.findById(ordenId).orElseThrow(() -> new RuntimeException("Orden de compra no encontrada con id: " + ordenId));
+    public void deleteOrdenDeCompra(Long ordenId) {
+
+        OrdenDeCompra orden = ordenDeCompraRepository.findById(ordenId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Orden de compra no encontrada con id: " + ordenId));
+
         ordenDeCompraRepository.delete(orden);
     }
 }

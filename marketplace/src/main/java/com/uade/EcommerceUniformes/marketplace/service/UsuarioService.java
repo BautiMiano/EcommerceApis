@@ -12,6 +12,8 @@ public interface UsuarioService {
 
     public Optional<Usuario> getUsuarioById(Long id);
 
-   public Usuario createUsuario(UsuarioDto usuarioDto);
+    public Usuario createUsuario(UsuarioDto usuarioDto);
+
+    void deleteUsuario (Long usuarioId);
 
 }
