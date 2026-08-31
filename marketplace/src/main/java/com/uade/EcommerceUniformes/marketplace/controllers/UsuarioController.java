@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioService;
@@ -40,19 +43,25 @@ public class UsuarioController {
     public ResponseEntity<Usuario> createUsuario(@RequestBody UsuarioDto usuario) {
         Usuario resultado = usuarioService.createUsuario(usuario);
 
-        if (resultado == null){
+        if (resultado == null) {
             return ResponseEntity.badRequest().build();
         }
-        
+
         return ResponseEntity.
                 created(URI.create("usuarios/" + resultado.getId()))
                 .body(resultado);
     }
 
     @DeleteMapping("/{usuarioId}")
-    public ResponseEntity<Void> deleteUsuario (@PathVariable Long usuarioId) {
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long usuarioId) {
         usuarioService.deleteUsuario(usuarioId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{usuarioId}/rol")
+    public Usuario cambiarRol(@PathVariable Long usuarioId,
+        @RequestParam Rol rol) {
+        return usuarioService.cambiarRol(usuarioId, rol);
     }
 }

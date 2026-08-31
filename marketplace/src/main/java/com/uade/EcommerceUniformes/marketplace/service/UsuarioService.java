@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
+import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 
@@ -15,5 +16,7 @@ public interface UsuarioService {
     public Usuario createUsuario(UsuarioDto usuarioDto);
 
     void deleteUsuario (Long usuarioId);
+
+    public Usuario cambiarRol(Long usuarioId, Rol nuevoRol);
 
 }
