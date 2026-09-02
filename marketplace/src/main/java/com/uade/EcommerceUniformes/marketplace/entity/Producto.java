@@ -1,11 +1,23 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
 
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 
 @Builder
 @Data
@@ -25,7 +37,6 @@ public class Producto {
     private double precio;
     private String talle;
     private int stock;
-    private String imagen;
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
 
@@ -33,6 +44,9 @@ public class Producto {
     @JoinColumn(name = "categoria_id")
     private Category categoria;
     //private Descuento descuentoProducto;
+
+    @OneToMany(mappedBy = "producto")
+    private List<Imagen> imagenes;
     
 
 }

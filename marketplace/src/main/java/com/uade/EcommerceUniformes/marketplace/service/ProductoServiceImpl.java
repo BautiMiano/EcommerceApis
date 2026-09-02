@@ -48,7 +48,6 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setPrecio(request.getPrecio());
         producto.setTalle(request.getTalle());
         producto.setStock(request.getStock());
-        producto.setImagen(request.getImagen());
         producto.setEstado(request.getEstado());
 
         if (request.getCategoryId() != null) {

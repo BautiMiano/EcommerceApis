@@ -11,7 +11,6 @@ public class ProductoRequest {
     private double precio;
     private String talle;
     private int stock;
-    private String imagen;
     private EstadoProducto estado;
     private Long categoryId;
 }
