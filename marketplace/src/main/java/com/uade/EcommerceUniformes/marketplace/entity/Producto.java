@@ -26,7 +26,6 @@ public class Producto {
     private String talle;
     private int stock;
     private String imagen;
-
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
 

@@ -9,6 +9,8 @@ public interface CarritoService {
     public Optional<Carrito> getCarritoById(Long carritoId);
     public Optional<Carrito> getCarritoByUsuarioId(Long usuarioId);
     public Carrito createCarrito(Long usuarioId);
-    public Carrito addProductoToCarrito(Long carritoId, Long productoId);
+    public Carrito addProductoToCarrito(Long carritoId, Long productoId, int cantidad);
+    public Carrito updateCantidadProducto(Long carritoId, Long productoId, int cantidad);
     public Carrito removeProductoFromCarrito(Long carritoId, Long productoId);
+    public void vaciarCarrito(Long carritoId);
 }

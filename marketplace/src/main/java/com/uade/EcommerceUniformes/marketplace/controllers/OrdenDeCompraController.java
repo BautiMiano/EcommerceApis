@@ -26,23 +26,23 @@ public class OrdenDeCompraController {
     @Autowired
     private OrdenDeCompraService ordenDeCompraSerivice;
 
-   @GetMapping
-   public List<OrdenDeCompra> getOrdenesDeCompra() {
-       return ordenDeCompraSerivice.getOrdenesDeCompra();
-   }
+    @GetMapping
+    public List<OrdenDeCompra> getOrdenesDeCompra() {
+        return ordenDeCompraSerivice.getOrdenesDeCompra();
+    }
 
-   @GetMapping("/{ordenId}")
-   public Optional<OrdenDeCompra> getOrdenDeCompraById(@PathVariable Long ordenId) {
-       return ordenDeCompraSerivice.getOrdenDeCompraById(ordenId);
-   }
+    @GetMapping("/{ordenId}")
+    public Optional<OrdenDeCompra> getOrdenDeCompraById(@PathVariable Long ordenId) {
+        return ordenDeCompraSerivice.getOrdenDeCompraById(ordenId);
+    }
 
-   @PostMapping
-   public ResponseEntity<OrdenDeCompra> createOrdenDeCompra(@RequestBody OrdenDeCompraRequest orden) {
-       OrdenDeCompra resultado = ordenDeCompraSerivice.createOrdenDeCompra(orden); 
-        return ResponseEntity.
-            created(URI.create("ordenDeCompra/" + resultado.getId()))
-            .body(resultado);  
-   }
+    @PostMapping
+    public ResponseEntity<OrdenDeCompra> createOrdenDeCompra(@RequestBody OrdenDeCompraRequest orden) {
+        OrdenDeCompra resultado = ordenDeCompraSerivice.createOrdenDeCompra(orden); 
+            return ResponseEntity.
+                created(URI.create("ordenDeCompra/" + resultado.getId()))
+                .body(resultado);  
+    }
 
     @DeleteMapping("/{ordenId}")
     public ResponseEntity<Void> deleteOrdenDeCompra(@PathVariable Long ordenId) {

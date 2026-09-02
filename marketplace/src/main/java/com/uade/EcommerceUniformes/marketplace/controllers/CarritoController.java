@@ -39,16 +39,30 @@ public class CarritoController {
                 .body(resultado);
     }
 
-    // POST http://localhost:4002/carritos/1/productos/5
+    // POST http://localhost:4002/carritos/1/productos/5?cantidad=2
     @PostMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<Carrito> addProductoToCarrito(@PathVariable Long carritoId, @PathVariable Long productoId) {
-        Carrito carritoActualizado = carritoService.addProductoToCarrito(carritoId, productoId);
+    public ResponseEntity<Carrito> addProductoToCarrito(
+            @PathVariable Long carritoId,
+            @PathVariable Long productoId,
+            @RequestParam(defaultValue = "1") int cantidad) {
+        Carrito carritoActualizado = carritoService.addProductoToCarrito(carritoId, productoId, cantidad);
         return ResponseEntity.ok(carritoActualizado);
     }
+
+    // PUT http://localhost:4002/carritos/1/productos/5?cantidad=4
+    @PutMapping("/{carritoId}/productos/{productoId}")
+    public ResponseEntity<Carrito> updateCantidadProducto(
+            @PathVariable Long carritoId,
+            @PathVariable Long productoId,
+            @RequestParam int cantidad) {
+        Carrito carritoActualizado = carritoService.updateCantidadProducto(carritoId, productoId, cantidad);
+        return ResponseEntity.ok(carritoActualizado);
+    }
+
     // DELETE http://localhost:4002/carritos/1/productos/5
-@DeleteMapping("/{carritoId}/productos/{productoId}")
-public ResponseEntity<Carrito> removeProductoFromCarrito(@PathVariable Long carritoId, @PathVariable Long productoId) {
-    Carrito carritoActualizado = carritoService.removeProductoFromCarrito(carritoId, productoId);
-    return ResponseEntity.ok(carritoActualizado);
-}
+    @DeleteMapping("/{carritoId}/productos/{productoId}")
+    public ResponseEntity<Carrito> removeProductoFromCarrito(@PathVariable Long carritoId, @PathVariable Long productoId) {
+        Carrito carritoActualizado = carritoService.removeProductoFromCarrito(carritoId, productoId);
+        return ResponseEntity.ok(carritoActualizado);
+    }
 }

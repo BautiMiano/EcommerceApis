@@ -1,11 +1,13 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
@@ -55,10 +57,10 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
         OrdenDeCompra orden = new OrdenDeCompra();
 
         orden.setUsuario(usuario);
-        orden.setFechaCompra(request.getFechaCompra());
+        orden.setFechaCompra(new Date(System.currentTimeMillis()));
         orden.setProductos(productos);
         orden.setTotal(total);
-        orden.setEstado(request.getEstado());
+        orden.setEstado(EstadoOrden.PENDIENTE);
         orden.setComprobante(request.getComprobante());
         orden.setMetodoDePago(request.getMetodoDePago());
 
