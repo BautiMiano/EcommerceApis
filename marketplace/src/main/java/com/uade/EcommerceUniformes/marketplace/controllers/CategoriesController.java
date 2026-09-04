@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
 import com.uade.EcommerceUniformes.marketplace.service.CategoryService;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @RequestMapping("categories")
@@ -40,6 +41,12 @@ public class CategoriesController {
         return ResponseEntity
                 .created(URI.create("/categories/" + resultado.getId()))
                 .body(resultado);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> desactivarCategory(@PathVariable Long id){
+        categoryService.desactivarCategory(id);
+        return ResponseEntity.ok("Categoria desactivada");
     }
 
 

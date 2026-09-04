@@ -22,7 +22,11 @@ public class Imagen {
 
     private Blob imagen;
 
+    private Boolean activo = true;
+
+
     @ManyToOne
     @JoinColumn(name = "producto_id")
     private Producto producto;
+
 }

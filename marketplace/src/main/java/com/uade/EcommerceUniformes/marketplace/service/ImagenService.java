@@ -1,8 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
-import org.springframework.stereotype.Service;
-
 
 public interface  ImagenService {
     
@@ -11,5 +9,9 @@ public interface  ImagenService {
 
 
     public Imagen viewById(Long id);
+
+    public void desactivarImagen(Long id);
+
+
 
 }

@@ -12,4 +12,9 @@ public interface CategoryService {
     public Optional<Category> getCategorById(Long categoryId);
 
     public Category createCategory( String nombre);
+
+    public void desactivarCategory(Long id);
+
+    public void activarCategory(Long id);
+
 }

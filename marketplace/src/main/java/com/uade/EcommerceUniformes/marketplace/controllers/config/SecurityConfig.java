@@ -32,8 +32,10 @@ public class SecurityConfig {
                 .hasAnyRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,"/categories/**")
                 .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE,"/categories/**")
+                .requestMatchers(HttpMethod.PATCH,"/categories/**")
                 .hasRole("ADMIN")//patch
+                .requestMatchers(HttpMethod.PATCH,"/imagenes/**")
+                .hasRole("ADMIN")
 
                 
                 

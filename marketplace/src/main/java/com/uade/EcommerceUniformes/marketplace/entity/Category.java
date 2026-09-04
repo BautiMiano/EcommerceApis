@@ -20,6 +20,9 @@ public class Category {
 
     @Column
     private String nombre;
+    
 
+    @Column
+    private Boolean activo = true;
 
 }

@@ -43,6 +43,7 @@ public class ImagenController {
         Imagen imagen = Imagen.builder()
                 .imagen(blob)
                 .producto(producto)
+                .activo(true)
                 .build();
 
         imagenService.createImagen(imagen);
@@ -73,5 +74,11 @@ public class ImagenController {
                                 .id(id)
                                 .build()
                 );
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> desactivarImagen(@PathVariable Long id) {
+        imagenService.desactivarImagen(id);
+        return ResponseEntity.ok("Imagen desactivada");
     }
 }
