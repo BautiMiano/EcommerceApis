@@ -8,7 +8,13 @@ import java.util.Base64;
 import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
@@ -55,30 +61,18 @@ public class ImagenController {
     public ResponseEntity<ImagenResponse> displayImage(
             @RequestParam("id") Long id)
             throws SQLException {
-
         Imagen imagen = imagenService.viewById(id);
 
         String encodedString = Base64.getEncoder()
-                .encodeToString(
-                        imagen.getImagen()
-                                .getBytes(
-                                        1,
-                                        (int) imagen.getImagen().length()
-                                )
-                );
+                .encodeToString(imagen.getImagen().getBytes(1,(int) imagen.getImagen().length()) );
 
         return ResponseEntity.ok()
-                .body(
-                        ImagenResponse.builder()
-                                .file(encodedString)
-                                .id(id)
-                                .build()
-                );
+                .body(ImagenResponse.builder().file(encodedString).id(id).build());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> desactivarImagen(@PathVariable Long id) {
+    public ResponseEntity<Imagen> desactivarImagen(@PathVariable Long id) {
         imagenService.desactivarImagen(id);
-        return ResponseEntity.ok("Imagen desactivada");
+        return ResponseEntity.ok().build();
     }
 }

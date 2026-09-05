@@ -37,6 +37,7 @@ public class Producto {
     private double precio;
     private String talle;
     private int stock;
+    private int stockReservado;
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
 

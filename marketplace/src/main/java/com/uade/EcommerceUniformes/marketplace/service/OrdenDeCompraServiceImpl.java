@@ -58,7 +58,7 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
 
         orden.setUsuario(usuario);
         orden.setFechaCompra(new Date(System.currentTimeMillis()));
-        orden.setProductos(productos);
+        orden.getItems();
         orden.setTotal(total);
         orden.setEstado(EstadoOrden.PENDIENTE);
         orden.setComprobante(request.getComprobante());
@@ -67,12 +67,5 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
         return ordenDeCompraRepository.save(orden);
     }
 
-    public void deleteOrdenDeCompra(Long ordenId) {
 
-        OrdenDeCompra orden = ordenDeCompraRepository.findById(ordenId)
-                .orElseThrow(() -> new RuntimeException(
-                        "Orden de compra no encontrada con id: " + ordenId));
-
-        ordenDeCompraRepository.delete(orden);
-    }
 }

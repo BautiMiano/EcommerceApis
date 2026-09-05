@@ -44,11 +44,5 @@ public class OrdenDeCompraController {
                 .body(resultado);  
     }
 
-    @DeleteMapping("/{ordenId}")
-    public ResponseEntity<Void> deleteOrdenDeCompra(@PathVariable Long ordenId) {
 
-        ordenDeCompraSerivice.deleteOrdenDeCompra(ordenId);
-
-        return ResponseEntity.noContent().build();
-    }
 }

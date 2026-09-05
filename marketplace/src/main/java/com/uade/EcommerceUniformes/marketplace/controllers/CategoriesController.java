@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
 import com.uade.EcommerceUniformes.marketplace.service.CategoryService;
-import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @RequestMapping("categories")
@@ -31,22 +31,22 @@ public class CategoriesController {
     }
 
     @GetMapping("/{categoryId}")
-    public Optional<Category> getCategorById(@PathVariable Long categoryId){// localhost:4002/categories/id // sirve oara pedir una categoria especifica por su id
+    public Optional<Category> getCategorById(@PathVariable Long categoryId){
         return categoryService.getCategorById(categoryId);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCategory(@RequestBody Category category){//crea una categoria // localhost:4002/categories
+    public ResponseEntity<Object> createCategory(@RequestBody Category category){
             Category resultado = categoryService.createCategory(category.getNombre());
         return ResponseEntity
                 .created(URI.create("/categories/" + resultado.getId()))
                 .body(resultado);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> desactivarCategory(@PathVariable Long id){
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity<Category> desactivarCategory(@PathVariable Long id){
         categoryService.desactivarCategory(id);
-        return ResponseEntity.ok("Categoria desactivada");
+        return ResponseEntity.ok().build();
     }
 
 

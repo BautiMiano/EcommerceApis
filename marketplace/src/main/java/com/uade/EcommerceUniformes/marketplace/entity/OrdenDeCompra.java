@@ -11,9 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Data
@@ -21,12 +20,12 @@ import lombok.Data;
 public class OrdenDeCompra {
 
     public OrdenDeCompra(Usuario usuario, Date fechaCompra,
-            List<Producto> productos, Double total, MetodoDePago metodoDePago,
+            List<ItemDeOrdenDeCompra> items, Double total, MetodoDePago metodoDePago,
             EstadoOrden estado, String comprobante) {
 
         this.usuario = usuario;
         this.fechaCompra = fechaCompra;
-        this.productos = productos;
+        this.items = items;
         this.total = total;
         this.metodoDePago = metodoDePago;
         this.estado = estado;
@@ -43,13 +42,8 @@ public class OrdenDeCompra {
     @Column
     private Date fechaCompra;
 
-    @ManyToMany
-    @JoinTable(
-            name = "orden_producto",
-            joinColumns = @JoinColumn(name = "orden_id"),
-            inverseJoinColumns = @JoinColumn(name = "producto_id")
-    )
-    private List<Producto> productos;
+    @OneToMany(mappedBy = "orden")
+    private List<ItemDeOrdenDeCompra> items;
 
     @Column(nullable = false)
     private Double total;

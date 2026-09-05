@@ -1,7 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
-import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +61,5 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
         
     }
-
 
 }

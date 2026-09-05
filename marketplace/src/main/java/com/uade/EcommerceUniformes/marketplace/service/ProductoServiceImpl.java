@@ -71,4 +71,35 @@ public class ProductoServiceImpl implements ProductoService {
 
     }
 
+    public void reservarStock(Long productoId, int cantidad) {
+        Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        int productoDisponible = producto.getStock() - producto.getStockReservado();
+
+        if (cantidad > productoDisponible) {
+            throw new RuntimeException("No hay suficiente stock disponible para el producto con id: " + productoId);
+        }
+
+        producto.setStockReservado(producto.getStockReservado() + cantidad);
+        productoRepository.save(producto);
+    }
+
+    public void liberarStock(Long productoId, int cantidad) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        producto.setStockReservado(producto.getStockReservado() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    public void descontarStockDefinitivo(Long productoId, int cantidad) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        producto.setStock(producto.getStock() - cantidad);
+        producto.setStockReservado(producto.getStockReservado() - cantidad);
+        productoRepository.save(producto);
+    }
+
+
 }

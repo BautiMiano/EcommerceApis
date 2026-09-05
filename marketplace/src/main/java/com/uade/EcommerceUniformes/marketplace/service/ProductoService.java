@@ -17,4 +17,11 @@ public interface ProductoService {
     Producto createProducto(ProductoRequest request);
 
     void deleteProducto(Long productoId);
+    
+    void reservarStock(Long productoId, int cantidad);
+    
+    void liberarStock(Long productoId, int cantidad);
+    
+    void descontarStockDefinitivo(Long productoId, int cantidad);
+
 }

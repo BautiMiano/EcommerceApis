@@ -14,5 +14,4 @@ public interface OrdenDeCompraService {
 
     public OrdenDeCompra createOrdenDeCompra(OrdenDeCompraRequest request);
 
-    public void deleteOrdenDeCompra(Long ordenId);
 }

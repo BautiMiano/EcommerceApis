@@ -28,17 +28,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/usuarios/**")
+                .requestMatchers(HttpMethod.GET, "/usuarios/**")
                 .hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST,"/categories/**")
+                .requestMatchers(HttpMethod.POST, "/categories/**")
                 .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH,"/categories/**")
+                .requestMatchers(HttpMethod.PATCH, "/categories/**")
                 .hasRole("ADMIN")//patch
-                .requestMatchers(HttpMethod.PATCH,"/imagenes/**")
+                .requestMatchers(HttpMethod.PATCH, "/imagenes/**")
                 .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/carritos/{carritoId}").hasAnyRole("ADMIN")
 
-                
-                
                 // Permisos del vendedor
                 .requestMatchers(HttpMethod.DELETE, "/productos/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")// patch 
@@ -56,14 +56,15 @@ public class SecurityConfig {
                 .authenticated()// comprador: get de sus propias ordenes/ vendedor: get de sus ordenes, que no se autocompre / admin: todas
                 .requestMatchers("/categories/**")
                 .permitAll()
-                .requestMatchers("/comentarios/**")
-                .permitAll()// get permitAll. post logica de comprar el prod comprador y vendedor. verificar si compro y que deje 1 solo comentario
-
+                .requestMatchers(HttpMethod.GET,"/comentarios/**")
+                .permitAll()
+                
 
                 // Permisos del comprador
-                .requestMatchers("/carrito/**")      
-                .hasAnyRole("COMPRADOR")//comprador.
-                
+                .requestMatchers("/carrito/**")
+                .hasAnyRole("COMPRADOR")
+                .requestMatchers("/carritos/**")
+                .hasAnyRole("COMPRADOR")
 
 
                 .anyRequest().authenticated()
