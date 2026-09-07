@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
@@ -51,9 +52,9 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{productoId}")
-    public ResponseEntity<Void> deleteProducto(@PathVariable Long productoId) {
+    public ResponseEntity<Void> desactivarProducto(@PathVariable Long productoId, @RequestParam Long usuarioId) {
 
-        productoService.deleteProducto(productoId);
+        productoService.desactivarProducto(productoId, usuarioId);
 
         return ResponseEntity.noContent().build();
     }

@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Builder
@@ -20,6 +23,7 @@ public class ItemCarrito {
 
     @ManyToOne
     @JoinColumn(name = "carrito_id", nullable = false)
+    @JsonIgnore 
     private Carrito carrito;
 
     @ManyToOne

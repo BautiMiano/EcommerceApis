@@ -33,38 +33,49 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/categories/**")
                 .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/categories/**")
-                .hasRole("ADMIN")//patch
+                .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/imagenes/**")
                 .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/usuarios/**")
+                .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE,"/usuarios/**")
+                .hasRole("ADMIN")
+
                 .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/carritos/{carritoId}").hasAnyRole("ADMIN")
 
                 // Permisos del vendedor
                 .requestMatchers(HttpMethod.DELETE, "/productos/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")// patch 
+                .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/productos/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/productos/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")// solo sus productos
+                .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers("/descuentos/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/imagenes/**")
+                .hasAnyRole("VENDEDOR", "ADMIN")
 
-                //Permiso de todos los usuarios
+                // Permiso de todos los usuarios
                 .requestMatchers(HttpMethod.GET, "/productos/**")
                 .permitAll()
                 .requestMatchers("/ordenesDeCompra/**")
-                .authenticated()// comprador: get de sus propias ordenes/ vendedor: get de sus ordenes, que no se autocompre / admin: todas
-                .requestMatchers("/categories/**")
+                .authenticated()
+                .requestMatchers(HttpMethod.GET, "/categories/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET,"/comentarios/**")
+                .requestMatchers(HttpMethod.GET, "/comentarios/**")
                 .permitAll()
-                
+                .requestMatchers(HttpMethod.POST, "/carritos/**")
+                .hasAnyRole("COMPRADOR")
+                .requestMatchers(HttpMethod.POST,"/carritos/**")
+                .hasAnyRole("COMPRADOR")
+                .requestMatchers(HttpMethod.DELETE,"/carritos/**")
+                .hasAnyRole("COMPRADOR")
+                .requestMatchers(HttpMethod.GET,"/imagenes/**")
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
+                .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
 
-                // Permisos del comprador
-                .requestMatchers("/carrito/**")
-                .hasAnyRole("COMPRADOR")
-                .requestMatchers("/carritos/**")
-                .hasAnyRole("COMPRADOR")
 
 
                 .anyRequest().authenticated()

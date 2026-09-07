@@ -2,6 +2,7 @@ package com.uade.EcommerceUniformes.marketplace.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 
 public interface CarritoService {
@@ -14,5 +15,6 @@ public interface CarritoService {
     public Carrito removeProductoFromCarrito(Long carritoId, Long productoId);
     public void vaciarCarrito(Long carritoId);
     public Carrito iniciarPago(Long carritoId);
-    public Carrito confirmarPago(Long carritoId);
+    Carrito confirmarPago(Long carritoId);
+    void expirarCarritosVencidos();
 }

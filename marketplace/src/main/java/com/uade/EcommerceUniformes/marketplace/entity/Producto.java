@@ -1,6 +1,5 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
-
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -30,7 +29,7 @@ public class Producto {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable=false)
     private String nombre;
     private String descripcion;
@@ -38,6 +37,8 @@ public class Producto {
     private String talle;
     private int stock;
     private int stockReservado;
+    private boolean activo;
+
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
 
@@ -48,6 +49,8 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto")
     private List<Imagen> imagenes;
-    
 
+    @ManyToOne
+    @JoinColumn(name = "vendedor_id", nullable = false)
+    private Usuario vendedor;
 }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Blob;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 @Builder
@@ -20,6 +22,7 @@ public class Imagen {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     private Blob imagen;
 
     private Boolean activo = true;
@@ -27,6 +30,7 @@ public class Imagen {
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
+    @JsonIgnore
     private Producto producto;
 
 }

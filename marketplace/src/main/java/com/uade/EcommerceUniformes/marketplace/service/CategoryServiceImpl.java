@@ -1,13 +1,13 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
-import com.uade.EcommerceUniformes.marketplace.entity.Category;
-import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import java.util.List;
-import java.util.Optional;
+import com.uade.EcommerceUniformes.marketplace.entity.Category;
+import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
                 "Categoria no encontrada con id: " + id
         ));
 
-        if (!category.getActivo()==false) {
+        if (category.getActivo()==false) {
             throw new RuntimeException("La categoria con id: " + id + " ya se encuentra desactivada");
         }
         category.setActivo(false);

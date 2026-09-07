@@ -9,7 +9,7 @@ import lombok.Data;
 public class OrdenDeCompraRequest {
     private Long usuarioId;
 
-    private List<Long> productosIds;
+    private List<ItemOrdenRequest> items;
 
     private String comprobante;
 

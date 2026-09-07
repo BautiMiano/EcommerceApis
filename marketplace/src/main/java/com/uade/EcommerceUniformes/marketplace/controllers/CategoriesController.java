@@ -43,9 +43,15 @@ public class CategoriesController {
                 .body(resultado);
     }
 
-    @PatchMapping("/{categoryId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Category> desactivarCategory(@PathVariable Long id){
         categoryService.desactivarCategory(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/activar/{id}")
+    public ResponseEntity<Category> activarCategory(@PathVariable Long id){
+        categoryService.activarCategory(id);
         return ResponseEntity.ok().build();
     }
 

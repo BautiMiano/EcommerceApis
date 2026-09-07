@@ -5,7 +5,6 @@ import com.uade.EcommerceUniformes.marketplace.entity.EstadoProducto;
 import lombok.Data;
 
 @Data
-
 public class ProductoRequest {
     private String nombre;
     private String descripcion;
@@ -15,4 +14,5 @@ public class ProductoRequest {
     private int stockReservado;
     private EstadoProducto estado;
     private Long categoryId;
+    private Long vendedorId;
 }
