@@ -22,6 +22,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
+
     @Autowired
     private CarritoRepository carritoRepository;
 
@@ -33,6 +34,7 @@ public class CarritoServiceImpl implements CarritoService {
 
     @Autowired
     private ProductoService productoService;
+
 
     public List<Carrito> getCarritos() {
         return carritoRepository.findAll();
@@ -47,40 +49,59 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     public Carrito createCarrito(Long usuarioId) {
-        if (carritoRepository.findByUsuarioId(usuarioId).isPresent())
-            throw new RuntimeException("El usuario ya tiene un carrito creado");
 
         Usuario usuario = usuarioService.getUsuarioById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
+                .orElseThrow(() -> new RuntimeException(
+                "Usuario no encontrado con id: " + usuarioId));
 
-        if (usuario.getRolUsuario() != Rol.COMPRADOR)
-            throw new RuntimeException("Solo los usuarios compradores pueden crear un carrito");
+        if (usuario.getRolUsuario() != Rol.COMPRADOR) {
+            throw new RuntimeException(
+                    "Solo los usuarios compradores pueden crear un carrito");
+        }
+
+        Optional<Carrito> carritoExistente = carritoRepository.findByUsuarioId(usuarioId);
+
+        if (carritoExistente.isPresent()) {
+
+            Carrito carrito = carritoExistente.get();
+
+            if (carrito.getEstado() == EstadoCarrito.ARMADO
+                    || carrito.getEstado() == EstadoCarrito.PENDIENTE_PAGO) {
+
+                throw new RuntimeException(
+                        "El usuario ya tiene un carrito activo");
+            }
+        }
 
         Carrito carrito = new Carrito();
         carrito.setUsuario(usuario);
         carrito.setEstado(EstadoCarrito.ARMADO);
+
         return carritoRepository.save(carrito);
     }
 
     public Carrito addProductoToCarrito(Long carritoId, Long productoId, int cantidad) {
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+        if (carrito.getEstado() != EstadoCarrito.ARMADO) {
+            throw new RuntimeException(
+                    "No se pueden agregar productos a un carrito que no está ARMADO");
+        }
 
         Producto producto = productoService.getProductoById(productoId)
                 .orElseThrow(() -> new Error("Producto no encontrado con id: " + productoId));
 
-        Optional<ItemCarrito> itemExistente =
-                itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, productoId);
-
-        
+        Optional<ItemCarrito> itemExistente
+                = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, productoId);
 
         if (itemExistente.isPresent()) {
             ItemCarrito item = itemExistente.get();
             item.setCantidad(item.getCantidad() + cantidad);
             itemCarritoRepository.save(item);
         } else {
-            if (carrito.getItems() == null)
+            if (carrito.getItems() == null) {
                 carrito.setItems(new ArrayList<>());
+            }
 
             ItemCarrito nuevoItem = new ItemCarrito();
             nuevoItem.setCarrito(carrito);
@@ -156,23 +177,24 @@ public class CarritoServiceImpl implements CarritoService {
         }
 
         carrito.setEstado(EstadoCarrito.PAGADO);
+
         return carritoRepository.save(carrito);
     }
 
     @Scheduled(fixedRate = 60000) // corre cada 1 minuto
     @Transactional
     public void expirarCarritosVencidos() {
-    LocalDateTime limite = LocalDateTime.now().minusMinutes(15);
+        LocalDateTime limite = LocalDateTime.now().minusMinutes(15);
 
-    List<Carrito> vencidos = carritoRepository
-            .findByEstadoAndFechaInicioPagoBefore(EstadoCarrito.PENDIENTE_PAGO, limite);
+        List<Carrito> vencidos = carritoRepository
+                .findByEstadoAndFechaInicioPagoBefore(EstadoCarrito.PENDIENTE_PAGO, limite);
 
-    for (Carrito carrito : vencidos) {
-        for (ItemCarrito item : carrito.getItems()) {
-            productoService.liberarStock(item.getProducto().getId(), item.getCantidad());
+        for (Carrito carrito : vencidos) {
+            for (ItemCarrito item : carrito.getItems()) {
+                productoService.liberarStock(item.getProducto().getId(), item.getCantidad());
+            }
+            carrito.setEstado(EstadoCarrito.EXPIRADO);
+            carritoRepository.save(carrito);
         }
-        carrito.setEstado(EstadoCarrito.EXPIRADO);
-        carritoRepository.save(carrito);
     }
-}
 }

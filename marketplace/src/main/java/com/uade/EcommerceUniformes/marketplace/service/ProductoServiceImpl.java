@@ -88,6 +88,24 @@ public class ProductoServiceImpl implements ProductoService {
         productoRepository.save(producto);
     }
 
+    public void activarProducto(Long productoId, Long usuarioId) {
+
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + productoId));
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
+
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
+        boolean esAdmin = usuario.getRolUsuario() == Rol.ADMIN;
+
+        if (!esDueño && !esAdmin)
+            throw new RuntimeException("No tenés permiso para activar este producto");
+
+        producto.setActivo(true);
+        productoRepository.save(producto);
+    }
+
     @Override
     public void reservarStock(Long productoId, int cantidad) {
         Producto producto = productoRepository.findById(productoId)

@@ -64,7 +64,7 @@ public class ImagenController {
         Imagen imagen = imagenService.viewById(id);
 
         String encodedString = Base64.getEncoder()
-                .encodeToString(imagen.getImagen().getBytes(1,(int) imagen.getImagen().length()) );
+                .encodeToString(imagen.getImagen().getBytes(1, (int) imagen.getImagen().length()));
 
         return ResponseEntity.ok()
                 .body(ImagenResponse.builder().file(encodedString).id(id).build());
@@ -73,6 +73,12 @@ public class ImagenController {
     @PatchMapping("/{id}")
     public ResponseEntity<Imagen> desactivarImagen(@PathVariable Long id) {
         imagenService.desactivarImagen(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/activar")
+    public ResponseEntity<Imagen> activarImagen(@PathVariable Long id) {
+        imagenService.activarImagen(id);
         return ResponseEntity.ok().build();
     }
 }

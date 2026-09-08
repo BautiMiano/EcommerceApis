@@ -55,6 +55,10 @@ public class SecurityConfig {
                 .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/imagenes/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/productos/**")
+                .hasAnyRole("VENDEDOR", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH,"/imagenes/{id}/activar")
+                .hasAnyRole( "ADMIN")
 
                 // Permiso de todos los usuarios
                 .requestMatchers(HttpMethod.GET, "/productos/**")
@@ -66,8 +70,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/comentarios/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/carritos/**")
-                .hasAnyRole("COMPRADOR")
-                .requestMatchers(HttpMethod.POST,"/carritos/**")
                 .hasAnyRole("COMPRADOR")
                 .requestMatchers(HttpMethod.DELETE,"/carritos/**")
                 .hasAnyRole("COMPRADOR")

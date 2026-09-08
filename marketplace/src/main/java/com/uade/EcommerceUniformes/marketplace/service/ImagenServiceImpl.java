@@ -31,4 +31,15 @@ public class ImagenServiceImpl implements ImagenService {
         imagenRepository.save(imagen);
     }
 
+    public void activarImagen(Long id) {
+
+        Imagen imagen = imagenRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        "Imagen no encontrada con id: " + id
+                ));
+        imagen.setActivo(true);
+
+        imagenRepository.save(imagen);
+    }
+
 }

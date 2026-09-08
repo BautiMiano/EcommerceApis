@@ -56,7 +56,7 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
         orden.getItems();
 
         orden.setTotal(total);
-        orden.setEstado(EstadoOrden.PENDIENTE);
+        orden.setEstado(EstadoOrden.CONFIRMADA);
         orden.setComprobante(request.getComprobante());
         orden.setMetodoDePago(request.getMetodoDePago());
 

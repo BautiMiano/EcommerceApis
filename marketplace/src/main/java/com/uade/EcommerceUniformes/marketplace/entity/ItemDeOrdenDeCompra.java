@@ -1,5 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +33,7 @@ public class ItemDeOrdenDeCompra {
 
     @ManyToOne
     @JoinColumn(name = "ordenId", nullable = false)
+    @JsonIgnore 
     private OrdenDeCompra orden;
 
     @ManyToOne

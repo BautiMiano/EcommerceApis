@@ -12,6 +12,7 @@ public interface ProductoService {
     List<Producto> getProductosByCategoria(Long categoryId);
     Producto createProducto(ProductoRequest request);
     void desactivarProducto(Long productoId, Long usuarioId);
+    void activarProducto(Long productoId, Long usuarioId) ;
 
     void reservarStock(Long productoId, int cantidad);
     void liberarStock(Long productoId, int cantidad);

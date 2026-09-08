@@ -11,6 +11,8 @@ public interface  ImagenService {
     public Imagen viewById(Long id);
 
     public void desactivarImagen(Long id);
+    public void activarImagen(Long id) ;
+
 
 
 
