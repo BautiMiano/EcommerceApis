@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/ordenesDeCompra")
                 .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/{ordenId}")
+                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/*")
                 .hasRole("ADMIN")
 
 
@@ -60,6 +60,11 @@ public class SecurityConfig {
                 .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/imagenes/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/imagenes/**")
+                .hasAnyRole("VENDEDOR", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/productos/*/stock")
+                .hasAnyRole("VENDEDOR")
+
                 .requestMatchers(HttpMethod.PATCH, "/productos/**")
                 .hasAnyRole("VENDEDOR", "ADMIN")
                 .requestMatchers(HttpMethod.PATCH,"/imagenes/{id}/activar")

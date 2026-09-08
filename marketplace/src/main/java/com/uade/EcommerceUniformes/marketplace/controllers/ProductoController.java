@@ -67,4 +67,15 @@ public class ProductoController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{productoId}/stock")
+    public ResponseEntity<Void> modificarStock(
+            @PathVariable Long productoId,
+            @RequestParam Long usuarioId,
+            @RequestParam int stock) {
+
+        productoService.modificarStock(productoId, usuarioId, stock);
+
+        return ResponseEntity.noContent().build();
+    }
 }

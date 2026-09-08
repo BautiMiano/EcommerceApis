@@ -46,8 +46,9 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new RuntimeException(
                 "Usuario no encontrado con id: " + request.getVendedorId()));
 
-        if (vendedor.getRolUsuario() != Rol.VENDEDOR)
+        if (vendedor.getRolUsuario() != Rol.VENDEDOR) {
             throw new RuntimeException("Solo los usuarios vendedores pueden crear productos");
+        }
 
         Producto producto = new Producto();
         producto.setNombre(request.getNombre());
@@ -81,8 +82,9 @@ public class ProductoServiceImpl implements ProductoService {
         boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
         boolean esAdmin = usuario.getRolUsuario() == Rol.ADMIN;
 
-        if (!esDueño && !esAdmin)
+        if (!esDueño && !esAdmin) {
             throw new RuntimeException("No tenés permiso para eliminar este producto");
+        }
 
         producto.setActivo(false);
         productoRepository.save(producto);
@@ -99,8 +101,9 @@ public class ProductoServiceImpl implements ProductoService {
         boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
         boolean esAdmin = usuario.getRolUsuario() == Rol.ADMIN;
 
-        if (!esDueño && !esAdmin)
+        if (!esDueño && !esAdmin) {
             throw new RuntimeException("No tenés permiso para activar este producto");
+        }
 
         producto.setActivo(true);
         productoRepository.save(producto);
@@ -132,6 +135,33 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         producto.setStock(producto.getStock() - cantidad);
         producto.setStockReservado(producto.getStockReservado() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    public void modificarStock(Long productoId, Long usuarioId, int nuevoStock) {
+
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException(
+                "Producto no encontrado con id: " + productoId));
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException(
+                "Usuario no encontrado con id: " + usuarioId));
+
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
+
+        if (!esDueño) {
+            throw new RuntimeException(
+                    "No tenés permiso para modificar el stock de este producto");
+        }
+
+        if (nuevoStock < 0) {
+            throw new RuntimeException(
+                    "El stock no puede ser negativo");
+        }
+
+        producto.setStock(nuevoStock);
+
         productoRepository.save(producto);
     }
 }
