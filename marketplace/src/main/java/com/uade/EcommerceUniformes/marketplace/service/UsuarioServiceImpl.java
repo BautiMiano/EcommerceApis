@@ -43,7 +43,17 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void deleteUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
-        usuarioRepository.delete(usuario);
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+    }
+
+    public void activarUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setActivo(true);
+
+        usuarioRepository.save(usuario);
     }
 
     public Usuario cambiarRol(Long usuarioId, Rol nuevoRol) {

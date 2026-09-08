@@ -59,9 +59,15 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{usuarioId}/activar")
+    public ResponseEntity<Usuario> activarUsuario(@PathVariable Long usuarioId) {
+        usuarioService.activarUsuario(usuarioId);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/{usuarioId}/rol")
     public Usuario cambiarRol(@PathVariable Long usuarioId,
-        @RequestParam Rol rol) {
+            @RequestParam Rol rol) {
         return usuarioService.cambiarRol(usuarioId, rol);
     }
 }

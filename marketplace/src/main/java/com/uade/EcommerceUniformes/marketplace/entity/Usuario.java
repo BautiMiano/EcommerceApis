@@ -63,6 +63,9 @@ public class Usuario implements UserDetails {
     @Column
     private Rol rolUsuario;
 
+    @Column(nullable = false)
+    private boolean activo = true;
+
     @Override
     public String getUsername() {
         return mail;
