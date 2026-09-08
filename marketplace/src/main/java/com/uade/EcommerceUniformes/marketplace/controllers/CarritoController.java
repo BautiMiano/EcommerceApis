@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.service.CarritoService;
@@ -81,8 +82,8 @@ public class CarritoController {
 }
 
     @PostMapping("/{carritoId}/confirmar")
-    public ResponseEntity<Carrito> confirmarPago(@PathVariable Long carritoId) {
-    Carrito carritoActualizado = carritoService.confirmarPago(carritoId);
+    public ResponseEntity<Carrito> confirmarPago(@PathVariable Long carritoId, @RequestParam MetodoDePago metodoDePago) {
+    Carrito carritoActualizado = carritoService.confirmarPago(carritoId , metodoDePago);
     return ResponseEntity.ok(carritoActualizado);
 }
 }

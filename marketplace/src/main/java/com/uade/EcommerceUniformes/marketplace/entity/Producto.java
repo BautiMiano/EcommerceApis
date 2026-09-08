@@ -45,7 +45,10 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Category categoria;
-    //private Descuento descuentoProducto;
+
+    @ManyToOne
+    @JoinColumn(name = "descuento_id")
+    private Descuento descuento;
 
     @OneToMany(mappedBy = "producto")
     private List<Imagen> imagenes;
@@ -53,4 +56,6 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "vendedor_id", nullable = false)
     private Usuario vendedor;
+
+
 }

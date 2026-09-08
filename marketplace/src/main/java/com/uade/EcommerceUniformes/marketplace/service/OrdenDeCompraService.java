@@ -12,6 +12,6 @@ public interface OrdenDeCompraService {
 
     public Optional<OrdenDeCompra> getOrdenDeCompraById(Long ordenId);
 
-    public OrdenDeCompra createOrdenDeCompra(OrdenDeCompraRequest request);
+    public List<OrdenDeCompra> getOrdenesDeCompraByUsuarioId(Long usuarioId);
 
 }

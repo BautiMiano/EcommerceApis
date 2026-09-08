@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,17 @@ import org.springframework.stereotype.Service;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
+import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 import com.uade.EcommerceUniformes.marketplace.entity.ItemCarrito;
+import com.uade.EcommerceUniformes.marketplace.entity.ItemDeOrdenDeCompra;
+import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ItemCarritoRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
+import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 
 import jakarta.transaction.Transactional;
 
@@ -35,6 +41,8 @@ public class CarritoServiceImpl implements CarritoService {
     @Autowired
     private ProductoService productoService;
 
+    @Autowired
+    private OrdenDeCompraRepository ordenDeCompraRepository;
 
     public List<Carrito> getCarritos() {
         return carritoRepository.findAll();
@@ -59,18 +67,26 @@ public class CarritoServiceImpl implements CarritoService {
                     "Solo los usuarios compradores pueden crear un carrito");
         }
 
-        Optional<Carrito> carritoExistente = carritoRepository.findByUsuarioId(usuarioId);
+        Optional<Carrito> carritoExistente
+                = carritoRepository.findByUsuarioIdAndEstado(
+                        usuarioId,
+                        EstadoCarrito.ARMADO
+                );
 
         if (carritoExistente.isPresent()) {
+            throw new RuntimeException(
+                    "El usuario ya tiene un carrito activo");
+        }
 
-            Carrito carrito = carritoExistente.get();
+        Optional<Carrito> carritoPendiente
+                = carritoRepository.findByUsuarioIdAndEstado(
+                        usuarioId,
+                        EstadoCarrito.PENDIENTE_PAGO
+                );
 
-            if (carrito.getEstado() == EstadoCarrito.ARMADO
-                    || carrito.getEstado() == EstadoCarrito.PENDIENTE_PAGO) {
-
-                throw new RuntimeException(
-                        "El usuario ya tiene un carrito activo");
-            }
+        if (carritoPendiente.isPresent()) {
+            throw new RuntimeException(
+                    "El usuario ya tiene un carrito pendiente de pago");
         }
 
         Carrito carrito = new Carrito();
@@ -164,17 +180,52 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Transactional
-    public Carrito confirmarPago(Long carritoId) {
+    public Carrito confirmarPago(Long carritoId, MetodoDePago metodoDePago) {
+
         Carrito carrito = carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+                .orElseThrow(()
+                        -> new RuntimeException("Carrito no encontrado con id: " + carritoId));
 
         if (carrito.getEstado() != EstadoCarrito.PENDIENTE_PAGO) {
-            throw new Error("El carrito no está pendiente de pago");
+            throw new RuntimeException("El carrito no está pendiente de pago");
         }
 
         for (ItemCarrito item : carrito.getItems()) {
-            productoService.descontarStockDefinitivo(item.getProducto().getId(), item.getCantidad());
+
+            productoService.descontarStockDefinitivo(
+                    item.getProducto().getId(),
+                    item.getCantidad()
+            );
         }
+
+        OrdenDeCompra orden = new OrdenDeCompra();
+
+        orden.setUsuario(carrito.getUsuario());
+        orden.setFechaCompra(new Date(System.currentTimeMillis()));
+        orden.setEstado(EstadoOrden.CONFIRMADA);
+        orden.setMetodoDePago(metodoDePago);
+        orden.setItems(new ArrayList<>());
+
+        double total = 0;
+
+        for (ItemCarrito itemCarrito : carrito.getItems()) {
+
+            ItemDeOrdenDeCompra itemOrden = new ItemDeOrdenDeCompra();
+
+            itemOrden.setOrden(orden);
+            itemOrden.setProducto(itemCarrito.getProducto());
+            itemOrden.setCantidad(itemCarrito.getCantidad());
+            itemOrden.setPrecioUnitario(itemCarrito.getPrecioUnitario());
+
+            orden.getItems().add(itemOrden);
+
+            total += itemCarrito.getPrecioUnitario()
+                    * itemCarrito.getCantidad();
+        }
+
+        orden.setTotal(total);
+
+        ordenDeCompraRepository.save(orden);
 
         carrito.setEstado(EstadoCarrito.PAGADO);
 

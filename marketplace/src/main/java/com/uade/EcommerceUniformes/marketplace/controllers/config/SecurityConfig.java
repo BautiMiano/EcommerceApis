@@ -40,6 +40,11 @@ public class SecurityConfig {
                 .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/usuarios/**")
                 .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra")
+                .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/{ordenId}")
+                .hasRole("ADMIN")
+
 
                 .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/carritos/{carritoId}").hasAnyRole("ADMIN")
@@ -63,8 +68,6 @@ public class SecurityConfig {
                 // Permiso de todos los usuarios
                 .requestMatchers(HttpMethod.GET, "/productos/**")
                 .permitAll()
-                .requestMatchers("/ordenesDeCompra/**")
-                .authenticated()
                 .requestMatchers(HttpMethod.GET, "/categories/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/comentarios/**")
@@ -73,6 +76,8 @@ public class SecurityConfig {
                 .hasAnyRole("COMPRADOR")
                 .requestMatchers(HttpMethod.DELETE,"/carritos/**")
                 .hasAnyRole("COMPRADOR")
+                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes")
+                .hasRole("COMPRADOR")
                 .requestMatchers(HttpMethod.GET,"/imagenes/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")

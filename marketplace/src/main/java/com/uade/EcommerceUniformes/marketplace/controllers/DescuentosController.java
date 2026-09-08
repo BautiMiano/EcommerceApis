@@ -32,4 +32,12 @@ public class DescuentosController {
                 .created(URI.create("/descuentos/" + resultado.getIdDescuento()))
                 .body(resultado);
     }
+
+    @PostMapping("/{descuentoId}/asignar-a-producto/{productoId}")
+    public ResponseEntity<Object> asignarDescuentoAProducto(@PathVariable Long descuentoId, @PathVariable Long productoId) {
+        descuentoService.asignarDescuentoAProducto(descuentoId, productoId);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

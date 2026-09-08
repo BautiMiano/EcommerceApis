@@ -10,6 +10,16 @@ import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
 
 public interface CarritoRepository extends JpaRepository<Carrito, Long> {
+
     Optional<Carrito> findByUsuarioId(Long usuarioId);
-    List<Carrito> findByEstadoAndFechaInicioPagoBefore(EstadoCarrito estado, LocalDateTime fecha);
+
+    Optional<Carrito> findByUsuarioIdAndEstado(
+            Long usuarioId,
+            EstadoCarrito estado
+    );
+
+    List<Carrito> findByEstadoAndFechaInicioPagoBefore(
+            EstadoCarrito estado,
+            LocalDateTime fechaInicioPago
+    );
 }

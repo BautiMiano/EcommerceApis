@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
+import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 
 public interface CarritoService {
     public List<Carrito> getCarritos();
@@ -15,6 +16,6 @@ public interface CarritoService {
     public Carrito removeProductoFromCarrito(Long carritoId, Long productoId);
     public void vaciarCarrito(Long carritoId);
     public Carrito iniciarPago(Long carritoId);
-    Carrito confirmarPago(Long carritoId);
+    public Carrito confirmarPago(Long carritoId, MetodoDePago metodoDePago);
     void expirarCarritosVencidos();
 }
