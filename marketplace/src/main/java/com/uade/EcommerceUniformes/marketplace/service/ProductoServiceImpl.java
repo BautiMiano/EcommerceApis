@@ -3,7 +3,9 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
@@ -23,31 +25,46 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoryRepository categoryRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioLogueadoService usuarioLogueadoService;
 
     @Override
     public List<Producto> getProductos() {
+        if (productoRepository.findAll().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay productos disponibles");
+        }
         return productoRepository.findAll();
     }
 
     @Override
     public Optional<Producto> getProductoById(Long productoId) {
+        if (!productoRepository.existsById(productoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId);
+        }
         return productoRepository.findById(productoId);
     }
 
     @Override
     public List<Producto> getProductosByCategoria(Long categoriaId) {
+        if (!categoryRepository.existsById(categoriaId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria no encontrada con id: " + categoriaId);
+        }
         return productoRepository.findByCategoriaId(categoriaId);
     }
 
     @Override
     public Producto createProducto(ProductoRequest request) {
 
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+        
         Usuario vendedor = usuarioRepository.findById(request.getVendedorId())
-                .orElseThrow(() -> new RuntimeException(
-                "Usuario no encontrado con id: " + request.getVendedorId()));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendedor no encontrado con id: " + request.getVendedorId()));
+        
         if (vendedor.getRolUsuario() != Rol.VENDEDOR) {
-            throw new RuntimeException("Solo los usuarios vendedores pueden crear productos");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo los usuarios vendedores pueden crear productos");
+        }
+
+        if (!vendedor.isActivo()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El usuario vendedor está desactivado y no puede crear productos");
         }
 
         Producto producto = new Producto();
@@ -61,9 +78,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (request.getCategoryId() != null) {
             Category categoria = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException(
-                    "Categoria no encontrada con id: " + request.getCategoryId()
-            ));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria no encontrada con id: " + request.getCategoryId()));
             producto.setCategoria(categoria);
         }
 
@@ -71,39 +86,52 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void desactivarProducto(Long productoId, Long usuarioId) {
+    public void desactivarProducto(Long productoId) {
+
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + productoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
-
-        boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
-        boolean esAdmin = usuario.getRolUsuario() == Rol.ADMIN;
+        if (!usuarioLogueado.isActivo()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario desactivado no puede desactivar productos");
+        }
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
+        boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
 
         if (!esDueño && !esAdmin) {
-            throw new RuntimeException("No tenés permiso para eliminar este producto");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permiso para eliminar este producto");
+        }
+        if(!producto.isActivo()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está desactivado");
         }
 
         producto.setActivo(false);
         productoRepository.save(producto);
     }
 
-    public void activarProducto(Long productoId, Long usuarioId) {
+    public void activarProducto(Long productoId) {
+
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + productoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
-
-        boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
-        boolean esAdmin = usuario.getRolUsuario() == Rol.ADMIN;
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
+        boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
 
         if (!esDueño && !esAdmin) {
-            throw new RuntimeException("No tenés permiso para activar este producto");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permiso para activar este producto");
         }
+
+        if (!usuarioLogueado.isActivo()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario desactivado no puede activar productos");
+        }
+
+        if (producto.isActivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está activo");
+        }
+
 
         producto.setActivo(true);
         productoRepository.save(producto);
@@ -112,10 +140,10 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void reservarStock(Long productoId, int cantidad) {
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
         int disponible = producto.getStock() - producto.getStockReservado();
         if (cantidad > disponible) {
-            throw new RuntimeException("No hay suficiente stock disponible para el producto con id: " + productoId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay suficiente stock disponible para el producto con id: " + productoId);
         }
         producto.setStockReservado(producto.getStockReservado() + cantidad);
         productoRepository.save(producto);
@@ -124,7 +152,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void liberarStock(Long productoId, int cantidad) {
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
         producto.setStockReservado(producto.getStockReservado() - cantidad);
         productoRepository.save(producto);
     }
@@ -132,33 +160,42 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void descontarStockDefinitivo(Long productoId, int cantidad) {
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
         producto.setStock(producto.getStock() - cantidad);
         producto.setStockReservado(producto.getStockReservado() - cantidad);
         productoRepository.save(producto);
     }
 
-    public void modificarStock(Long productoId, Long usuarioId, int nuevoStock) {
+    public void modificarStock(ProductoRequest request) {
 
-        Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException(
-                "Producto no encontrado con id: " + productoId));
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException(
-                "Usuario no encontrado con id: " + usuarioId));
+        Producto producto = productoRepository.findById(request.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + request.getId()));
+        
+        if (usuarioLogueado.getRolUsuario() != Rol.VENDEDOR) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solo los usuarios vendedores pueden modificar el stock");
+        }
 
-        boolean esDueño = producto.getVendedor().getId().equals(usuarioId);
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
 
         if (!esDueño) {
-            throw new RuntimeException(
-                    "No tenés permiso para modificar el stock de este producto");
+            throw new ResponseStatusException(
+        HttpStatus.FORBIDDEN,
+        "No se puede modificar el stock de otro vendedor");
         }
 
-        if (nuevoStock < 0) {
-            throw new RuntimeException(
+        if (request.getStock() < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
                     "El stock no puede ser negativo");
         }
+
+        int nuevoStock = producto.getStock() + request.getStock(); 
 
         producto.setStock(nuevoStock);
 

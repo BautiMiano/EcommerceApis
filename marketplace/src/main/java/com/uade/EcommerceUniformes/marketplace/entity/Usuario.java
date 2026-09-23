@@ -17,19 +17,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Data
 @Entity
 public class Usuario implements UserDetails {
 
-    public Usuario(String nombreUsuario, String nombre, String apellido, String mail, String contrasena, Rol rolUsuario) {
+    public Usuario(String nombreUsuario, String nombre, String apellido, String mail, String contrasena, Rol rolUsuario, Carrito carrito) {
         this.nombreUsuario = nombreUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.mail = mail;
         this.contrasena = contrasena;
         this.rolUsuario = rolUsuario;
+        this.carrito = carrito;
     }
 
     public Usuario() {
@@ -66,6 +68,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private boolean activo = true;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "usuario")
+    private Carrito carrito;
+
     @Override
     public String getUsername() {
         return mail;
@@ -83,4 +89,7 @@ public class Usuario implements UserDetails {
                 new SimpleGrantedAuthority("ROLE_" + rolUsuario.name())
         );
     }
+
+    @OneToMany (mappedBy = "usuario")
+    private List<Ticket> tickets;
 }

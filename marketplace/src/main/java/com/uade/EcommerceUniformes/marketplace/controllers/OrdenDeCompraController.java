@@ -15,6 +15,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import org.springframework.security.core.Authentication;
 
 
+
 @RestController
 @RequestMapping("ordenesDeCompra")
 public class OrdenDeCompraController {
@@ -33,9 +34,13 @@ public class OrdenDeCompraController {
     }
 
     @GetMapping("/mis-ordenes")
-    public List<OrdenDeCompra> getMisOrdenes (Authentication authentication){
-        Usuario usuario = (Usuario) authentication.getPrincipal();
-        return ordenDeCompraSerivice.getOrdenesDeCompraByUsuarioId(usuario.getId());
+    public List<OrdenDeCompra> getMisOrdenes (){
+        return ordenDeCompraSerivice.getOrdenesDeCompraByUsuarioId();
+    }
+
+    @GetMapping("/mis-ordenes/{ordenId}")
+    public Optional<OrdenDeCompra> getMisOrdenesDeCompraById(@PathVariable Long ordenId) {
+        return ordenDeCompraSerivice.getMisOrdenesDeCompraById(ordenId);
     }
 
 

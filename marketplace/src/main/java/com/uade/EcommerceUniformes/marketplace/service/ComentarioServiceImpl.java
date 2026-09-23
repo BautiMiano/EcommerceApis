@@ -15,6 +15,9 @@ import com.uade.EcommerceUniformes.marketplace.repository.ComentarioRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ItemDeOrdenDeCompraRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import com.uade.EcommerceUniformes.marketplace.service.UsuarioLogueadoService;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -31,48 +34,62 @@ public class ComentarioServiceImpl implements ComentarioService {
     @Autowired
     private ItemDeOrdenDeCompraRepository itemDeOrdenDeCompraRepository;
 
+    @Autowired
+    private UsuarioLogueadoService usuarioLogueadoService;
+
     @Override
     public List<Comentario> getComentarios() {
+
+        if (comentarioRepository.findAll().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay comentarios disponibles");
+        }
         return comentarioRepository.findAll();
     }
 
     @Override
     public Optional<Comentario> getComentariosById(Long comentarioId) {
+        if (!comentarioRepository.existsById(comentarioId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comentario no encontrado con id: " + comentarioId);
+        }
+
         return comentarioRepository.findById(comentarioId);
     }
 
     @Override
     public List<Comentario> getComentariosByProductoId(Long productoId) {
+
+        if (!productoRepository.existsById(productoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId);
+        }
         return comentarioRepository.findByProductoId(productoId);
     }
 
     public Comentario createComentario(ComentarioRequest request) {
 
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+
         Producto producto = productoRepository.findById(request.getProductoId())
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + request.getProductoId()));
 
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException(
-                        "Usuario no encontrado con id: " + request.getUsuarioId()));
 
         boolean compro = itemDeOrdenDeCompraRepository
                 .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
-                        usuario.getId(), producto.getId(), EstadoOrden.CONFIRMADA); // ajustar nombre
+                        usuarioLogueado.getId(), producto.getId(), EstadoOrden.CONFIRMADA);
 
         if (!compro) {
-            throw new RuntimeException("Solo podés comentar productos que compraste");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo podés comentar productos que compraste");
         }
 
         boolean yaComento = comentarioRepository
-                .existsByUsuario_IdAndProducto_Id(usuario.getId(), producto.getId());
+                .existsByUsuario_IdAndProducto_Id(usuarioLogueado.getId(), producto.getId());
 
         if (yaComento) {
-            throw new RuntimeException("Ya dejaste un comentario en este producto");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya dejaste un comentario en este producto");
         }
 
         Comentario comentario = new Comentario();
-        comentario.setUsuario(usuario);
+        comentario.setUsuario(usuarioLogueado);
         comentario.setComentarioProducto(request.getComentarioProducto());
         comentario.setCalificacion(request.getCalificacion());
         comentario.setProducto(producto);

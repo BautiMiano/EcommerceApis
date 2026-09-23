@@ -10,5 +10,6 @@ public interface DescuentoService {
     public Optional<Descuento> getDescuentoById(Long descuentoId);
     public Descuento createDescuento(double porcentaje);
     public void asignarDescuentoAProducto(Long descuentoId, Long productoId);
+    public void eliminarDescuentoDeProducto(Long productoId);
 
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 import com.uade.EcommerceUniformes.marketplace.service.CarritoService;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("carritos")
@@ -41,39 +43,29 @@ public class CarritoController {
         return carritoService.getCarritoByUsuarioId(usuarioId);
     }
 
-    // POST http://localhost:4002/carritos/usuario/1
-    @PostMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Object> createCarrito(@PathVariable Long usuarioId) {
-        Carrito resultado = carritoService.createCarrito(usuarioId);
-        return ResponseEntity
-                .created(URI.create("/carritos/" + resultado.getId()))
-                .body(resultado);
-    }
-
-    // POST http://localhost:4002/carritos/1/productos/5?cantidad=2
-    @PostMapping("/{carritoId}/productos/{productoId}")
+    @PostMapping("/{carritoId}/agregar-productos")
     public ResponseEntity<Carrito> addProductoToCarrito(
             @PathVariable Long carritoId,
-            @PathVariable Long productoId,
-            @RequestParam(defaultValue = "1") int cantidad) {
-        Carrito carritoActualizado = carritoService.addProductoToCarrito(carritoId, productoId, cantidad);
+            @RequestBody CarritoRequest request) {
+
+        Carrito carritoActualizado =
+                carritoService.addProductoToCarrito(carritoId, request);
+
         return ResponseEntity.ok(carritoActualizado);
     }
 
-    // PUT http://localhost:4002/carritos/1/productos/5?cantidad=4
-    @PutMapping("/{carritoId}/productos/{productoId}")
+    @PutMapping("/{carritoId}/actualizar-cantidad")
     public ResponseEntity<Carrito> updateCantidadProducto(
             @PathVariable Long carritoId,
-            @PathVariable Long productoId,
-            @RequestParam int cantidad) {
-        Carrito carritoActualizado = carritoService.updateCantidadProducto(carritoId, productoId, cantidad);
+            @RequestBody CarritoRequest request) {
+        Carrito carritoActualizado = carritoService.updateCantidadProducto(carritoId, request);
         return ResponseEntity.ok(carritoActualizado);
     }
 
     // DELETE http://localhost:4002/carritos/1/productos/5
-    @DeleteMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<Carrito> removeProductoFromCarrito(@PathVariable Long carritoId, @PathVariable Long productoId) {
-        Carrito carritoActualizado = carritoService.removeProductoFromCarrito(carritoId, productoId);
+    @DeleteMapping("/{carritoId}/eliminar-producto-carrito")
+    public ResponseEntity<Carrito> removeProductoFromCarrito(@PathVariable Long carritoId, @RequestBody CarritoRequest request) {
+        Carrito carritoActualizado = carritoService.removeProductoFromCarrito(carritoId, request);
         return ResponseEntity.ok(carritoActualizado);
     }
 
@@ -84,8 +76,8 @@ public class CarritoController {
     }
 
     @PostMapping("/{carritoId}/confirmar")
-    public ResponseEntity<Carrito> confirmarPago(@PathVariable Long carritoId, @RequestParam MetodoDePago metodoDePago) {
-        Carrito carritoActualizado = carritoService.confirmarPago(carritoId, metodoDePago);
+    public ResponseEntity<Carrito> confirmarPago(@PathVariable Long carritoId, @RequestBody CarritoRequest request) {
+        Carrito carritoActualizado = carritoService.confirmarPago(carritoId, request);
         return ResponseEntity.ok(carritoActualizado);
     }
 }
