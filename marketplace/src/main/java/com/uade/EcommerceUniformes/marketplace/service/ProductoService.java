@@ -11,9 +11,9 @@ public interface ProductoService {
     Optional<Producto> getProductoById(Long productoId);
     List<Producto> getProductosByCategoria(Long categoryId);
     Producto createProducto(ProductoRequest request);
-    void desactivarProducto(Long productoId, Long usuarioId);
-    void activarProducto(Long productoId, Long usuarioId) ;
-    void modificarStock(Long productoId, Long usuarioId, int nuevoStock);
+    void desactivarProducto(Long productoId);
+    public void activarProducto(Long productoId);
+    public void modificarStock(ProductoRequest request);
     void reservarStock(Long productoId, int cantidad);
     void liberarStock(Long productoId, int cantidad);
     void descontarStockDefinitivo(Long productoId, int cantidad);

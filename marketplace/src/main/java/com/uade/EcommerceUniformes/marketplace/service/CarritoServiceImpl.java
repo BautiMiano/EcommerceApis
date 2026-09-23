@@ -17,14 +17,19 @@ import com.uade.EcommerceUniformes.marketplace.entity.ItemCarrito;
 import com.uade.EcommerceUniformes.marketplace.entity.ItemDeOrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
-import com.uade.EcommerceUniformes.marketplace.entity.Rol;
-import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ItemCarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
 import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import jakarta.transaction.Transactional;
+
+import com.uade.EcommerceUniformes.marketplace.service.UsuarioLogueadoService;
+import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
@@ -35,8 +40,6 @@ public class CarritoServiceImpl implements CarritoService {
     @Autowired
     private ItemCarritoRepository itemCarritoRepository;
 
-    @Autowired
-    private UsuarioService usuarioService;
 
     @Autowired
     private ProductoService productoService;
@@ -44,75 +47,53 @@ public class CarritoServiceImpl implements CarritoService {
     @Autowired
     private OrdenDeCompraRepository ordenDeCompraRepository;
 
+    @Autowired
+    private UsuarioLogueadoService usuarioLogueadoService;
+
     public List<Carrito> getCarritos() {
+
+        if (carritoRepository.findAll().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay carritos disponibles");
+        }
         return carritoRepository.findAll();
     }
 
     public Optional<Carrito> getCarritoById(Long carritoId) {
+        if (!carritoRepository.existsById(carritoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId);
+        }
         return carritoRepository.findById(carritoId);
     }
 
     public Optional<Carrito> getCarritoByUsuarioId(Long usuarioId) {
+    
+
         return carritoRepository.findByUsuarioId(usuarioId);
     }
 
-    public Carrito createCarrito(Long usuarioId) {
+    public Carrito addProductoToCarrito(Long carritoId, CarritoRequest request) {
 
-        Usuario usuario = usuarioService.getUsuarioById(usuarioId)
-                .orElseThrow(() -> new RuntimeException(
-                "Usuario no encontrado con id: " + usuarioId));
-
-        if (usuario.getRolUsuario() != Rol.COMPRADOR) {
-            throw new RuntimeException(
-                    "Solo los usuarios compradores pueden crear un carrito");
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+        
+        if (!carritoRepository.existsById(carritoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId);
         }
-
-        Optional<Carrito> carritoExistente
-                = carritoRepository.findByUsuarioIdAndEstado(
-                        usuarioId,
-                        EstadoCarrito.ARMADO
-                );
-
-        if (carritoExistente.isPresent()) {
-            throw new RuntimeException(
-                    "El usuario ya tiene un carrito activo");
-        }
-
-        Optional<Carrito> carritoPendiente
-                = carritoRepository.findByUsuarioIdAndEstado(
-                        usuarioId,
-                        EstadoCarrito.PENDIENTE_PAGO
-                );
-
-        if (carritoPendiente.isPresent()) {
-            throw new RuntimeException(
-                    "El usuario ya tiene un carrito pendiente de pago");
-        }
-
-        Carrito carrito = new Carrito();
-        carrito.setUsuario(usuario);
-        carrito.setEstado(EstadoCarrito.ARMADO);
-
-        return carritoRepository.save(carrito);
-    }
-
-    public Carrito addProductoToCarrito(Long carritoId, Long productoId, int cantidad) {
         Carrito carrito = carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
         if (carrito.getEstado() != EstadoCarrito.ARMADO) {
             throw new RuntimeException(
                     "No se pueden agregar productos a un carrito que no está ARMADO");
         }
 
-        Producto producto = productoService.getProductoById(productoId)
-                .orElseThrow(() -> new Error("Producto no encontrado con id: " + productoId));
+        Producto producto = productoService.getProductoById(request.getProductoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + request.getProductoId()));
 
         Optional<ItemCarrito> itemExistente
-                = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, productoId);
+                = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId());
 
         if (itemExistente.isPresent()) {
             ItemCarrito item = itemExistente.get();
-            item.setCantidad(item.getCantidad() + cantidad);
+            item.setCantidad(item.getCantidad() + request.getCantidad());
             itemCarritoRepository.save(item);
         } else {
             if (carrito.getItems() == null) {
@@ -122,7 +103,7 @@ public class CarritoServiceImpl implements CarritoService {
             ItemCarrito nuevoItem = new ItemCarrito();
             nuevoItem.setCarrito(carrito);
             nuevoItem.setProducto(producto);
-            nuevoItem.setCantidad(cantidad);
+            nuevoItem.setCantidad(request.getCantidad());
             nuevoItem.setPrecioUnitario(producto.getPrecio());
             carrito.getItems().add(nuevoItem);
         }
@@ -130,23 +111,23 @@ public class CarritoServiceImpl implements CarritoService {
         return carritoRepository.save(carrito);
     }
 
-    public Carrito updateCantidadProducto(Long carritoId, Long productoId, int cantidad) {
-        ItemCarrito item = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, productoId)
-                .orElseThrow(() -> new Error("El producto no se encuentra en el carrito"));
+    public Carrito updateCantidadProducto(Long carritoId, CarritoRequest request) {
+        ItemCarrito item = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
-        item.setCantidad(cantidad);
+        item.setCantidad(request.getCantidad());
         itemCarritoRepository.save(item);
 
         return carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
     }
 
-    public Carrito removeProductoFromCarrito(Long carritoId, Long productoId) {
+    public Carrito removeProductoFromCarrito(Long carritoId, CarritoRequest request) {
         Carrito carrito = carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
 
-        ItemCarrito item = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, productoId)
-                .orElseThrow(() -> new Error("El producto no se encuentra en el carrito"));
+        ItemCarrito item = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
         carrito.getItems().remove(item);
         return carritoRepository.save(carrito);
@@ -154,7 +135,7 @@ public class CarritoServiceImpl implements CarritoService {
 
     public void vaciarCarrito(Long carritoId) {
         Carrito carrito = carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
 
         carrito.getItems().clear();
         carritoRepository.save(carrito);
@@ -180,7 +161,7 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Transactional
-    public Carrito confirmarPago(Long carritoId, MetodoDePago metodoDePago) {
+    public Carrito confirmarPago(Long carritoId, CarritoRequest request) {
 
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(()
@@ -203,7 +184,7 @@ public class CarritoServiceImpl implements CarritoService {
         orden.setUsuario(carrito.getUsuario());
         orden.setFechaCompra(new Date(System.currentTimeMillis()));
         orden.setEstado(EstadoOrden.CONFIRMADA);
-        orden.setMetodoDePago(metodoDePago);
+        orden.setMetodoDePago(request.getMetodoDePago());
         orden.setItems(new ArrayList<>());
 
         double total = 0;

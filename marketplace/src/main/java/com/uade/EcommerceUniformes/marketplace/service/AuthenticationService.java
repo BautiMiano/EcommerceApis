@@ -9,6 +9,8 @@ import com.uade.EcommerceUniformes.marketplace.controllers.auth.AuthenticationRe
 import com.uade.EcommerceUniformes.marketplace.controllers.auth.AuthenticationResponse;
 import com.uade.EcommerceUniformes.marketplace.controllers.auth.RegisterRequest;
 import com.uade.EcommerceUniformes.marketplace.controllers.config.JwtService;
+import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
+import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
@@ -44,10 +46,19 @@ public class AuthenticationService {
                 request.getApellido(),
                 request.getMail(),
                 passwordEncoder.encode(request.getContrasena()),
-                request.getRol()
+                request.getRol(),
+                null
             );
 
         usuarioRepository.save(usuario);
+
+            if (request.getRol() == Rol.COMPRADOR) {
+
+        Carrito carrito = new Carrito();
+        carrito.setUsuario(usuario);
+        carrito.setEstado(EstadoCarrito.ARMADO);
+
+    }
 
         String jwtToken = jwtService.generateToken(usuario);
 

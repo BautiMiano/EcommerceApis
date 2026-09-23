@@ -71,14 +71,14 @@ public class ImagenController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Imagen> desactivarImagen(@PathVariable Long id) {
+    public ResponseEntity<String> desactivarImagen(@PathVariable Long id) {
         imagenService.desactivarImagen(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Imagen desactivada correctamente");
     }
 
     @PatchMapping("/{id}/activar")
-    public ResponseEntity<Imagen> activarImagen(@PathVariable Long id) {
+    public ResponseEntity<String> activarImagen(@PathVariable Long id) {
         imagenService.activarImagen(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Imagen activada correctamente");
     }
 }

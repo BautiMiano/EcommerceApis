@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.controllers.auth;
 
+import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 
 import lombok.AllArgsConstructor;
@@ -19,4 +20,5 @@ public class RegisterRequest {
     private String mail;
     private String contrasena;
     private Rol rol;
+    private Carrito carrito;
 }

@@ -1,22 +1,18 @@
 package com.uade.EcommerceUniformes.marketplace.controllers;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioService;
@@ -39,35 +35,25 @@ public class UsuarioController {
         return usuarioService.getUsuarioById(usuarioId);
     }
 
-    @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@RequestBody UsuarioDto usuario) {
-        Usuario resultado = usuarioService.createUsuario(usuario);
 
-        if (resultado == null) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        return ResponseEntity.
-                created(URI.create("usuarios/" + resultado.getId()))
-                .body(resultado);
+
+    @PatchMapping("/desactivar/{usuarioId}")
+    public ResponseEntity<String> desactivaUsuario(@PathVariable Long usuarioId) {
+        usuarioService.desactivaUsuario(usuarioId);
+
+        return ResponseEntity.ok("Usuario desactivado correctamente");
     }
 
-    @DeleteMapping("/{usuarioId}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long usuarioId) {
-        usuarioService.deleteUsuario(usuarioId);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{usuarioId}/activar")
-    public ResponseEntity<Usuario> activarUsuario(@PathVariable Long usuarioId) {
+    @PatchMapping("/activar/{usuarioId}")
+    public ResponseEntity<String> activarUsuario(@PathVariable Long usuarioId) {
         usuarioService.activarUsuario(usuarioId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Usuario activado correctamente");
     }
 
-    @PutMapping("/{usuarioId}/rol")
+    @PutMapping("/{usuarioId}")
     public Usuario cambiarRol(@PathVariable Long usuarioId,
-            @RequestParam Rol rol) {
-        return usuarioService.cambiarRol(usuarioId, rol);
+            @RequestBody UsuarioDto usuarioDto) {
+        return usuarioService.cambiarRol(usuarioId, usuarioDto.getRolUsuarioDto());
     }
 }
