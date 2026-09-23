@@ -32,8 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 
-# Configuración local
-marketplace/src/main/resources/application.properties
-
-# Maven
+src/main/resources/application.properties
 target/
