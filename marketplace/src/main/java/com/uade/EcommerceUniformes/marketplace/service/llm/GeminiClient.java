@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
+import com.uade.EcommerceUniformes.marketplace.entity.RolMensaje;
 
 /**
  * Implementación de LlmClient que llama a la API de Gemini por HTTP.
@@ -33,13 +34,18 @@ public class GeminiClient implements LlmClient {
     }
 
     @Override
-    public String generar(String instrucciones, String mensaje) {
+    public String generar(String instrucciones, List<MensajeLlm> mensajes) {
+        // Cada mensaje se convierte al formato de Gemini: { "role": ..., "parts": [ { "text": ... } ] }
+        List<Map<String, Object>> contents = mensajes.stream()
+                .map(m -> Map.<String, Object>of(
+                        "role", m.rol() == RolMensaje.USER ? "user" : "model",
+                        "parts", List.of(Map.of("text", m.texto()))))
+                .toList();
+
         Map<String, Object> body = Map.of(
                 "system_instruction", Map.of(
                         "parts", List.of(Map.of("text", instrucciones))),
-                "contents", List.of(Map.of(
-                        "role", "user",
-                        "parts", List.of(Map.of("text", mensaje)))));
+                "contents", contents);
 
         try {
             Map<String, Object> respuesta = restClient.post()
