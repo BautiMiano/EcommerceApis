@@ -1,5 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.service.llm;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
-import com.uade.EcommerceUniformes.marketplace.entity.RolMensaje;
 
 /**
  * Implementación de LlmClient que llama a la API de Gemini por HTTP.
@@ -34,29 +35,28 @@ public class GeminiClient implements LlmClient {
     }
 
     @Override
-    public String generar(String instrucciones, List<MensajeLlm> mensajes) {
-        // Cada mensaje se convierte al formato de Gemini: { "role": ..., "parts": [ { "text": ... } ] }
-        List<Map<String, Object>> contents = mensajes.stream()
-                .map(m -> Map.<String, Object>of(
-                        "role", m.rol() == RolMensaje.USER ? "user" : "model",
-                        "parts", List.of(Map.of("text", m.texto()))))
-                .toList();
+    public RespuestaLlm generarConHerramientas(String instrucciones,
+                                               List<Map<String, Object>> contenidos,
+                                               List<Map<String, Object>> herramientas) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("system_instruction", Map.of("parts", List.of(Map.of("text", instrucciones))));
+        body.put("contents", contenidos);
+        if (!herramientas.isEmpty()) {
+            body.put("tools", List.of(Map.of("functionDeclarations", herramientas)));
+        }
 
-        Map<String, Object> body = Map.of(
-                "system_instruction", Map.of(
-                        "parts", List.of(Map.of("text", instrucciones))),
-                "contents", contents);
+        Map<String, Object> contenidoModelo = primerContenido(llamar(body));
+        return interpretar(contenidoModelo);
+    }
 
+    private Map<String, Object> llamar(Map<String, Object> body) {
         try {
-            Map<String, Object> respuesta = restClient.post()
+            return restClient.post()
                     .uri("/models/{modelo}:generateContent", modelo)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(body)
                     .retrieve()
                     .body(new ParameterizedTypeReference<Map<String, Object>>() {});
-
-            return extraerTexto(respuesta);
-
         } catch (RestClientException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_GATEWAY,
@@ -64,26 +64,40 @@ public class GeminiClient implements LlmClient {
         }
     }
 
+    /** Saca el mensaje del modelo de: { "candidates": [ { "content": {...} } ] } */
     @SuppressWarnings("unchecked")
-    private String extraerTexto(Map<String, Object> respuesta) {
+    private Map<String, Object> primerContenido(Map<String, Object> respuesta) {
         List<Map<String, Object>> candidatos =
                 respuesta == null ? null : (List<Map<String, Object>>) respuesta.get("candidates");
-
-        if (candidatos == null || candidatos.isEmpty()) {
+        if (candidatos == null || candidatos.isEmpty() || candidatos.get(0).get("content") == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_GATEWAY, "El modelo no devolvió ninguna respuesta");
         }
+        return (Map<String, Object>) candidatos.get(0).get("content");
+    }
 
-        Map<String, Object> contenido = (Map<String, Object>) candidatos.get(0).get("content");
-        List<Map<String, Object>> partes = (List<Map<String, Object>>) contenido.get("parts");
-
+    /** Recorre TODAS las partes: pueden venir textos y pedidos de herramientas mezclados. */
+    @SuppressWarnings("unchecked")
+    private RespuestaLlm interpretar(Map<String, Object> contenido) {
         StringBuilder texto = new StringBuilder();
+        List<LlamadaHerramienta> llamadas = new ArrayList<>();
+
+        List<Map<String, Object>> partes =
+                (List<Map<String, Object>>) contenido.getOrDefault("parts", List.of());
+
         for (Map<String, Object> parte : partes) {
-            Object t = parte.get("text");
-            if (t != null) {
+            if (parte.get("functionCall") instanceof Map<?, ?> fc) {
+                Map<String, Object> args = fc.get("args") instanceof Map<?, ?> a
+                        ? (Map<String, Object>) a
+                        : Map.of();
+                llamadas.add(new LlamadaHerramienta(
+                        (String) fc.get("id"),
+                        (String) fc.get("name"),
+                        args));
+            } else if (parte.get("text") instanceof String t && !Boolean.TRUE.equals(parte.get("thought"))) {
                 texto.append(t);
             }
         }
-        return texto.toString();
+        return new RespuestaLlm(contenido, texto.toString(), llamadas);
     }
 }
