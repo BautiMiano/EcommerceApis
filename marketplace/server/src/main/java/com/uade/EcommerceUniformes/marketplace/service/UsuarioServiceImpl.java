@@ -98,8 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado con id: " + usuarioId));
 
         if (usuario.getRolUsuario() == nuevoRol) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario ya tiene el rol asignado: " + nuevoRol);
-
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario ya tiene el rol asignado: " );
         }
 
 
