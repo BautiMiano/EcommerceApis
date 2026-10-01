@@ -134,6 +134,7 @@ public class ProductoServiceImpl implements ProductoService {
 
 
         producto.setActivo(true);
+        producto.setDesactivadoPorCategoria(false);
         productoRepository.save(producto);
     }
 

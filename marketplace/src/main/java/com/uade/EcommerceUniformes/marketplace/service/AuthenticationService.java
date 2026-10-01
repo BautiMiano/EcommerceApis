@@ -14,6 +14,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final CarritoRepository carritoRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (request.getRol() == null) {
@@ -57,6 +59,7 @@ public class AuthenticationService {
         Carrito carrito = new Carrito();
         carrito.setUsuario(usuario);
         carrito.setEstado(EstadoCarrito.ARMADO);
+        carritoRepository.save(carrito);
 
     }
 

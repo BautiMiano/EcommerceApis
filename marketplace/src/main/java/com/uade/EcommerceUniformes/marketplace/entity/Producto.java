@@ -38,6 +38,7 @@ public class Producto {
     private int stock;
     private int stockReservado;
     private boolean activo;
+    private boolean desactivadoPorCategoria;
 
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
