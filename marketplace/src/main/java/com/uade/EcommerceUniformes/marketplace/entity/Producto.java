@@ -50,6 +50,7 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "descuento_id")
     private Descuento descuento;
+    private boolean descuentoAplicadoPorAdmin; 
 
     @OneToMany(mappedBy = "producto")
     private List<Imagen> imagenes;

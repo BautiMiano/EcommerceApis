@@ -53,35 +53,32 @@ public class DescuentoServiceImpl implements DescuentoService {
         return descuentoRepository.save(descuento);
     }
 
-    public void asignarDescuentoAProducto(Long descuentoId, Long productoId){
+public void asignarDescuentoAProducto(Long descuentoId, Long productoId){
+    Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+    boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
 
-        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+    Descuento descuento = descuentoRepository.findById(descuentoId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Descuento no encontrado con id: " + descuentoId));
 
+    Producto producto = productoRepository.findById(productoId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
 
-
-        Descuento descuento = descuentoRepository.findById(descuentoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Descuento no encontrado con id: " + descuentoId));
-        
-        Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
-        
-        if (producto.getDescuento() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya tiene un descuento asignado");
+    if (producto.getDescuento() != null) {
+        if (producto.isDescuentoAplicadoPorAdmin() && !esAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El descuento de este producto fue aplicado por un administrador y no puede modificarse");
         }
-
-        if (!producto.getVendedor().getId().equals(usuarioLogueado.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para asignar un descuento a este producto");
-        }
-
-        producto.setDescuento(descuento);
-        productoRepository.save(producto);
-
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya tiene un descuento asignado");
+    }
+    if (!esAdmin && !producto.getVendedor().getId().equals(usuarioLogueado.getId())) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para asignar un descuento a este producto");
+    }
+    producto.setDescuento(descuento);
+    producto.setDescuentoAplicadoPorAdmin(esAdmin);   
+    productoRepository.save(producto);
     }
     
-    public void eliminarDescuentoDeProducto(Long productoId) {
-
+public void eliminarDescuentoDeProducto(Long productoId) {
     Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
-
     Producto producto = productoRepository.findById(productoId)
             .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
@@ -89,7 +86,6 @@ public class DescuentoServiceImpl implements DescuentoService {
 
     boolean esDueño = producto.getVendedor().getId()
             .equals(usuarioLogueado.getId());
-
     boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
 
     if (!esDueño && !esAdmin) {
@@ -97,15 +93,18 @@ public class DescuentoServiceImpl implements DescuentoService {
                 HttpStatus.FORBIDDEN,
                 "No tienes permiso para eliminar el descuento de este producto");
     }
-
     if (producto.getDescuento() == null) {
         throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "El producto no tiene un descuento asignado");
     }
-
+    if (producto.isDescuentoAplicadoPorAdmin() && !esAdmin) {          
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "El descuento fue aplicado por un administrador y solo un administrador puede quitarlo");
+    }
     producto.setDescuento(null);
-
+    producto.setDescuentoAplicadoPorAdmin(false);                      
     productoRepository.save(producto);
 }
 }
