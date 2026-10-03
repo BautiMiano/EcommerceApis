@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ItemCarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
@@ -20,6 +22,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ItemCarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 
 import org.springframework.http.HttpStatus;
@@ -43,6 +46,9 @@ public class CarritoServiceImpl implements CarritoService {
 
     @Autowired
     private ProductoService productoService;
+    
+    @Autowired
+private ProductoRepository productoRepository;
 
     @Autowired
     private OrdenDeCompraRepository ordenDeCompraRepository;
@@ -50,28 +56,66 @@ public class CarritoServiceImpl implements CarritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
-    public List<Carrito> getCarritos() {
+//Convertir el Carrito completo de la base de datos en un CarritoResponse más simple, mostrando solo la información que queremos enviar al frontend.
+private CarritoResponse convertirACarritoResponse(Carrito carrito) {
+
+    List<ItemCarritoResponse> itemsResponse = new ArrayList<>();
+
+    if (carrito.getItems() != null) { //si el carrito está vacío, no explota el stream() y devuelve simplemente una lista vacía y total = 0.
+
+        itemsResponse = carrito.getItems()
+                .stream()
+                .map(item -> new ItemCarritoResponse(
+                        item.getProducto().getId(),
+                        item.getProducto().getNombre(),
+                        item.getCantidad(),
+                        item.getPrecioUnitario(),
+                        item.getPrecioUnitario() * item.getCantidad()
+                ))
+                .toList();
+    }
+
+    double total = itemsResponse.stream()
+            .mapToDouble(ItemCarritoResponse::getSubtotal)
+            .sum();
+
+    return new CarritoResponse(
+            carrito.getId(),
+            carrito.getEstado().name(),
+            carrito.getUsuario().getId(),
+            itemsResponse,
+            total
+    );
+}
+
+    public List<CarritoResponse> getCarritos() {
 
         if (carritoRepository.findAll().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay carritos disponibles");
         }
-        return carritoRepository.findAll();
+
+        //cada Carrito que viene de la base se convierta automáticamente en CarritoResponse
+        return carritoRepository.findAll()
+        .stream()
+        .map(this::convertirACarritoResponse)
+        .toList();
     }
 
-    public Optional<Carrito> getCarritoById(Long carritoId) {
+    public Optional<CarritoResponse> getCarritoById(Long carritoId) {
         if (!carritoRepository.existsById(carritoId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId);
         }
-        return carritoRepository.findById(carritoId);
+        return carritoRepository.findById(carritoId)
+        .map(this::convertirACarritoResponse);
     }
 
-    public Optional<Carrito> getCarritoByUsuarioId(Long usuarioId) {
+    public Optional<CarritoResponse> getCarritoByUsuarioId(Long usuarioId) {
     
-
-        return carritoRepository.findByUsuarioId(usuarioId);
+        return carritoRepository.findByUsuarioId(usuarioId)
+        .map(this::convertirACarritoResponse);
     }
 
-    public Carrito addProductoToCarrito(Long carritoId, CarritoRequest request) {
+    public CarritoResponse addProductoToCarrito(Long carritoId, CarritoRequest request) {
 
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
         
@@ -85,8 +129,10 @@ public class CarritoServiceImpl implements CarritoService {
                     "No se pueden agregar productos a un carrito que no está ARMADO");
         }
 
-        Producto producto = productoService.getProductoById(request.getProductoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + request.getProductoId()));
+        Producto producto = productoRepository.findById(request.getProductoId())
+        .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Producto no encontrado con id: " + request.getProductoId()));
 
         Optional<ItemCarrito> itemExistente
                 = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId());
@@ -108,21 +154,27 @@ public class CarritoServiceImpl implements CarritoService {
             carrito.getItems().add(nuevoItem);
         }
 
-        return carritoRepository.save(carrito);
+        Carrito carritoGuardado = carritoRepository.save(carrito);
+        return convertirACarritoResponse(carritoGuardado);
     }
 
-    public Carrito updateCantidadProducto(Long carritoId, CarritoRequest request) {
+    public CarritoResponse updateCantidadProducto(Long carritoId, CarritoRequest request) {
         ItemCarrito item = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
         item.setCantidad(request.getCantidad());
         itemCarritoRepository.save(item);
 
-        return carritoRepository.findById(carritoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
+        Carrito carrito = carritoRepository.findById(carritoId)
+        .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Carrito no encontrado con id: " + carritoId
+        ));
+
+        return convertirACarritoResponse(carrito);
     }
 
-    public Carrito removeProductoFromCarrito(Long carritoId, CarritoRequest request) {
+    public CarritoResponse removeProductoFromCarrito(Long carritoId, CarritoRequest request) {
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
 
@@ -130,7 +182,8 @@ public class CarritoServiceImpl implements CarritoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
         carrito.getItems().remove(item);
-        return carritoRepository.save(carrito);
+        Carrito carritoGuardado = carritoRepository.save(carrito);
+        return convertirACarritoResponse(carritoGuardado);
     }
 
     public void vaciarCarrito(Long carritoId) {
@@ -142,7 +195,7 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Transactional
-    public Carrito iniciarPago(Long carritoId) {
+    public CarritoResponse iniciarPago(Long carritoId) {
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(() -> new Error("Carrito no encontrado con id: " + carritoId));
 
@@ -157,11 +210,12 @@ public class CarritoServiceImpl implements CarritoService {
         carrito.setEstado(EstadoCarrito.PENDIENTE_PAGO);
         carrito.setFechaInicioPago(LocalDateTime.now());
 
-        return carritoRepository.save(carrito);
+        Carrito carritoGuardado = carritoRepository.save(carrito);
+        return convertirACarritoResponse(carritoGuardado);
     }
 
     @Transactional
-    public Carrito confirmarPago(Long carritoId, CarritoRequest request) {
+    public CarritoResponse confirmarPago(Long carritoId, CarritoRequest request) {
 
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(()
@@ -210,7 +264,8 @@ public class CarritoServiceImpl implements CarritoService {
 
         carrito.setEstado(EstadoCarrito.PAGADO);
 
-        return carritoRepository.save(carrito);
+        Carrito carritoGuardado = carritoRepository.save(carrito);
+        return convertirACarritoResponse(carritoGuardado);
     }
 
     @Scheduled(fixedRate = 60000) // corre cada 1 minuto
