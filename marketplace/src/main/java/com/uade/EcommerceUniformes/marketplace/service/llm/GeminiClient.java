@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service.llm;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,16 +10,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementación de LlmClient que llama a la API de Gemini por HTTP.
+ * Reintenta ante saturación (429 y 503) con espera creciente.
  */
+@Slf4j
 @Component
 public class GeminiClient implements LlmClient {
+
+    private static final int MAX_REINTENTOS = 2;
+    private static final long ESPERA_INICIAL_MS = 1000;
 
     private final RestClient restClient;
     private final String modelo;
@@ -28,8 +38,15 @@ public class GeminiClient implements LlmClient {
             @Value("${gemini.model}") String modelo,
             @Value("${gemini.base-url}") String baseUrl) {
         this.modelo = modelo;
+
+        // Tiempos máximos: 5 s para conectarse y 30 s para recibir la respuesta
+        SimpleClientHttpRequestFactory tiempos = new SimpleClientHttpRequestFactory();
+        tiempos.setConnectTimeout(Duration.ofSeconds(5));
+        tiempos.setReadTimeout(Duration.ofSeconds(30));
+
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
+                .requestFactory(tiempos)
                 .defaultHeader("x-goog-api-key", apiKey)
                 .build();
     }
@@ -45,22 +62,59 @@ public class GeminiClient implements LlmClient {
             body.put("tools", List.of(Map.of("functionDeclarations", herramientas)));
         }
 
-        Map<String, Object> contenidoModelo = primerContenido(llamar(body));
+        Map<String, Object> contenidoModelo = primerContenido(llamarConReintentos(body));
         return interpretar(contenidoModelo);
     }
 
+    private Map<String, Object> llamarConReintentos(Map<String, Object> body) {
+        long espera = ESPERA_INICIAL_MS;
+
+        for (int intento = 0; ; intento++) {
+            try {
+                return llamar(body);
+            } catch (RestClientResponseException e) {
+                int codigo = e.getStatusCode().value();
+                boolean saturado = codigo == 429 || codigo == 503;
+
+                if (!saturado) {
+                    // Errores que no se arreglan reintentando (clave inválida, modelo inexistente...)
+                    log.error("Gemini respondió {}: {}", codigo, e.getResponseBodyAsString());
+                    throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                            "El asistente no está disponible en este momento");
+                }
+                if (intento >= MAX_REINTENTOS) {
+                    log.warn("Gemini sigue saturado ({}) después de {} reintentos", codigo, MAX_REINTENTOS);
+                    throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                            "El asistente tiene mucha demanda. Probá de nuevo en unos minutos.");
+                }
+                log.warn("Gemini respondió {}. Reintento {} de {} en {} ms",
+                        codigo, intento + 1, MAX_REINTENTOS, espera);
+                esperar(espera);
+                espera *= 2; // espera creciente: 1 s, 2 s...
+            } catch (RestClientException e) {
+                // Sin respuesta: no se pudo conectar o se pasó el tiempo máximo
+                log.error("No se pudo contactar a Gemini: {}", e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                        "No se pudo contactar al asistente");
+            }
+        }
+    }
+
     private Map<String, Object> llamar(Map<String, Object> body) {
+        return restClient.post()
+                .uri("/models/{modelo}:generateContent", modelo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+    }
+
+    private void esperar(long milisegundos) {
         try {
-            return restClient.post()
-                    .uri("/models/{modelo}:generateContent", modelo)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(body)
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<Map<String, Object>>() {});
-        } catch (RestClientException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_GATEWAY,
-                    "No se pudo contactar al modelo: " + e.getMessage());
+            Thread.sleep(milisegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Se interrumpió la espera");
         }
     }
 
