@@ -1,0 +1,12 @@
+.hero-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
+  max-width: 680px;
+}
+
+@media screen and (max-width: 768px) {
+  .hero-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

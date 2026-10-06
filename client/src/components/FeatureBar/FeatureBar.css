@@ -1,0 +1,22 @@
+.feature-bar {
+  padding: 28px 0;
+  background-color: #ffffff;
+}
+
+.feature-bar-lista {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 32px;
+}
+
+@media screen and (max-width: 1024px) {
+  .feature-bar-lista {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .feature-bar-lista {
+    grid-template-columns: 1fr;
+  }
+}
