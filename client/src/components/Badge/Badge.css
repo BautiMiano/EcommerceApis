@@ -1,0 +1,26 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #cfff46;
+}
+
+.badge-oscuro {
+  padding: 6px 14px;
+  border: 1px solid #2e2e2e;
+  border-radius: 50px;
+  background-color: #1a1a1a;
+  color: #d4d4d4;
+}
+
+.badge-claro {
+  color: #1a1a1a;
+}
