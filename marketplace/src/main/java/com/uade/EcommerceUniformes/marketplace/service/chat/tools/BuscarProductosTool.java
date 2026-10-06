@@ -40,7 +40,7 @@ public class BuscarProductosTool implements ChatTool {
                                 "texto", Map.of("type", "string",
                                         "description", "Palabra clave para buscar en nombre o descripción. Ej: chomba, ambo, casual"),
                                 "categoria", Map.of("type", "string",
-                                        "description", "Categoría: Escolar, Trabajo, Salud o Gastronomía"),
+                                        "description", "Nombre de una categoría. Si no sabés cuáles existen, usá antes listarCategorias"),
                                 "talle", Map.of("type", "string",
                                         "description", "Talle exacto. Ej: 12, M, L, 42"),
                                 "precioMaximo", Map.of("type", "number",
