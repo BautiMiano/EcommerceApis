@@ -1,0 +1,28 @@
+.select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.08));
+  transition: border-color 0.25s;
+}
+
+.select-trigger:hover {
+  border-color: #d4d4d4;
+}
+
+.select-trigger img {
+  width: 20px;
+  height: 20px;
+}
+
+.select-trigger .select-trigger-flecha {
+  margin: 0 0 0 auto;
+}

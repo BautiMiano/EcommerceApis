@@ -1,0 +1,36 @@
+.icon-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.icon-circle-gris {
+  width: 44px;
+  height: 44px;
+  background-color: #f5f5f5;
+}
+
+.icon-circle-gris img {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-circle-oscuro {
+  width: 56px;
+  height: 56px;
+  background-color: #000000;
+}
+
+.icon-circle-claro {
+  width: 56px;
+  height: 56px;
+  background-color: #ffffff;
+}
+
+.icon-circle-oscuro img,
+.icon-circle-claro img {
+  width: 26px;
+  height: 26px;
+}

@@ -1,0 +1,76 @@
+.role-card {
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+  border-radius: 4px;
+}
+
+.role-card-claro {
+  border: 1px solid #e8e8e8;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.role-card-oscuro {
+  border: 1px solid #000000;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.role-card .icon-circle {
+  margin: 0 0 28px 0;
+}
+
+.role-card-titulo {
+  margin: 12px 0 20px 0;
+  font-size: 2.25rem;
+}
+
+.role-card-descripcion {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.role-card-claro .role-card-descripcion {
+  color: #5b6472;
+}
+
+.role-card-oscuro .role-card-descripcion {
+  color: #e5e5e5;
+}
+
+.role-card-divisor {
+  height: 1px;
+  margin: 28px 0;
+}
+
+.role-card-claro .role-card-divisor {
+  background-color: #ececec;
+}
+
+.role-card-oscuro .role-card-divisor {
+  background-color: #262626;
+}
+
+.role-card-claro .benefit-item {
+  color: #3a3a3a;
+}
+
+.role-card .benefit-list {
+  margin: 0 0 48px 0;
+}
+
+.role-card .boton {
+  width: 100%;
+  margin: auto 0 0 0;
+}
+
+@media screen and (max-width: 768px) {
+  .role-card {
+    padding: 28px;
+  }
+
+  .role-card-titulo {
+    font-size: 1.875rem;
+  }
+}

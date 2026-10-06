@@ -1,0 +1,18 @@
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.feature-item-titulo {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.feature-item-descripcion {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #6b6b6b;
+}

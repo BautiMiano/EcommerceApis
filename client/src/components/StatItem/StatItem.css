@@ -1,0 +1,18 @@
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-item-valor {
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.stat-item-etiqueta {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #a3a3a3;
+}

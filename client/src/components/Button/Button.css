@@ -1,0 +1,33 @@
+.boton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.boton img {
+  width: 18px;
+  height: 18px;
+}
+
+.boton-oscuro {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.boton-oscuro:hover {
+  background-color: #262626;
+}
+
+.boton-claro {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.boton-claro:hover {
+  background-color: #e5e5e5;
+}
