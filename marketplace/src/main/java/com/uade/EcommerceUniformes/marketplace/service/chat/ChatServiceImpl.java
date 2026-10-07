@@ -55,7 +55,6 @@ public class ChatServiceImpl implements ChatService {
         this.usuarioLogueadoService = usuarioLogueadoService;
         this.conversacionRepository = conversacionRepository;
         this.mensajeChatRepository = mensajeChatRepository;
-        // Spring inyecta todas las clases que implementan ChatTool; las indexamos por nombre
         this.herramientas = herramientas.stream()
                 .collect(Collectors.toMap(ChatTool::nombre, Function.identity()));
     }
@@ -64,12 +63,13 @@ public class ChatServiceImpl implements ChatService {
     public ChatResponse responder(ChatRequest request) {
         String mensaje = validar(request);
         Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+        RolChat rol = RolChat.de(usuario);
         Conversacion conversacion = obtenerOCrearConversacion(request.conversacionId(), usuario);
 
         List<Map<String, Object>> contenidos = new ArrayList<>(cargarHistorial(conversacion));
         contenidos.add(Contenidos.texto(RolMensaje.USER, mensaje));
 
-        String respuesta = conversar(contenidos, usuario);
+        String respuesta = conversar(contenidos, usuario, rol);
 
         guardarMensaje(conversacion, RolMensaje.USER, mensaje);
         guardarMensaje(conversacion, RolMensaje.MODEL, respuesta);
@@ -80,16 +80,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /** El loop: llamar al modelo, ejecutar las herramientas que pida, repetir. */
-    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario) {
-        List<Map<String, Object>> declaraciones = herramientas.values().stream()
+    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario, RolChat rol) {
+        String instrucciones = systemPromptProvider.para(rol);
+        List<Map<String, Object>> declaraciones = herramientasPara(rol).stream()
                 .map(ChatTool::declaracion)
                 .toList();
 
         for (int paso = 1; paso <= MAX_PASOS; paso++) {
-            RespuestaLlm respuesta = llmClient.generarConHerramientas(
-                    systemPromptProvider.paraComprador(), contenidos, declaraciones);
+            RespuestaLlm respuesta = llmClient.generarConHerramientas(instrucciones, contenidos, declaraciones);
 
-            // El mensaje del modelo se agrega TAL CUAL vino (con su firma)
             contenidos.add(respuesta.contenidoModelo());
 
             if (!respuesta.pideHerramientas()) {
@@ -98,7 +97,7 @@ public class ChatServiceImpl implements ChatService {
 
             List<Object> resultados = new ArrayList<>();
             for (LlamadaHerramienta llamada : respuesta.llamadas()) {
-                resultados.add(ejecutar(llamada, usuario));
+                resultados.add(ejecutar(llamada, usuario, rol));
             }
             contenidos.add(Contenidos.resultadosHerramientas(respuesta.llamadas(), resultados));
         }
@@ -107,15 +106,23 @@ public class ChatServiceImpl implements ChatService {
         return RESPUESTA_FALLBACK;
     }
 
-    private Object ejecutar(LlamadaHerramienta llamada, Usuario usuario) {
-        log.info("Gemini pidió la herramienta {} con {}", llamada.nombre(), llamada.args());
+    /** Solo las herramientas habilitadas para este rol. */
+    private List<ChatTool> herramientasPara(RolChat rol) {
+        return herramientas.values().stream()
+                .filter(h -> h.roles().contains(rol))
+                .toList();
+    }
+
+    private Object ejecutar(LlamadaHerramienta llamada, Usuario usuario, RolChat rol) {
+        log.info("[{}] Gemini pidió la herramienta {} con {}", rol, llamada.nombre(), llamada.args());
 
         ChatTool herramienta = herramientas.get(llamada.nombre());
-        if (herramienta == null) {
-            return Map.of("error", "La herramienta " + llamada.nombre() + " no existe");
+        // Segunda barrera: aunque el modelo la pida, si no es de este rol, no se ejecuta
+        if (herramienta == null || !herramienta.roles().contains(rol)) {
+            log.warn("Herramienta {} rechazada para el rol {}", llamada.nombre(), rol);
+            return Map.of("error", "La herramienta " + llamada.nombre() + " no está disponible");
         }
         try {
-            // El usuario viene del token, nunca de los argumentos del modelo
             return herramienta.ejecutar(llamada.args(), usuario);
         } catch (Exception e) {
             log.error("Error ejecutando {}", llamada.nombre(), e);
@@ -136,7 +143,6 @@ public class ChatServiceImpl implements ChatService {
                         HttpStatus.NOT_FOUND, "Conversación no encontrada"));
     }
 
-    /** Solo texto: los pasos de herramientas de mensajes viejos no se guardan ni se reenvían. */
     private List<Map<String, Object>> cargarHistorial(Conversacion conversacion) {
         return mensajeChatRepository.findTop10ByConversacionIdOrderByIdDesc(conversacion.getId())
                 .reversed()
