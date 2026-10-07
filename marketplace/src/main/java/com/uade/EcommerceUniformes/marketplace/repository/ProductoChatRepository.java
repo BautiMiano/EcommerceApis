@@ -29,11 +29,13 @@ public interface ProductoChatRepository extends JpaRepository<Producto, Long> {
               AND (:estado IS NULL OR p.estado = :estado)
             ORDER BY p.precio ASC
             """)
-    List<Producto> buscarParaChat(
+        List<Producto> buscarParaChat(
             @Param("texto") String texto,
             @Param("talle") String talle,
             @Param("categoria") String categoria,
             @Param("precioMaximo") Double precioMaximo,
             @Param("estado") EstadoProducto estado,
             Pageable pageable);
+
+        List<Producto> findByVendedorIdOrderByNombreAsc(Long vendedorId);
 }
