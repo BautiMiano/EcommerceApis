@@ -1,7 +1,9 @@
 package com.uade.EcommerceUniformes.marketplace.service.chat.tools;
 
 import java.util.Map;
+import java.util.Set;
 
+import com.uade.EcommerceUniformes.marketplace.service.chat.RolChat;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 
 /**
@@ -20,4 +22,12 @@ public interface ChatTool {
      * nunca de los argumentos que manda el modelo.
      */
     Object ejecutar(Map<String, Object> args, Usuario usuario);
-}
+
+        
+    /** Para qué roles está disponible 
+     * la herramienta. Por defecto, 
+     * solo compradores. */
+    default Set<RolChat> roles() {
+        return Set.of(RolChat.COMPRADOR);
+    }
+}   
