@@ -17,5 +17,7 @@ public interface ProductoService {
     void reservarStock(Long productoId, int cantidad);
     void liberarStock(Long productoId, int cantidad);
     void descontarStockDefinitivo(Long productoId, int cantidad);
+    Optional<Producto> getProductoEntityById(Long productoId);
     List<ProductoRequest> getMisProductos();
+
 }

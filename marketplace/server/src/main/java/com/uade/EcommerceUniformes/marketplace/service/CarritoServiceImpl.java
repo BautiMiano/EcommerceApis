@@ -85,9 +85,10 @@ public class CarritoServiceImpl implements CarritoService {
                     "No se pueden agregar productos a un carrito que no está ARMADO");
         }
 
-        Producto producto = productoService.getProductoById(request.getProductoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + request.getProductoId()));
-
+       Producto producto = productoService.getProductoEntityById(request.getProductoId())
+        .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Producto no encontrado con id: " + request.getProductoId()));
         Optional<ItemCarrito> itemExistente
                 = itemCarritoRepository.findByCarritoIdAndProductoId(carritoId, request.getProductoId());
 
