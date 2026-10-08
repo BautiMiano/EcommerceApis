@@ -345,7 +345,9 @@ public class ProductoServiceImpl implements ProductoService {
     }
     
     
-    
-    
+    @Override 
+    public Optional<Producto> getProductoEntityById(Long productoId) {  
+    return productoRepository.findById(productoId);
+}
     
 }
