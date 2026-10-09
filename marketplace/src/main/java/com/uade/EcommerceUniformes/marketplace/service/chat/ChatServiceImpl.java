@@ -25,6 +25,9 @@ import com.uade.EcommerceUniformes.marketplace.service.llm.Contenidos;
 import com.uade.EcommerceUniformes.marketplace.service.llm.LlamadaHerramienta;
 import com.uade.EcommerceUniformes.marketplace.service.llm.LlmClient;
 import com.uade.EcommerceUniformes.marketplace.service.llm.RespuestaLlm;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionDetalleResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionResumenResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.MensajeDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,6 +79,41 @@ public class ChatServiceImpl implements ChatService {
         conversacionRepository.save(conversacion);
 
         return new ChatResponse(conversacion.getId(), respuesta);
+    }
+
+        @Override
+    public List<ConversacionResumenResponse> listarConversaciones() {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+        return conversacionRepository.findByUsuarioIdOrderByActualizadaEnDesc(usuario.getId())
+                .stream()
+                .map(c -> new ConversacionResumenResponse(c.getId(), tituloDe(c), c.getActualizadaEn()))
+                .toList();
+    }
+
+    @Override
+    public ConversacionDetalleResponse verConversacion(Long conversacionId) {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+        // Solo la encuentra si es del usuario logueado; si no, 404
+        Conversacion conversacion = conversacionRepository
+                .findByIdAndUsuarioId(conversacionId, usuario.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Conversación no encontrada"));
+
+        List<MensajeDto> mensajes = mensajeChatRepository
+                .findByConversacionIdOrderByIdAsc(conversacion.getId())
+                .stream()
+                .map(m -> new MensajeDto(
+                        m.getRol() == RolMensaje.USER ? "USUARIO" : "ASISTENTE",
+                        m.getTexto(),
+                        m.getCreadoEn()))
+                .toList();
+
+        return new ConversacionDetalleResponse(conversacion.getId(), tituloDe(conversacion), mensajes);
+    }
+
+    /** Las charlas viejas no tienen título: se muestran como "Conversación #id". */
+    private String tituloDe(Conversacion c) {
+        return c.getTitulo() != null ? c.getTitulo() : "Conversación #" + c.getId();
     }
 
     /** El título de la charla: el primer mensaje, recortado a 50 caracteres. */
