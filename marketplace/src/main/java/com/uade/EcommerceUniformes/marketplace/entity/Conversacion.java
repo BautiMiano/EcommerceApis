@@ -23,4 +23,7 @@ public class Conversacion {
 
     private LocalDateTime creadaEn;
     private LocalDateTime actualizadaEn;
+
+    @Column(length = 60)
+    private String titulo;
 }
