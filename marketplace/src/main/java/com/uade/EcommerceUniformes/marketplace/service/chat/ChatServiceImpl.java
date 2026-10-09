@@ -64,8 +64,7 @@ public class ChatServiceImpl implements ChatService {
         String mensaje = validar(request);
         Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
         RolChat rol = RolChat.de(usuario);
-        Conversacion conversacion = obtenerOCrearConversacion(request.conversacionId(), usuario);
-
+        Conversacion conversacion = obtenerOCrearConversacion(request.conversacionId(), usuario, mensaje);
         List<Map<String, Object>> contenidos = new ArrayList<>(cargarHistorial(conversacion));
         contenidos.add(Contenidos.texto(RolMensaje.USER, mensaje));
 
@@ -77,6 +76,11 @@ public class ChatServiceImpl implements ChatService {
         conversacionRepository.save(conversacion);
 
         return new ChatResponse(conversacion.getId(), respuesta);
+    }
+
+    /** El título de la charla: el primer mensaje, recortado a 50 caracteres. */
+    private String resumir(String mensaje) {
+        return mensaje.length() <= 50 ? mensaje : mensaje.substring(0, 50) + "...";
     }
 
     /** El loop: llamar al modelo, ejecutar las herramientas que pida, repetir. */
@@ -130,10 +134,11 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private Conversacion obtenerOCrearConversacion(Long conversacionId, Usuario usuario) {
+    private Conversacion obtenerOCrearConversacion(Long conversacionId, Usuario usuario, String primerMensaje) {
         if (conversacionId == null) {
             Conversacion nueva = new Conversacion();
             nueva.setUsuario(usuario);
+            nueva.setTitulo(resumir(primerMensaje));
             nueva.setCreadaEn(LocalDateTime.now());
             nueva.setActualizadaEn(LocalDateTime.now());
             return conversacionRepository.save(nueva);
