@@ -9,4 +9,5 @@ import com.uade.EcommerceUniformes.marketplace.entity.MensajeChat;
 public interface MensajeChatRepository extends JpaRepository<MensajeChat, Long> {
 
     List<MensajeChat> findTop10ByConversacionIdOrderByIdDesc(Long conversacionId);
+    List<MensajeChat> findByConversacionIdOrderByIdAsc(Long conversacionId);
 }

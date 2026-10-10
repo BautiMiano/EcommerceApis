@@ -91,7 +91,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
                 .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
-                .requestMatchers("/chat", "/chat/**").hasRole("COMPRADOR")
+                .requestMatchers("/chat", "/chat/**").hasAnyRole("COMPRADOR", "VENDEDOR")
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session
