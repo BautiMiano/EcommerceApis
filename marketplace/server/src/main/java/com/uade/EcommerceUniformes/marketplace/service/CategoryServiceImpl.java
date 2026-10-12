@@ -8,8 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
+<<<<<<< HEAD:marketplace/server/src/main/java/com/uade/EcommerceUniformes/marketplace/service/CategoryServiceImpl.java
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CategoryDto;
+=======
+import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+>>>>>>> origin/Roman:marketplace/src/main/java/com/uade/EcommerceUniformes/marketplace/service/CategoryServiceImpl.java
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -17,6 +23,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductoRepository productoRepository;
 
     @Autowired
 
@@ -70,34 +79,48 @@ public CategoryDto createCategory(String nombre) {
         return response;
     }
 
-    public void desactivarCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "Categoria no encontrada con id: " + id
-        ));
+@Transactional
+public void desactivarCategory(Long id) {
+    Category category = categoryRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "Categoria no encontrada con id: " + id
+    ));
 
-        if (category.getActivo()==false) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria con id: " + id + " ya se encuentra desactivada");
-        }
-        category.setActivo(false);
-
-        categoryRepository.save(category);
+    if (category.getActivo()==false) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria con id: " + id + " ya se encuentra desactivada");
     }
+    category.setActivo(false);
+    categoryRepository.save(category);
 
-    public void activarCategory(Long id){
-
-        Category category = categoryRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-            "La categoria con id: "+ id + " no se encuentra"
-        ));
-
-
-        if (category.getActivo()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria con id: " +  id  + " ya se encuentra activada");
+    List<Producto> productos = productoRepository.findByCategoriaId(id);
+    for (Producto producto : productos) {
+        if (producto.isActivo()) {                       // los que ya estaban desactivados no se tocan
+            producto.setActivo(false);
+            producto.setDesactivadoPorCategoria(true);   // quedan marcados
         }
-        category.setActivo(true);    
-        categoryRepository.save(category);
-        
     }
+    productoRepository.saveAll(productos);
+}
+@Transactional
+public void activarCategory(Long id){
+    Category category = categoryRepository.findById(id)
+    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+        "La categoria con id: "+ id + " no se encuentra"
+    ));
 
+    if (category.getActivo()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria con id: " +  id  + " ya se encuentra activada");
+    }
+    category.setActivo(true);
+    categoryRepository.save(category);
+
+    List<Producto> productos = productoRepository.findByCategoriaId(id);
+    for (Producto producto : productos) {
+        if (producto.isDesactivadoPorCategoria()) {      // solo los desactivados por la categoría
+            producto.setActivo(true);
+            producto.setDesactivadoPorCategoria(false);
+        }
+    }
+    productoRepository.saveAll(productos);
+}
 }

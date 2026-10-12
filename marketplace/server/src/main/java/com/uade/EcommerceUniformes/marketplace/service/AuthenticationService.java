@@ -29,6 +29,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final CarritoRepository carritoRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (request.getRol() == null) {
