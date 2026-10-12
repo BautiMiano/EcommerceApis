@@ -1,0 +1,17 @@
+.category-option {
+  display: flex;
+}
+
+.category-option button {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 15px;
+  text-align: left;
+}
+
+.category-option button:hover {
+  background-color: #f5f5f5;
+}

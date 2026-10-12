@@ -1,0 +1,12 @@
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.benefit-item img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}

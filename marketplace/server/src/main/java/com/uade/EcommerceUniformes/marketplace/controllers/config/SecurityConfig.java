@@ -91,6 +91,9 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
                 .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
+                .requestMatchers(HttpMethod.GET, "/favoritos/mis-favoritos").hasRole("COMPRADOR")
+                .requestMatchers(HttpMethod.POST, "/favoritos/*").hasRole("COMPRADOR")
+                .requestMatchers(HttpMethod.DELETE, "/favoritos/*").hasRole("COMPRADOR")
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session
