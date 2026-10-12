@@ -94,6 +94,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/favoritos/mis-favoritos").hasRole("COMPRADOR")
                 .requestMatchers(HttpMethod.POST, "/favoritos/*").hasRole("COMPRADOR")
                 .requestMatchers(HttpMethod.DELETE, "/favoritos/*").hasRole("COMPRADOR")
+                .requestMatchers("/chat", "/chat/**").hasAnyRole("COMPRADOR", "VENDEDOR")
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session
