@@ -1,21 +1,15 @@
 package com.uade.EcommerceUniformes.marketplace.service;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
-<<<<<<< HEAD:marketplace/server/src/main/java/com/uade/EcommerceUniformes/marketplace/service/CategoryServiceImpl.java
-import com.uade.EcommerceUniformes.marketplace.entity.dto.CategoryDto;
-=======
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
->>>>>>> origin/Roman:marketplace/src/main/java/com/uade/EcommerceUniformes/marketplace/service/CategoryServiceImpl.java
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import org.springframework.transaction.annotation.Transactional;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CategoryDto;
 
 
 @Service
