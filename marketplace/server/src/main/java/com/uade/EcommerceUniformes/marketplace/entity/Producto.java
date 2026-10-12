@@ -38,6 +38,7 @@ public class Producto {
     private int stock;
     private int stockReservado;
     private boolean activo;
+    private boolean desactivadoPorCategoria;
 
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
@@ -49,6 +50,7 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "descuento_id")
     private Descuento descuento;
+    private boolean descuentoAplicadoPorAdmin;
 
     @OneToMany(mappedBy = "producto")
     private List<Imagen> imagenes;

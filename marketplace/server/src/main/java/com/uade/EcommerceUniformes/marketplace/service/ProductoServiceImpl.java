@@ -220,8 +220,15 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está activo");
         }
 
+        if (producto.getCategoria() != null &&
+        !producto.getCategoria().getActivo()) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "No se puede activar un producto cuya categoría está desactivada");
+        }
 
         producto.setActivo(true);
+        producto.setDesactivadoPorCategoria(false);
         productoRepository.save(producto);
     }
 
