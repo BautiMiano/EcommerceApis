@@ -1,0 +1,22 @@
+.cart-section {
+  padding: 48px 0 96px 0;
+}
+
+.cart-section-grilla {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: start;
+  gap: 24px;
+}
+
+@media screen and (max-width: 1024px) {
+  .cart-section-grilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cart-section {
+    padding: 32px 0 64px 0;
+  }
+}
