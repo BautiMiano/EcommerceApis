@@ -1,36 +1,35 @@
 .chat-historial {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .chat-historial-subtitulo {
-    margin: 0;
-    font-size: 13px;
-    color: #737373;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .chat-historial-lista {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .chat-historial-estado {
-    color: #888888;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 20px;
+  margin: 20px 0 0 0;
+  font-size: 14px;
+  color: #4a4a4a;
+  text-align: center;
 }
 
 .chat-historial-error {
-    color: #ef4444;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 20px;
+  margin: 20px 0 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  text-align: center;
 }

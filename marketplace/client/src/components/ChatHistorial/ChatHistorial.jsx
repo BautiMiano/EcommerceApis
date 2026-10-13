@@ -46,7 +46,7 @@ const ChatHistorial = ({ onSeleccionarConversacion }) => {
 
     return (
         <section className="chat-historial">
-            <h4 className="chat-historial-subtitulo">Historial de conversaciones</h4>
+            <h4 className="chat-historial-subtitulo">Tus conversaciones</h4>
             <ul className="chat-historial-lista">
                 {conversaciones.map(conv => (
                     <ConversacionItem 
