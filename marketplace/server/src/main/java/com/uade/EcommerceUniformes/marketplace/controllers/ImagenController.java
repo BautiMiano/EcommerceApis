@@ -8,6 +8,7 @@ import java.util.Base64;
 import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/imagenes")
 @RequiredArgsConstructor
+@CrossOrigin ("http://localhost:5173")
+
 public class ImagenController {
 
     private final ImagenService imagenService;

@@ -4,6 +4,17 @@
   padding: 0 48px;
 }
 
+/* App.css */
+#root, .app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* El contenedor de las rutas empuja al footer hacia abajo */
+main, .main-content {
+  flex: 1;
+}
 @media screen and (max-width: 768px) {
   .contenedor {
     padding: 0 20px;

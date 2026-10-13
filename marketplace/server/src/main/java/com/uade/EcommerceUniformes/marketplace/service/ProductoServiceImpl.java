@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
+import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
@@ -16,6 +17,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
+import java.util.Base64;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ public class ProductoServiceImpl implements ProductoService {
     private final CategoryRepository categoryRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioLogueadoService usuarioLogueadoService;
+
 
     @Override
     public List<ProductoRequest> getProductos() {
@@ -40,15 +43,40 @@ public class ProductoServiceImpl implements ProductoService {
         return productos.stream()
                 .map(producto -> {
                     ProductoRequest response = new ProductoRequest();
+                    response.setId(producto.getId());
+
+                    if (producto.getCategoria() != null) {
+                        response.setCategoryId(producto.getCategoria().getId());
+                    }
+
                     response.setNombre(producto.getNombre());
                     response.setDescripcion(producto.getDescripcion());
                     response.setPrecio(producto.getPrecio());
                     response.setTalle(producto.getTalle());
                     response.setStock(producto.getStock());
 
+                    if (producto.getImagenes() != null) {
+                        List<String> imagenesBase64 = producto.getImagenes().stream()
+                                .filter(img -> Boolean.TRUE.equals(img.getActivo())) // Opcional: filtrar solo imágenes activas
+                                .map(img -> {
+                                    try {
+                                        if (img.getImagen() != null) {
+                                            byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
+                                            return Base64.getEncoder().encodeToString(bytes);
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    return null;
+                                })
+                                .filter(b64 -> b64 != null)
+                                .toList();
+
+                        response.setImagenes(imagenesBase64);
+                    }
+
                     return response;
                 })
-
                 .toList();
     }
 
@@ -349,6 +377,60 @@ public class ProductoServiceImpl implements ProductoService {
     @Override 
     public Optional<Producto> getProductoEntityById(Long productoId) {  
     return productoRepository.findById(productoId);
-}
-    
+    }
+
+    @Override
+public List<ProductoRequest> getProductos(Double precioMax) {
+
+    if (precioMax != null && precioMax < 0) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El precio máximo no puede ser negativo");
+    }
+
+    List<Producto> productos = (precioMax == null)
+            ? productoRepository.findAll()
+            : productoRepository.findByPrecioBetween(0.0, precioMax);
+
+    if (productos.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay productos disponibles");
+    }
+
+    return productos.stream()
+            .map(producto -> {
+                ProductoRequest response = new ProductoRequest();
+                response.setId(producto.getId());
+
+                if (producto.getCategoria() != null) {
+                    response.setCategoryId(producto.getCategoria().getId());
+                }
+
+                response.setNombre(producto.getNombre());
+                response.setDescripcion(producto.getDescripcion());
+                response.setPrecio(producto.getPrecio());
+                response.setTalle(producto.getTalle());
+                response.setStock(producto.getStock());
+
+                if (producto.getImagenes() != null) {
+                    List<String> imagenesBase64 = producto.getImagenes().stream()
+                            .filter(img -> Boolean.TRUE.equals(img.getActivo()))
+                            .map(img -> {
+                                try {
+                                    if (img.getImagen() != null) {
+                                        byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
+                                        return Base64.getEncoder().encodeToString(bytes);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return null;
+                            })
+                            .filter(b64 -> b64 != null)
+                            .toList();
+
+                    response.setImagenes(imagenesBase64);
+                }
+
+                return response;
+            })
+            .toList();
+        }
 }

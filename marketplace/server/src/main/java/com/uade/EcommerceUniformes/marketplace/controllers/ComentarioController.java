@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("comentarios")
+@CrossOrigin ("http://localhost:5173")
+
 @RequiredArgsConstructor
 
 public class ComentarioController {
