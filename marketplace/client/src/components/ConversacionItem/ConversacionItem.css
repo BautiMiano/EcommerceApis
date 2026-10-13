@@ -1,0 +1,21 @@
+.conversacion-item {
+    list-style: none;
+}
+
+.conversacion-item-btn {
+    width: 100%;
+    text-align: left;
+    background-color: #f9f9f9;
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.conversacion-item-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #e0e0e0;
+}
