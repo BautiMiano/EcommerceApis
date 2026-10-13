@@ -1,0 +1,9 @@
+.assistant-section {
+  padding: 0 0 96px 0;
+}
+
+@media screen and (max-width: 768px) {
+  .assistant-section {
+    padding: 0 0 64px 0;
+  }
+}
