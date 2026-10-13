@@ -1,0 +1,28 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  padding: 0 24px;
+  border-radius: 50px;
+  background-color: #ffffff;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.08));
+}
+
+.search-bar img {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 18px 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: #000000;
+  font-family: inherit;
+  font-size: 15px;
+}

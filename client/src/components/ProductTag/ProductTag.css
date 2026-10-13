@@ -1,0 +1,13 @@
+.product-tag {
+  padding: 4px 8px;
+  border-radius: 2px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.product-tag-descuento {
+  background-color: #e5383b;
+}
