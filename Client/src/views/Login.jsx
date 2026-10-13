@@ -1,5 +1,5 @@
 const Login = () => {
-  return <h1>Inicio de sesión (próximamente)</h1>
+  return <h1>Inicio de sesión </h1>
 }
 
 export default Login
