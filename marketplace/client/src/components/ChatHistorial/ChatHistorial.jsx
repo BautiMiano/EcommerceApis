@@ -8,7 +8,13 @@ const ChatHistorial = ({ onSeleccionarConversacion }) => {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        fetch('/chat/conversaciones')
+        const token = localStorage.getItem('token')        // NUEVO: leo el token guardado
+
+        fetch('/chat/conversaciones', {
+            headers: {                                      // NUEVO: lo mando en el pedido
+                'Authorization': 'Bearer ' + token
+            }
+        })
             .then(res => {
                 if (!res.ok) {
                     throw new Error('Error al obtener conversaciones')
