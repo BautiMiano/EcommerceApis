@@ -14,13 +14,23 @@ export const getCategories = () => {
 
 
 export const getCategoryProducts = (categoryId) => {
-  return fetch(`${API_BASE_URL}/productos/${categoryId}`)
+  const endpoint = categoryId ? `/productos/categoria/${categoryId}` : '/productos';
+  return fetch(`${API_BASE_URL}${endpoint}`)
     .then((res) => {
       return res.json();
     })
     .catch((err) => {
     });
 };
+
+export const getProductosByPrice = (max)=>{
+  return fetch(`${API_BASE_URL}/productos/precio/${max}`)
+  .then((res) => {
+    return res.json();
+  })
+  .catch((err) => {
+  });
+}
 
 
 

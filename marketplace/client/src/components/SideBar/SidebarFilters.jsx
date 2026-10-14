@@ -1,8 +1,9 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CategoryFilter } from '../Filtros/CategoryFilter';
 import { PriceFilter } from '../Filtros/PriceFilter';
 import { SizeFilter } from '../Filtros/SizeFilter';
+import { getCategories, getCategoryProducts, getProductosByPrice } from '../../utils/api.js';
 import './SidebarFilters.css';
 
 
@@ -13,16 +14,18 @@ import './SidebarFilters.css';
 
 export const SidebarFilters = ({
   selectedCategory, onSelectCategory,
-  bounds, priceLimit, onFilterPrice,
+  bounds, priceLimit, onFilterPrice, onProductsFiltered,
+  maxPrice, onPriceResults,
   sizes, selectedSize, onSelectSize, onReset,
 }) => {
 
-  const [filterProducts, setProducts] = useState([]);
-  const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
   const [filterCategories, setFilterCategories] = useState([]);
+  const [precios, setPrecios] = useState([]);
+  const [error, setError] = useState(null);
 
-  const {idCategoria} = useParams();
+  const { idCategoria } = useParams();
+
 
   useEffect(() => {
     getCategories() //fn fetch categories
@@ -34,24 +37,45 @@ export const SidebarFilters = ({
   useEffect(() => {
     const onSelectedCategory = (categoryId) => {
       getCategoryProducts(categoryId)
-        .then((data) => setFilterCategories(data))
+        .then((data) => {
+          const lista = Array.isArray(data) ? data : [];
+          setFilterCategories(lista);
+          if (onProductsFiltered) onProductsFiltered(lista);
+        })
         .finally(() => setError(null))
         .catch((error) => setError(error));
     };
 
     onSelectedCategory(idCategoria);
-    // const filterPrice = (priceLimit) => {
-    //   .then((data) => setFilterPrice(data))
-    // };
-  }, [filterCategories, idCategoria]);
+  }, [idCategoria]);
 
+  useEffect(() => {
+    const onSelectedPrice = (precioMax) => {
+      getProductosByPrice(precioMax)
+        .then((data) => {
+          const lista = Array.isArray(data) ? data : [];
+          setPrecios(lista);
+          if (onPriceResults) onPriceResults(new Set(lista.map((p) => p.id)));
+        })
+        .finally(() => setError(null))
+        .catch((error) => setError(error));
+    };
+
+    if (maxPrice === null) {
+      setPrecios([]);
+      if (onPriceResults) onPriceResults(null);
+      return;
+    }
+
+    onSelectedPrice(maxPrice);
+  }, [maxPrice]);
 
 
 
   return (
 
 
-  <aside className="sidebar-container">
+    <aside className="sidebar-container">
       <div className="sidebar-header">
         <div className="sidebar-title">
           <span className="material-symbols-outlined">tune</span>
@@ -64,7 +88,7 @@ export const SidebarFilters = ({
 
       <CategoryFilter
         categories={categories}
-        filterCategories={filterCategories}
+        selectedCategory={selectedCategory}
         onSelectCategory={onSelectCategory}
       />
 

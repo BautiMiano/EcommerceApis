@@ -19,6 +19,5 @@ public interface ProductoService {
     void descontarStockDefinitivo(Long productoId, int cantidad);
     Optional<Producto> getProductoEntityById(Long productoId);
     List<ProductoRequest> getMisProductos();
-    List<ProductoRequest> getProductos(Double precioMax);
-
+    List<ProductoRequest> getProductosByPrecio(Double precioMax);
 }

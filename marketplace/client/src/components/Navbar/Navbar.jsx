@@ -47,10 +47,7 @@ const Navbar = () => {
       return;
     }
 
-    const catId = typeof cat === 'object' ? (cat.idCategoria || cat.nombreCategoria) : cat;
-    if (catId) {
-      navigate(`/categorias?cat=${encodeURIComponent(catId)}`);
-    }
+    navigate(`/categorias/${cat.idCategoria}`);
   };
 
   return (
@@ -69,13 +66,13 @@ const Navbar = () => {
         <nav className="navbar-links" aria-label="Principal">
           <NavLink to="/" end>Home</NavLink>
 
-          <div 
+          <div
             className="dropdown-container"
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
-            <NavLink 
-              to="/categorias" 
+            <NavLink
+              to="/categorias"
               className="dropdown-trigger"
               onClick={() => setIsDropdownOpen(false)}
             >
@@ -87,7 +84,7 @@ const Navbar = () => {
 
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                <button 
+                <button
                   type="button"
                   className="dropdown-item dropdown-item-bold"
                   onClick={() => handleSelectCategory('all')}
@@ -101,11 +98,10 @@ const Navbar = () => {
                 {categories.length === 0 ? (
                   <div className="dropdown-loading">Sin categorías disponibles</div>
                 ) : (
-                  categories.map((cat, index) => {
-                    const keyVal = cat.idCategoria ?? cat.nombreCategoria ?? index;
+                  categories.map((cat) => {
                     return (
                       <button
-                        key={`nav-cat-${keyVal}`}
+                        key={`nav-cat-${cat.idCategoria}`}
                         type="button"
                         className="dropdown-item"
                         onClick={() => handleSelectCategory(cat)}

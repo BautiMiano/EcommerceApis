@@ -79,8 +79,8 @@ public class ProductoController {
         return this.productoService.getMisProductos();
     }
 
-    @GetMapping
-    public List<ProductoRequest> getProductos(@RequestParam(required = false) Double precioMax) {
-        return this.productoService.getProductos(precioMax);
+    @GetMapping("/precio/{max}")
+    public List<ProductoRequest> getProductosByPrecio(@PathVariable Double max) {
+        return this.productoService.getProductosByPrecio(max);
     }
 }
