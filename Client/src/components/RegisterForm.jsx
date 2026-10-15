@@ -2,11 +2,8 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import FormField from './FormField'
 import PasswordStrength from './PasswordStrength'
-import TermsCheckbox from './TermsCheckbox'
-import TermsModal from './TermsModal'
 import Button from './Button'
-
-const API_URL = 'http://localhost:4002'
+import { registerUser } from '../utils/api'
 
 const campos = [
   { name: 'nombre', label: 'Nombre *', type: 'text', placeholder: 'Ej: Marcelo' },
@@ -33,15 +30,12 @@ const RegisterForm = ({ onRegistroExitoso }) => {
     contrasena: '',
     confirmar: '',
   })
-  const [terminos, setTerminos] = useState(false)
-  const [modalAbierto, setModalAbierto] = useState(false)
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const handleTerminos = (e) => {
-    setTerminos(e.target.checked)
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    })
   }
 
   const registrar = (rol) => {
@@ -57,24 +51,18 @@ const RegisterForm = ({ onRegistroExitoso }) => {
       toast.error('Las contraseñas no coinciden.')
       return
     }
-    if (!terminos) {
-      toast.error('Tenés que aceptar los Términos de Servicio.')
-      return
-    }
+    
+    const userData = {
+      nombreUsuario: form.nombreUsuario,
+      nombre: form.nombre,
+      apellido: form.apellido,
+      mail: form.mail,
+      contrasena: form.contrasena,
+      rol: rol,
+    };
 
-    fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombreUsuario: form.nombreUsuario,
-        nombre: form.nombre,
-        apellido: form.apellido,
-        mail: form.mail,
-        contrasena: form.contrasena,
-        rol: rol,
-      }),
-    })
-      .then((response) => response.json())
+    //función importada de api.js
+    registerUser(userData)
       .then((data) => {
         if (data.access_token) {
           localStorage.setItem('token', data.access_token)
@@ -85,7 +73,6 @@ const RegisterForm = ({ onRegistroExitoso }) => {
         }
       })
       .catch((error) => {
-        console.error('Error al registrar', error)
         toast.error('No se pudo conectar con el servidor.')
       })
   }
@@ -108,31 +95,23 @@ const RegisterForm = ({ onRegistroExitoso }) => {
             ayuda={campo.ayuda}
             full={campo.full}
             value={form[campo.name]}
-            onChange={handleChange}
+            onChange={handleChange} 
           >
             {campo.name === 'contrasena' && <PasswordStrength contrasena={form.contrasena} />}
           </FormField>
         ))}
-
-        <TermsCheckbox
-          checked={terminos}
-          onChange={handleTerminos}
-          onVerTerminos={() => setModalAbierto(true)}
-        />
 
         <div className="register-actions">
           <Button texto="Registrarse como comprador →" tipo="submit" variante="primary" />
           <Button
             texto="Solicitar aprobación como vendedor"
             variante="secondary"
+            type="button"
             onClick={() => registrar('VENDEDOR')}
           />
         </div>
       </form>
-
-      <TermsModal abierto={modalAbierto} onCerrar={() => setModalAbierto(false)} />
     </>
   )
 }
-
 export default RegisterForm

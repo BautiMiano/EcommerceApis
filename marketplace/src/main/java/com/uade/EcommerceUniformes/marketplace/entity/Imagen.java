@@ -24,7 +24,7 @@ public class Imagen {
 
     @JsonIgnore
     private Blob imagen;
-
+    @Builder.Default
     private Boolean activo = true;
 
 

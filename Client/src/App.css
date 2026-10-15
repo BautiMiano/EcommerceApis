@@ -216,7 +216,7 @@
   margin: 32px 0 0;
 }
 
-.login-link button {
+.login-link button, .register-link button {
   background: none;
   border: none;
   padding: 0;
