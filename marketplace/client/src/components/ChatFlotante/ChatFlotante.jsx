@@ -19,13 +19,15 @@ const ChatFlotante = () => {
         <div className="chat-flotante">
             {mostrarGlobo && (
                 <div className="chat-flotante-globo">
-                    <span>¿Te ayudo a encontrar tu uniforme?</span>
+                    <span>¿Te ayudo a encontrar algo?</span>
                     <button type="button" className="chat-flotante-globo-cerrar"
                         aria-label="Cerrar mensaje" onClick={() => setMostrarGlobo(false)}>
+                        
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
                             <path d="M6 6l12 12M18 6L6 18" />
                         </svg>
+                        
                     </button>
                 </div>
             )}

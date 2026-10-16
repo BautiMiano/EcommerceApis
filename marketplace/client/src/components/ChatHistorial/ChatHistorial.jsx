@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 import ConversacionItem from '../ConversacionItem/ConversacionItem'
 import './ChatHistorial.css'
 
-const ChatHistorial = ({ onSeleccionarConversacion }) => {
+const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
     const [conversaciones, setConversaciones] = useState([])
     const [cargando, setCargando] = useState(true)
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        const token = localStorage.getItem('token')        // NUEVO: leo el token guardado
+        const token = localStorage.getItem('token')
 
         fetch('/chat/conversaciones', {
-            headers: {                                      // NUEVO: lo mando en el pedido
+            headers: {
                 'Authorization': 'Bearer ' + token
             }
         })
@@ -32,30 +32,32 @@ const ChatHistorial = ({ onSeleccionarConversacion }) => {
             })
     }, [])
 
-    if (cargando) {
-        return <p className="chat-historial-estado">Cargando conversaciones...</p>
-    }
-
-    if (error) {
-        return <p className="chat-historial-error">{error}</p>
-    }
-
-    if (conversaciones.length === 0) {
-        return <p className="chat-historial-estado">No tenés conversaciones previas.</p>
-    }
-
     return (
         <section className="chat-historial">
-            <h4 className="chat-historial-subtitulo">Tus conversaciones</h4>
-            <ul className="chat-historial-lista">
-                {conversaciones.map(conv => (
-                    <ConversacionItem 
-                        key={conv.id} 
-                        conversacion={conv} 
-                        onSeleccionar={onSeleccionarConversacion} 
-                    />
-                ))}
-            </ul>
+            <button type="button" className="chat-historial-nueva" onClick={onNueva}>
+                + Nueva conversación
+            </button>
+
+            {cargando && <p className="chat-historial-estado">Cargando conversaciones...</p>}
+            {error && <p className="chat-historial-error">{error}</p>}
+            {!cargando && !error && conversaciones.length === 0 && (
+                <p className="chat-historial-estado">Todavía no tenés conversaciones.</p>
+            )}
+
+            {conversaciones.length > 0 && (
+                <>
+                    <h4 className="chat-historial-subtitulo">Tus conversaciones</h4>
+                    <ul className="chat-historial-lista">
+                        {conversaciones.map(conv => (
+                            <ConversacionItem
+                                key={conv.id}
+                                conversacion={conv}
+                                onSeleccionar={onSeleccionarConversacion}
+                            />
+                        ))}
+                    </ul>
+                </>
+            )}
         </section>
     )
 }

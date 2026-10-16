@@ -5,7 +5,18 @@ import ChatConversacion from '../ChatConversacion/ChatConversacion'
 import './ChatPanel.css'
 
 const ChatPanel = ({ onCerrar }) => {
+    const [vista, setVista] = useState('historial')
     const [conversacionId, setConversacionId] = useState(null)
+
+    const abrirConversacion = (id) => {
+        setConversacionId(id)
+        setVista('conversacion')
+    }
+
+    const nuevaConversacion = () => {
+        setConversacionId(null)
+        setVista('conversacion')
+    }
 
     return (
         <>
@@ -13,12 +24,15 @@ const ChatPanel = ({ onCerrar }) => {
             <aside className="chat-panel" aria-label="Chat con Uni">
                 <ChatHeader onCerrar={onCerrar} />
                 <div className="chat-panel-cuerpo">
-                    {conversacionId === null ? (
-                        <ChatHistorial onSeleccionarConversacion={setConversacionId} />
+                    {vista === 'historial' ? (
+                        <ChatHistorial
+                            onSeleccionarConversacion={abrirConversacion}
+                            onNueva={nuevaConversacion}
+                        />
                     ) : (
                         <ChatConversacion
                             conversacionId={conversacionId}
-                            onVolver={() => setConversacionId(null)}
+                            onVolver={() => setVista('historial')}
                         />
                     )}
                 </div>
