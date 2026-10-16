@@ -23,8 +23,8 @@ const ProductoEditor = ({ formulario, categorias, onChange, onSubmit, onCancelar
           Categoría *
           <select name="categoryId" value={formulario.categoryId} onChange={onChange} required>
             <option value="">Seleccioná una categoría</option>
-            {categorias.filter((categoria) => categoria.activo).map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>{categoria.nombreCategoria}</option>
+            {categorias.map((categoria) => (
+              <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.nombreCategoria}</option>
             ))}
           </select>
         </label>

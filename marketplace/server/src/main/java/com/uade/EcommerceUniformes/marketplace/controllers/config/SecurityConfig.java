@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,79 +29,95 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/usuarios/**")
-                .hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH,"/usuarios/**")
-                .hasAnyRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/categories/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/categories/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/usuarios/**")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes")
-                .hasRole("COMPRADOR")
-                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes/*")
-                .hasRole("COMPRADOR")
-                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/*")
-                .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/carritos/{carritoId}").hasAnyRole("ADMIN")
-                // Permisos del vendedor
-                .requestMatchers(HttpMethod.POST, "/productos/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/productos/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.GET, "/descuentos/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/descuentos/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE,"/producto/{productoId}")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.POST, "/imagenes/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/imagenes/**")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/productos/stock")
-                .hasAnyRole("VENDEDOR")
-                .requestMatchers(HttpMethod.PATCH, "/productos/desactivar/*")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/productos/activar/*")
-                .hasAnyRole("VENDEDOR", "ADMIN")
-                .requestMatchers(HttpMethod.POST, "/tickets").hasRole("VENDEDOR")
-                .requestMatchers(HttpMethod.GET, "/tickets/mis-tickets").hasRole("VENDEDOR")
-                .requestMatchers(HttpMethod.GET, "/tickets/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/tickets/**").hasRole("ADMIN")
-                // Permiso de todos los usuarios
-                .requestMatchers(HttpMethod.GET, "/productos/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET, "/categories/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET, "/comentarios/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/carritos/**")
-                .hasAnyRole("COMPRADOR")
-                .requestMatchers(HttpMethod.DELETE, "/carritos/**")
-                .hasAnyRole("COMPRADOR")
-                .requestMatchers(HttpMethod.GET, "/imagenes/**")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
-                .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
-                .anyRequest().authenticated()
-                )
-                .sessionManagement(session
-                        -> session.sessionCreationPolicy(STATELESS)
-                )
+                        // Permitir peticiones pre-flight OPTIONS globales (necesario para CORS con autenticación)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Publicos
+                        .requestMatchers("/auth/**", "/error").permitAll()
+
+                        // Usuarios (solo admin)
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasRole("ADMIN")
+
+                        // Categorias (Soporta /categories y /categorias)
+                        .requestMatchers(HttpMethod.POST, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/categories/**", "/categorias/**").permitAll()
+
+                        // Ordenes
+                        .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes/*").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.GET, "/ordenesDeCompra").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/*").hasRole("ADMIN")
+
+                        // Carritos (el orden importa: lo mas especifico primero)
+                        .requestMatchers(HttpMethod.GET, "/carritos/usuario/*").hasAnyRole("COMPRADOR", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/carritos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.POST, "/carritos/**").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/carritos/**").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/carritos/**").hasRole("COMPRADOR")
+
+                        // Productos (mis-productos ANTES del permitAll de GET /productos/**)
+                        .requestMatchers(HttpMethod.GET, "/productos/mis-productos").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/productos/talle/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/productos/talles/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/productos/**").hasAnyRole("VENDEDOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/productos/**").hasAnyRole("VENDEDOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/productos/stock").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.PATCH, "/productos/desactivar/*").hasAnyRole("VENDEDOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/productos/activar/*").hasAnyRole("VENDEDOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/producto/{productoId}").hasAnyRole("VENDEDOR", "ADMIN")
+
+                        // Descuentos
+                        .requestMatchers(HttpMethod.GET, "/descuentos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/descuentos/**").hasAnyRole("VENDEDOR", "ADMIN")
+
+                        // Imagenes
+                        .requestMatchers(HttpMethod.GET, "/imagenes/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/imagenes/**").hasAnyRole("VENDEDOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/imagenes/**").hasAnyRole("VENDEDOR", "ADMIN")
+
+                        // Tickets
+                        .requestMatchers(HttpMethod.POST, "/tickets").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/tickets/mis-tickets").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/tickets/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/tickets/**").hasRole("ADMIN")
+
+                        // Comentarios y favoritos
+                        .requestMatchers(HttpMethod.GET, "/comentarios/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/favoritos/mis-favoritos").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.POST, "/favoritos/*").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/favoritos/*").hasRole("COMPRADOR")
+
+                        // Chat
+                        .requestMatchers("/chat", "/chat/**").hasAnyRole("COMPRADOR", "VENDEDOR")
+
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(
-                        jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

@@ -5,7 +5,7 @@ import PasswordStrength from './PasswordStrength'
 import TermsCheckbox from './TermsCheckbox'
 import TermsModal from './TermsModal'
 import Button from './Button'
-import { registrarUsuario } from '../api'
+import { registrarUsuario } from '../utils/api'
 
 const campos = [
   { name: 'nombre', label: 'Nombre *', type: 'text', placeholder: 'Ej: Marcelo' },

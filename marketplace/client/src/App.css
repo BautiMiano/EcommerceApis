@@ -1,3 +1,26 @@
+.contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+/* App.css */
+#root, .app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* El contenedor de las rutas empuja al footer hacia abajo */
+main, .main-content {
+  flex: 1;
+}
+@media screen and (max-width: 768px) {
+  .contenedor {
+    padding: 0 20px;
+  }
+}
+
 /* Logo */
 .logo {
   display: inline-block;
@@ -8,27 +31,6 @@
   letter-spacing: 1px;
   padding: 14px 22px;
   border-radius: 4px;
-}
-
-/* SecurityBadge */
-.security-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border: 1px solid #e5e5e5;
-  background: #f5f5f5;
-  padding: 6px 10px;
-}
-
-/* Header */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 28px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
 }
 
 /* PageTitle */
@@ -216,7 +218,7 @@
   margin: 32px 0 0;
 }
 
-.login-link button {
+.login-link button, .register-link button {
   background: none;
   border: none;
   padding: 0;
@@ -228,33 +230,6 @@
   cursor: pointer;
 }
 
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding: 24px 28px;
-  background: #f3f3f3;
-  border-top: 1px solid #e5e5e5;
-  font-size: 11px;
-  color: #444;
-}
-
-.footer-info p {
-  margin: 12px 0 0;
-  max-width: 420px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
 /* Register (vista) */
 .register-page {

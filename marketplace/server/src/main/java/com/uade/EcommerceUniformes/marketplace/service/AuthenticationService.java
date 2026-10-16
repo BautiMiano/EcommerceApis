@@ -1,9 +1,11 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.controllers.auth.AuthenticationRequest;
 import com.uade.EcommerceUniformes.marketplace.controllers.auth.AuthenticationResponse;
@@ -30,16 +32,16 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (request.getRol() == null) {
-            throw new RuntimeException("Debe especificar un rol");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe especificar un rol");
         }
         if (request.getRol() == Rol.ADMIN) {
-            throw new RuntimeException("No se puede registrar un usuario con rol ADMIN");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se puede registrar un usuario con rol ADMIN");
         }
         if (usuarioRepository.findByMail(request.getMail()).isPresent()) {
-            throw new RuntimeException("El mail que se intenta agregar ya esta creado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El mail que se intenta agregar ya esta creado");
         }
         if (usuarioRepository.findAll().stream().anyMatch((usuario) -> usuario.getNombreUsuario().equals(request.getNombreUsuario()))) {
-            throw new RuntimeException("El nombre de usuario que se intenta agregar ya esta creado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario que se intenta agregar ya esta creado");
         }
 
         Usuario usuario = new Usuario(

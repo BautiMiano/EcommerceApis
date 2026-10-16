@@ -1,0 +1,232 @@
+/* Topbar */
+.topbar {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 8px 16px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+}
+
+.topbar a {
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+/* Header Navbar Principal */
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #E5E5E5;
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Contenedor del enlace del logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0;
+  margin-right: 2rem; /* Espaciado respecto a los links de navegación */
+}
+
+/* Imagen del logo */
+.navbar-logo-img {
+  height: 4.5rem;        /* 48px equivalen a 3rem */
+  width: auto;         /* Mantiene la relación de aspecto original */
+  max-width: 14rem;    /* 160px equivalen a 10rem */
+  object-fit: contain; /* Evita que la imagen se estire o deforme */
+  display: block;
+}
+
+/* Nav Links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-links a {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #5e5e60;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.navbar-links a:hover,
+.navbar-links a.active {
+  color: #000000;
+}
+
+/* Dropdown de Categorías */
+.dropdown-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.arrow-icon {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  width: 250px;
+  background-color: #ffffff;
+  border: 1px solid #E5E5E5;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 200;
+}
+
+/* Puente invisible para evitar que el dropdown se cierre al mover el mouse */
+.dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: #1b1c1c;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+
+.dropdown-item:hover {
+  background-color: #F5F5F5;
+  color: #000000;
+}
+
+.dropdown-item-bold {
+  background-color: #F5F5F5;
+  font-weight: 700;
+}
+
+.dropdown-item-bold:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #E5E5E5;
+  margin: 4px 0;
+}
+
+.dropdown-loading {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: #747878;
+  text-align: center;
+}
+
+/* Buscador Original */
+.navbar-search {
+  display: flex;
+  align-items: center;
+  background-color: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  border-radius: 999px;
+  padding: 6px 16px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.navbar-search .search-icon {
+  color: #5e5e60;
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.navbar-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  width: 100%;
+}
+
+/* Botones / Acciones */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  white-space: nowrap;
+}
+
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-pill-outline {
+  border: 1px solid #000000;
+  background-color: transparent;
+  color: #000000;
+}
+
+.btn-pill-outline:hover {
+  background-color: #F5F5F5;
+}
+
+.btn-pill-solid {
+  border: none;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.btn-pill-solid:hover {
+  background-color: #303031;
+}

@@ -19,6 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -59,6 +61,8 @@ public class Usuario implements UserDetails {
 
     @JsonIgnore
     @OneToMany(mappedBy = "usuario")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<OrdenDeCompra> ordenDeCompras;
 
     @Enumerated(EnumType.STRING)
@@ -70,11 +74,18 @@ public class Usuario implements UserDetails {
 
     @JsonIgnore
     @OneToOne(mappedBy = "usuario")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Carrito carrito;
 
     @Override
     public String getUsername() {
         return mail;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return activo;
     }
 
     @Override
@@ -91,5 +102,7 @@ public class Usuario implements UserDetails {
     }
 
     @OneToMany (mappedBy = "usuario")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Ticket> tickets;
 }

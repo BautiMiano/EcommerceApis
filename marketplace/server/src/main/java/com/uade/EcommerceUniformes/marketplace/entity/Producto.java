@@ -37,7 +37,8 @@ public class Producto {
     private String talle;
     private int stock;
     private int stockReservado;
-    private boolean activo;
+    @Builder.Default
+    private boolean activo = true;
     private boolean desactivadoPorCategoria;
 
     @Enumerated(EnumType.STRING)

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 import ProductoForm from '../components/ProductoForm/ProductoForm'
 import ImageUploader from '../components/ImageUploader/ImageUploader'
-import { crearProducto, obtenerCategorias, subirImagen } from '../api'
+import { crearProducto, getCategories, subirImagen } from '../utils/api'
 import './CrearPublicacion.css'
 
 const formularioInicial = {
@@ -34,7 +32,7 @@ const CrearPublicacion = () => {
   useEffect(() => {
     const cargarCategorias = async () => {
       try {
-        const categoriasObtenidas = await obtenerCategorias()
+        const categoriasObtenidas = await getCategories()
         setCategorias(categoriasObtenidas)
       } catch (error) {
         setErrorGeneral(error.message)
@@ -165,8 +163,6 @@ const CrearPublicacion = () => {
 
   return (
     <div className="crear-publicacion-page">
-      <Header />
-
       <main className="crear-publicacion-main">
         <div className="crear-publicacion-heading">
           <span className="page-title-tag">Nueva publicación</span>
@@ -209,8 +205,6 @@ const CrearPublicacion = () => {
           </p>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

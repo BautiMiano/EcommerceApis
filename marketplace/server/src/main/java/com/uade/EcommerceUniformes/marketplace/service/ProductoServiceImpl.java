@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
+import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
@@ -16,6 +17,9 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
+
+import io.jsonwebtoken.lang.Collections;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +32,48 @@ public class ProductoServiceImpl implements ProductoService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioLogueadoService usuarioLogueadoService;
 
+    private ProductoRequest toResponse(Producto producto) {
+        ProductoRequest response = new ProductoRequest();
+        response.setId(producto.getId());
+
+        if (producto.getCategoria() != null) {
+            response.setCategoryId(producto.getCategoria().getId());
+        }
+
+        response.setNombre(producto.getNombre());
+        response.setDescripcion(producto.getDescripcion());
+        response.setPrecio(producto.getPrecio());
+        response.setTalle(producto.getTalle());
+        response.setStock(producto.getStock());
+        response.setActivo(producto.isActivo());
+
+        if (producto.getImagenes() != null) {
+            List<String> imagenesBase64 = producto.getImagenes().stream()
+                    .filter(img -> Boolean.TRUE.equals(img.getActivo()))
+                    .map(img -> {
+                        try {
+                            if (img.getImagen() != null) {
+                                byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
+                                String tipoContenido = img.getTipoContenido() == null
+                                        ? "application/octet-stream"
+                                        : img.getTipoContenido();
+                                return "data:" + tipoContenido + ";base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    })
+                    .filter(b64 -> b64 != null)
+                    .toList();
+
+            response.setImagenes(imagenesBase64);
+        }
+
+        return response;
+    }
+
     @Override
     public List<ProductoRequest> getProductos() {
 
@@ -37,98 +83,58 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay productos disponibles");
         }
 
-        return productos.stream()
-                .map(producto -> {
-                    ProductoRequest response = new ProductoRequest();
-                    response.setNombre(producto.getNombre());
-                    response.setDescripcion(producto.getDescripcion());
-                    response.setPrecio(producto.getPrecio());
-                    response.setTalle(producto.getTalle());
-                    response.setStock(producto.getStock());
-
-                    return response;
-                })
-
-                .toList();
+        return productos.stream().map(this::toResponse).toList();
     }
 
     @Override
     public ProductoRequest getProductoById(Long productoId) {
-        
+
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay producto creados actualmente "));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
 
-        productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
-       
-
-        ProductoRequest productoRequest = new ProductoRequest();
-
-        productoRequest.setNombre(producto.getNombre());
-        productoRequest.setDescripcion(producto.getDescripcion());
-        productoRequest.setPrecio(producto.getPrecio());
-        productoRequest.setTalle(producto.getTalle());
-        productoRequest.setStock(producto.getStock());
-
-        return productoRequest;
+        return toResponse(producto);
     }
 
     @Override
     public List<ProductoRequest> getProductosByCategoria(Long categoriaId) {
+
         if (!categoryRepository.existsById(categoriaId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria no encontrada con id: " + categoriaId);
         }
 
-        
         List<Producto> productos = productoRepository.findByCategoriaId(categoriaId);
+
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    public List<ProductoRequest> getMisProductos() {
+
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        List<Producto> productos = productoRepository.findByVendedorId(usuarioLogueado.getId());
+
         if (productos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay productos disponibles para la categoria con id: " + categoriaId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No hay productos disponibles para el vendedor con id: " + usuarioLogueado.getId());
         }
-        
-        return productos.stream()
-            .map(producto -> {
 
-                ProductoRequest productoRequest = new ProductoRequest();
-
-                productoRequest.setCategoryId(categoriaId);
-                productoRequest.setNombre(producto.getNombre());
-                productoRequest.setDescripcion(producto.getDescripcion());
-                productoRequest.setPrecio(producto.getPrecio());
-                productoRequest.setTalle(producto.getTalle());
-                productoRequest.setStock(producto.getStock());
-
-                if (producto.getImagenes() != null) {
-                    List<String> imagenes = producto.getImagenes().stream()
-                        .map(imagen -> {
-                            try {
-                                byte[] bytes = imagen.getImagen().getBytes(1, (int) imagen.getImagen().length());
-                                return Base64.getEncoder().encodeToString(bytes);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        })
-                        .toList();
-
-                    productoRequest.setImagenes(imagenes);
-                }
-
-                return productoRequest;
-            })
-            .toList();
+        return productos.stream().map(this::toResponse).toList();
     }
 
     @Override
     public ProductoRequest createProducto(ProductoRequest request) {
 
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
-        
 
         if (usuarioLogueado.getRolUsuario() != Rol.VENDEDOR) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo los usuarios vendedores pueden crear productos");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo los usuarios vendedores pueden crear productos");
         }
 
         if (!usuarioLogueado.isActivo()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El usuario vendedor está desactivado y no puede crear productos");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El usuario vendedor está desactivado y no puede crear productos");
         }
 
         Producto producto = new Producto();
@@ -142,7 +148,8 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (request.getCategoryId() != null) {
             Category categoria = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria no encontrada con id: " + request.getCategoryId()));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Categoria no encontrada con id: " + request.getCategoryId()));
             producto.setCategoria(categoria);
         }
 
@@ -154,7 +161,7 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El stock no puede ser negativo");
         }
 
-        if(producto.getPrecio() < 0) {
+        if (producto.getPrecio() < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El precio no puede ser negativo");
         }
 
@@ -224,7 +231,7 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setCategoria(categoria);
         productoRepository.save(producto);
 
-        return productoResponse(producto);
+        return toResponse(producto);
     }
 
     @Override
@@ -233,10 +240,12 @@ public class ProductoServiceImpl implements ProductoService {
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
 
         if (!usuarioLogueado.isActivo()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario desactivado no puede desactivar productos");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Usuario desactivado no puede desactivar productos");
         }
         boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
         boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
@@ -244,7 +253,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (!esDueño && !esAdmin) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permiso para eliminar este producto");
         }
-        if(!producto.isActivo()){
+        if (!producto.isActivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está desactivado");
         }
 
@@ -257,7 +266,8 @@ public class ProductoServiceImpl implements ProductoService {
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
 
         boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
         boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
@@ -274,11 +284,9 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está activo");
         }
 
-        if (producto.getCategoria() != null &&
-        !producto.getCategoria().getActivo()) {
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "No se puede activar un producto cuya categoría está desactivada");
+        if (producto.getCategoria() != null && !producto.getCategoria().getActivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se puede activar un producto cuya categoría está desactivada");
         }
 
         producto.setActivo(true);
@@ -292,7 +300,8 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
         int disponible = producto.getStock() - producto.getStockReservado();
         if (cantidad > disponible) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay suficiente stock disponible para el producto con id: " + productoId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No hay suficiente stock disponible para el producto con id: " + productoId);
         }
         producto.setStockReservado(producto.getStockReservado() + cantidad);
         productoRepository.save(producto);
@@ -323,7 +332,7 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + request.getId()));
-        
+
         if (usuarioLogueado.getRolUsuario() != Rol.VENDEDOR) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -334,8 +343,8 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (!esDueño) {
             throw new ResponseStatusException(
-        HttpStatus.FORBIDDEN,
-        "No se puede modificar el stock de otro vendedor");
+                    HttpStatus.FORBIDDEN,
+                    "No se puede modificar el stock de otro vendedor");
         }
 
         if (request.getStock() < 0) {
@@ -344,76 +353,65 @@ public class ProductoServiceImpl implements ProductoService {
                     "El stock no puede ser negativo");
         }
 
-        int nuevoStock = producto.getStock() + request.getStock(); 
+        int nuevoStock = producto.getStock() + request.getStock();
 
         producto.setStock(nuevoStock);
 
         productoRepository.save(producto);
     }
 
-
-    public List<ProductoRequest> getMisProductos() {
-
-    Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
-
-    List<Producto> productos =
-            productoRepository.findByVendedorId(usuarioLogueado.getId());
-
-    if (productos.isEmpty()) {
-        throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "No hay productos disponibles para el vendedor con id: "
-                        + usuarioLogueado.getId()
-        );
+    @Override
+    public Optional<Producto> getProductoEntityById(Long productoId) {
+        return productoRepository.findById(productoId);
     }
 
-    return productos.stream()
-            .map(producto -> {
-                return productoResponse(producto);
-            })
-            .toList();
-    }
+    @Override
+    public List<ProductoRequest> getProductosByPrecio(Double precioMin, Double precioMax) {
 
-    private ProductoRequest productoResponse(Producto producto) {
-        ProductoRequest response = new ProductoRequest();
-        response.setId(producto.getId());
-        response.setNombre(producto.getNombre());
-        response.setDescripcion(producto.getDescripcion());
-        response.setPrecio(producto.getPrecio());
-        response.setTalle(producto.getTalle());
-        response.setStock(producto.getStock());
-        response.setActivo(producto.isActivo());
-
-        if (producto.getCategoria() != null) {
-            response.setCategoryId(producto.getCategoria().getId());
+        // Validaciones de negocio delegadas al backend
+        if (precioMin == null || precioMax == null || precioMin < 0 || precioMax < precioMin) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rango de precios inválido");
         }
 
-        if (producto.getImagenes() != null) {
-            List<String> imagenes = producto.getImagenes().stream()
-                    .filter(imagen -> Boolean.TRUE.equals(imagen.getActivo()))
-                    .map(imagen -> {
-                        try {
-                            byte[] bytes = imagen.getImagen()
-                                    .getBytes(1, (int) imagen.getImagen().length());
-                            String tipoContenido = imagen.getTipoContenido() == null
-                                    ? "application/octet-stream"
-                                    : imagen.getTipoContenido();
-                            return "data:" + tipoContenido + ";base64,"
-                                    + Base64.getEncoder().encodeToString(bytes);
-                        } catch (Exception e) {
-                            return null;
-                        }
-                    })
-                    .filter(imagen -> imagen != null)
-                    .toList();
-            response.setImagenes(imagenes);
+        List<Producto> productos = productoRepository.findByPrecioBetween(precioMin, precioMax);
+
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<ProductoRequest> buscarProductosPorNombre(String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return response;
+        List<Producto> productos = productoRepository.findByNombreContainingIgnoreCase(q);
+        return productos.stream().map(this::toResponse).toList();
     }
-    
-    
-    
-    
-    
+
+    @Override
+    public List<ProductoRequest> getProductosByTalle(String talle) {
+        
+        if (talle == null || talle.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Producto> productos = productoRepository.findByTalleIgnoreCase(talle);
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<String> getTallesDisponibles() {
+        List<Producto> productosConTalle = productoRepository.findDistinctByTalleNotNull();
+
+        if (productosConTalle.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron talles disponibles");
+        }
+
+        return productosConTalle.stream()
+                .map(Producto::getTalle)
+                .filter(talle -> talle != null && !talle.isBlank())
+                .distinct()
+                .toList();
+    }
+
 }

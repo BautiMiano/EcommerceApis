@@ -1,0 +1,80 @@
+.category-filter-group {
+  margin-bottom: 1.5rem;
+}
+
+.filter-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 0.9rem;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #1b1c1c;
+  cursor: pointer;
+}
+
+/* El radio se dibuja como un circulo negro con tilde, igual que el diseño */
+.filter-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid #c8c8c8;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.filter-option input[type="radio"]::before {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+}
+
+.filter-option input[type="radio"]:checked {
+  background: #000000;
+  border-color: #000000;
+}
+
+.filter-option input[type="radio"]:checked::before {
+  opacity: 1;
+}
+
+.filter-option input[type="radio"]:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+.filter-count {
+  margin-left: auto;
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1f1f1;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  color: #5e5e60;
+}

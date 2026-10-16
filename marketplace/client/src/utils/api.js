@@ -1,5 +1,5 @@
 // Centraliza todas las solicitudes al backend. Las vistas y componentes solo importan y llaman estas funciones.
-const API_URL = 'http://localhost:8080'
+const API_URL = 'http://localhost:4002'
 
 const obtenerHeaders = (incluyeJson = false) => {
   const token = localStorage.getItem('token')
@@ -53,7 +53,7 @@ export const registrarUsuario = (datos) =>
 
 // ---------- Categorías ----------
 
-export const obtenerCategorias = () =>
+export const getCategories = () =>
   solicitar('/categories', {}, 'No se pudieron obtener las categorías.')
 
 // ---------- Productos ----------
@@ -118,4 +118,60 @@ export const subirImagen = (archivo, productoId) => {
     headers: obtenerHeaders(),
     body: formData,
   }, 'No se pudo subir una de las imágenes.')
+}
+
+// ---------- Login ----------
+
+export const loginUser = async (credenciales) => {
+  const response = await fetch(`${API_URL}/auth/authenticate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credenciales),
+  })
+
+  if (!response.ok) {
+    throw new Error('Correo o contraseña incorrectos')
+  }
+
+  return await response.json()
+}
+
+// ---------- Búsqueda y filtros de productos ----------
+
+// Búsqueda global de productos por nombre
+export const searchProductsByName = (query) => {
+  return fetch(`${API_URL}/productos/buscar?q=${encodeURIComponent(query)}`)
+    .then((res) => res.json())
+    .catch(() => [])
+}
+
+// Obtener productos por categoría
+export const getCategoryProducts = (categoryId) => {
+  const endpoint = categoryId ? `/productos/categoria/${categoryId}` : '/productos'
+  return fetch(`${API_URL}${endpoint}`)
+    .then((res) => res.json())
+    .catch(() => [])
+}
+
+// Obtener productos por rango de precio
+export const getProductosByPrice = (precioMin, precioMax) => {
+  return fetch(`${API_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
+    .then((res) => res.json())
+    .catch(() => [])
+}
+
+// Obtener lista de talles disponibles desde el backend
+export const getTalles = () => {
+  return fetch(`${API_URL}/productos/talles`)
+    .then((res) => res.json())
+    .catch(() => [])
+}
+
+// Obtener productos filtrados por talle desde el backend
+export const getProductosByTalle = (talle) => {
+  return fetch(`${API_URL}/productos/talle/${encodeURIComponent(talle)}`)
+    .then((res) => res.json())
+    .catch(() => [])
 }

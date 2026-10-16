@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 import ProductosFiltro from '../components/ProductosFiltro/ProductosFiltro'
 import ProductoVendedorCard from '../components/ProductoVendedorCard/ProductoVendedorCard'
 import ProductoEditor from '../components/ProductoEditor/ProductoEditor'
@@ -11,9 +9,9 @@ import {
   actualizarProducto,
   agregarStock,
   desactivarProducto,
-  obtenerCategorias,
+  getCategories,
   obtenerMisProductos,
-} from '../api'
+} from '../utils/api'
 import './MisProductos.css'
 
 const formularioDesdeProducto = (producto) => ({
@@ -43,7 +41,7 @@ const MisProductos = () => {
     try {
       const [productosObtenidos, categoriasObtenidas] = await Promise.all([
         obtenerMisProductos(),
-        obtenerCategorias(),
+        getCategories(),
       ])
       setProductos(productosObtenidos)
       setCategorias(categoriasObtenidas)
@@ -129,11 +127,10 @@ const MisProductos = () => {
   }
 
   const categoriaPorId = (categoryId) =>
-    categorias.find((categoria) => categoria.id === categoryId)?.nombreCategoria
+    categorias.find((categoria) => categoria.idCategoria === categoryId)?.nombreCategoria
 
   return (
     <div className="mis-productos-page">
-      <Header />
       <main className="mis-productos-main">
         <div className="mis-productos-heading">
           <div>
@@ -198,7 +195,6 @@ const MisProductos = () => {
           ))}
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

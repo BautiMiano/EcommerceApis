@@ -30,9 +30,10 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryRepository.findAll();
 
         return categories.stream()
+                .filter(category -> Boolean.TRUE.equals(category.getActivo()))
                 .map(category -> {
                     CategoryDto response = new CategoryDto();
-                    response.setId(category.getId());
+                    response.setCategoryId(category.getId());
                     response.setCategoryName(category.getNombre());
                     response.setActivo(category.getActivo());
                     return response;
@@ -50,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
                 ));
 
         CategoryDto response = new CategoryDto();
-        response.setId(category.getId());
+        response.setCategoryId(category.getId());
         response.setCategoryName(category.getNombre());
         response.setActivo(category.getActivo());
 
