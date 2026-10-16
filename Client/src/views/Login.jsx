@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import PageTitle from '../components/PageTitle';
 import LoginForm from '../components/LoginForm'; 
-import Footer from '../components/Footer';
+import Footer from '../components/FooterLR/Footer'
 import RegisterLink from '../components/RegisterLink';
 
 const Login = () => {

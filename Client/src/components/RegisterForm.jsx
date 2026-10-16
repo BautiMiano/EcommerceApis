@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import FormField from './FormField'
+import FormField from './FormField/FormField'
 import PasswordStrength from './PasswordStrength'
-import Button from './Button'
+import Button from './RegisterButton/Button';
 import { registerUser } from '../utils/api'
 
 const campos = [

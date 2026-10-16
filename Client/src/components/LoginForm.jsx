@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import FormField from './FormField';
-import Button from './Button';
+import FormField from './FormField/FormField';
+import Button from './RegisterButton/Button';
 import { loginUser } from '../utils/api';
 
 export default function LoginForm({ onLoginExitoso }) {

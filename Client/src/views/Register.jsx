@@ -3,7 +3,7 @@ import Header from '../components/Header'
 import PageTitle from '../components/PageTitle'
 import RegisterForm from '../components/RegisterForm'
 import LoginLink from '../components/LoginLink'
-import Footer from '../components/Footer'
+import Footer from '../components/FooterLR/Footer'
 
 const Register = () => {
   const navigate = useNavigate()

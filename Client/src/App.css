@@ -69,41 +69,7 @@
   border-bottom: 1px solid #e5e5e5;
 }
 
-/* FormField */
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
 
-.form-field-full {
-  grid-column: 1 / -1;
-}
-
-.form-field label {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.form-field input {
-  padding: 14px 12px;
-  border: 1px solid #e0e0e0;
-  background: #fff;
-  font-size: 13px;
-  font-family: inherit;
-}
-
-.form-field input:focus {
-  outline: 2px solid #111;
-  border-color: #111;
-}
-
-.form-field-help {
-  font-size: 11px;
-  color: #555;
-}
 
 /* PasswordStrength */
 .password-strength-bar {
@@ -126,36 +92,6 @@
   letter-spacing: 0.5px;
 }
 
-/* TermsCheckbox */
-.terms-checkbox {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  background: #f3f3f3;
-  border: 1px solid #e5e5e5;
-  padding: 16px;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #444;
-  cursor: pointer;
-}
-
-.terms-checkbox input {
-  accent-color: #111;
-  margin-top: 2px;
-}
-
-.terms-checkbox-link {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-weight: 700;
-  color: #111;
-  text-decoration: underline;
-  cursor: pointer;
-}
 
 /* Button */
 .button {
@@ -181,34 +117,6 @@
   color: #111;
 }
 
-/* TermsModal */
-.terms-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.terms-modal {
-  background: #fff;
-  max-width: 460px;
-  width: calc(100% - 32px);
-  padding: 28px;
-  outline: none;
-}
-
-.terms-modal h2 {
-  margin-top: 0;
-}
-
-.terms-modal p {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #444;
-}
-
 /* LoginLink */
 .login-link {
   text-align: center;
@@ -216,45 +124,7 @@
   margin: 32px 0 0;
 }
 
-.login-link button, .register-link button {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-weight: 800;
-  text-transform: uppercase;
-  text-decoration: underline;
-  color: #111;
-  cursor: pointer;
-}
 
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding: 24px 28px;
-  background: #f3f3f3;
-  border-top: 1px solid #e5e5e5;
-  font-size: 11px;
-  color: #444;
-}
-
-.footer-info p {
-  margin: 12px 0 0;
-  max-width: 420px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
 /* Register (vista) */
 .register-page {

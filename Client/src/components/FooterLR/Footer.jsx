@@ -1,5 +1,5 @@
-import Logo from './Logo'
-
+import Logo from '../Logo'
+import './Footer.css';
 const enlaces = [
   'Términos de Servicio',
   'Privacidad y Seguridad',
