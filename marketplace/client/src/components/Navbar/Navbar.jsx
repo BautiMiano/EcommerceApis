@@ -38,8 +38,8 @@ export const Navbar = () => {
       )}
       <header className="navbar">
         <Link to="/" className="navbar-logo">
-          <span className="navbar-logo-mark">U</span>UNIFORMA
-        </Link>
+          <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
+          </Link>
 
         <nav className="navbar-links" aria-label="Principal">
           <NavLink to="/" end>Home</NavLink>

@@ -30,27 +30,22 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* Logo */
+/* Contenedor del enlace del logo */
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.8rem;
-  color: #000000;
   text-decoration: none;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
+  padding: 0;
+  margin-right: 2rem; /* Espaciado respecto a los links de navegación */
 }
 
-.navbar-logo-mark {
-  background-color: #000000;
-  color: #ffffff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 900;
-  font-size: 1.1rem;
+/* Imagen del logo */
+.navbar-logo-img {
+  height: 4.5rem;        /* 48px equivalen a 3rem */
+  width: auto;         /* Mantiene la relación de aspecto original */
+  max-width: 14rem;    /* 160px equivalen a 10rem */
+  object-fit: contain; /* Evita que la imagen se estire o deforme */
+  display: block;
 }
 
 /* Nav Links */

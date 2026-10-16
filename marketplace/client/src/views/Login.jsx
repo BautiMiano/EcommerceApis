@@ -1,17 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
 import PageTitle from '../components/PageTitle';
 import LoginForm from '../components/LoginForm'; 
-import Footer from '../components/Footer';
 import RegisterLink from '../components/RegisterLink';
 
 const Login = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="register-page"> 
-      <Header />
-      
+    <div className="register-page">       
       <main className="register-main">
         <PageTitle
           etiqueta="ACCESO DE USUARIO"
@@ -24,7 +20,6 @@ const Login = () => {
         <RegisterLink onClick={() => navigate('/register')} />
       </main>
       
-      <Footer />
     </div>
   );
 }
