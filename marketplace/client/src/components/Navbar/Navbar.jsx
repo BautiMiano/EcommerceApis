@@ -1,38 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { getCategories } from '../../utils/api.js';
+import { Search } from '../Search/Search.jsx';
 import './Navbar.css';
 
-const Navbar = () => {
-  const [busqueda, setBusqueda] = useState('');
+export const Navbar = () => {
   const [logueado, setLogueado] = useState(!!localStorage.getItem('jwt'));
   const [categories, setCategories] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    fetch('http://localhost:4002/categories', { headers })
-      .then((res) => {
-        if (!res.ok) throw new Error('Error al obtener categorías');
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setCategories(data);
-        }
-      })
-      .catch((err) => console.error('Error cargando menú de categorías:', err));
-  }, [logueado]);
-
-  const buscar = (e) => {
-    e.preventDefault();
-    navigate(busqueda.trim() ? `/categorias?q=${encodeURIComponent(busqueda.trim())}` : '/categorias');
-  };
+    getCategories()
+      .then((data) => setCategories(data))
+      .catch(() => setCategories([]));
+  }, []);
 
   const cerrarSesion = () => {
     localStorage.removeItem('jwt');
@@ -42,12 +24,8 @@ const Navbar = () => {
 
   const handleSelectCategory = (cat) => {
     setIsDropdownOpen(false);
-    if (cat === 'all') {
-      navigate('/categorias');
-      return;
-    }
-
-    navigate(`/categorias/${cat.idCategoria}`);
+    cat === 'all' && navigate('/categorias');
+    cat !== 'all' && navigate(`/categorias/${cat.idCategoria}`);
   };
 
   return (
@@ -98,19 +76,17 @@ const Navbar = () => {
                 {categories.length === 0 ? (
                   <div className="dropdown-loading">Sin categorías disponibles</div>
                 ) : (
-                  categories.map((cat) => {
-                    return (
-                      <button
-                        key={`nav-cat-${cat.idCategoria}`}
-                        type="button"
-                        className="dropdown-item"
-                        onClick={() => handleSelectCategory(cat)}
-                      >
-                        <span className="material-symbols-outlined">category</span>
-                        {cat.nombreCategoria}
-                      </button>
-                    );
-                  })
+                  categories.map((cat) => (
+                    <button
+                      key={`nav-cat-${cat.idCategoria}`}
+                      type="button"
+                      className="dropdown-item"
+                      onClick={() => handleSelectCategory(cat)}
+                    >
+                      <span className="material-symbols-outlined">category</span>
+                      {cat.nombreCategoria}
+                    </button>
+                  ))
                 )}
               </div>
             )}
@@ -120,20 +96,13 @@ const Navbar = () => {
           <NavLink to="/carrito">Carrito</NavLink>
         </nav>
 
-        <form className="navbar-search" onSubmit={buscar} role="search">
-          <span className="material-symbols-outlined search-icon">search</span>
-          <input
-            type="search"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar uniformes, calzado, EPP..."
-            aria-label="Buscar productos"
-          />
-        </form>
+        <Search />
 
         <div className="navbar-actions">
           {logueado ? (
-            <button className="btn-pill btn-pill-outline" onClick={cerrarSesion}>Cerrar sesión</button>
+            <button className="btn-pill btn-pill-outline" onClick={cerrarSesion}>
+              Cerrar sesión
+            </button>
           ) : (
             <>
               <Link to="/login" className="btn-pill btn-pill-outline">Iniciar sesión</Link>

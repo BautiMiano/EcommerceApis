@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.config.Customizer;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
@@ -36,8 +35,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        // Permitir peticiones pre-flight OPTIONS globales (necesario para CORS con
-                        // autenticación)
+                        // Permitir peticiones pre-flight OPTIONS globales (necesario para CORS con autenticación)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Publicos
                         .requestMatchers("/auth/**", "/error").permitAll()
@@ -47,10 +45,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/usuarios/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasRole("ADMIN")
 
-                        // Categorias
-                        .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                        // Categorias (Soporta /categories y /categorias)
+                        .requestMatchers(HttpMethod.POST, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/categories/**", "/categorias/**").permitAll()
 
                         // Ordenes
                         .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes").hasRole("COMPRADOR")
@@ -69,6 +67,9 @@ public class SecurityConfig {
                         // Productos (mis-productos ANTES del permitAll de GET /productos/**)
                         .requestMatchers(HttpMethod.GET, "/productos/mis-productos").hasRole("VENDEDOR")
                         .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/productos/talle/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/productos/talles/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/productos/**").hasAnyRole("VENDEDOR", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/productos/**").hasAnyRole("VENDEDOR", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/productos/stock").hasRole("VENDEDOR")
@@ -113,7 +114,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Permite el envío de credenciales/cookies/tokens si fuera necesario
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

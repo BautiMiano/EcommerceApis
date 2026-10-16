@@ -3,78 +3,92 @@ import { useParams } from 'react-router-dom';
 import { CategoryFilter } from '../Filtros/CategoryFilter';
 import { PriceFilter } from '../Filtros/PriceFilter';
 import { SizeFilter } from '../Filtros/SizeFilter';
-import { getCategories, getCategoryProducts, getProductosByPrice } from '../../utils/api.js';
+import {
+  getCategories,
+  getCategoryProducts,
+  getProductosByPrice,
+  getProductosByTalle,
+  getTalles
+} from '../../utils/api.js';
 import './SidebarFilters.css';
 
-
-
-
-
-
-
 export const SidebarFilters = ({
-  selectedCategory, onSelectCategory,
-  bounds, priceLimit, onFilterPrice, onProductsFiltered,
-  maxPrice, onPriceResults,
-  sizes, selectedSize, onSelectSize, onReset,
+  selectedCategory,
+  onSelectCategory,
+  bounds = { min: 0, max: 400000 },
+  priceLimit,
+  onFilterPrice,
+  onProductsFiltered,
+  maxPrice,
+  onPriceResults,
+  selectedSize,
+  onSelectSize,
+  onReset,
 }) => {
-
   const [categories, setCategories] = useState([]);
   const [filterCategories, setFilterCategories] = useState([]);
   const [precios, setPrecios] = useState([]);
-  const [error, setError] = useState(null);
+  const [sizes, setSizes] = useState([]);
 
   const { idCategoria } = useParams();
 
-
+  // 1. Obtener categorías desde la DB
   useEffect(() => {
-    getCategories() //fn fetch categories
+    getCategories()
       .then((data) => setCategories(data))
-      .finally(() => setError(null))
-      .catch((error) => setError(error));
+      .catch(() => setCategories([]));
   }, []);
 
+  // 2. Obtener talles disponibles desde la DB
   useEffect(() => {
-    const onSelectedCategory = (categoryId) => {
-      getCategoryProducts(categoryId)
-        .then((data) => {
-          const lista = Array.isArray(data) ? data : [];
-          setFilterCategories(lista);
-          if (onProductsFiltered) onProductsFiltered(lista);
-        })
-        .finally(() => setError(null))
-        .catch((error) => setError(error));
-    };
+    getTalles()
+      .then((data) => setSizes(data))
+      .catch(() => setSizes([]));
+  }, []);
 
-    onSelectedCategory(idCategoria);
+  // 3. Obtener productos por categoría según la URL
+  useEffect(() => {
+    getCategoryProducts(idCategoria)
+      .then((data) => {
+        setFilterCategories(data);
+        onProductsFiltered && onProductsFiltered(data);
+      })
+      .catch(() => {
+        setFilterCategories([]);
+        onProductsFiltered && onProductsFiltered([]);
+      });
   }, [idCategoria]);
 
+  // 4. Obtener productos por rango de precio desde la API
   useEffect(() => {
-    const onSelectedPrice = (precioMax) => {
-      getProductosByPrice(precioMax)
-        .then((data) => {
-          const lista = Array.isArray(data) ? data : [];
-          setPrecios(lista);
-          if (onPriceResults) onPriceResults(new Set(lista.map((p) => p.id)));
-        })
-        .finally(() => setError(null))
-        .catch((error) => setError(error));
-    };
+    maxPrice !== null && getProductosByPrice(0, maxPrice)
+      .then((data) => {
+        setPrecios(data);
+        onPriceResults && onPriceResults(data);
+      })
+      .catch(() => {
+        setPrecios([]);
+        onPriceResults && onPriceResults([]);
+      });
 
-    if (maxPrice === null) {
-      setPrecios([]);
-      if (onPriceResults) onPriceResults(null);
-      return;
-    }
-
-    onSelectedPrice(maxPrice);
+    maxPrice === null && setPrecios([]);
+    maxPrice === null && onPriceResults && onPriceResults(null);
   }, [maxPrice]);
 
+  // 5. Obtener productos filtrados por talle desde la API
+  useEffect(() => {
+    selectedSize.trim() !== '' && getProductosByTalle(selectedSize)
+      .then((data) => {
+        onProductsFiltered && onProductsFiltered(data);
+      })
+      .catch(() => {
+        onProductsFiltered && onProductsFiltered([]);
+      });
 
+    selectedSize.trim() === '' && onProductsFiltered && onProductsFiltered([]);
+  }, [selectedSize]);
 
   return (
-
-
     <aside className="sidebar-container">
       <div className="sidebar-header">
         <div className="sidebar-title">
@@ -102,5 +116,5 @@ export const SidebarFilters = ({
         </>
       )}
     </aside>
-  )
+  );
 };

@@ -1,79 +1,39 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
 import { ProductGridSection } from '../../components/ProductGridSection/ProductGridSection';
+import { searchProductsByName, getCategoryProducts } from '../../utils/api.js';
 import './CategoryPage.css';
 
 const PAGE_SIZE = 6;
-const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 export const CategoryPage = () => {
   const [products, setProducts] = useState([]);
+  const [sort, setSort] = useState('relevancia');
+  const [page, setPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
 
   const { idCategoria } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(idCategoria || '');
   const [selectedSize, setSelectedSize] = useState('');
   const [maxPrice, setMaxPrice] = useState(null);
-  const [priceIds, setPriceIds] = useState(null);
-  const [sort, setSort] = useState('relevancia');
-  const [page, setPage] = useState(1);
-  const [showAll, setShowAll] = useState(false); 
 
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q');
   const navigate = useNavigate();
 
-  // Sincronizar el estado con el idCategoria de la URL cuando cambia la ruta
   useEffect(() => {
     setSelectedCategory(idCategoria || '');
   }, [idCategoria]);
 
-  const bounds = useMemo(() => {
-    if (products.length === 0) return { min: 0, max: 0 };
-    const precios = products.map((p) => Number(p.precio));
-    return { min: Math.floor(Math.min(...precios)), max: Math.ceil(Math.max(...precios)) };
-  }, [products]);
+  // Paginación puramente visual sobre los productos provistos por la API
+  const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const visible = showAll ? products : products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const sizes = useMemo(() => {
-    const set = [...new Set(products.map((p) => p.talle).filter(Boolean))];
-    return set.sort((a, b) => {
-      const ia = SIZE_ORDER.indexOf(a);
-      const ib = SIZE_ORDER.indexOf(b);
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b);
-    });
-  }, [products]);
-
-  const priceLimit = maxPrice ?? bounds.max;
-
-  const filtered = useMemo(() => {
-    let result = products.filter((p) => {
-      const matchesSize = selectedSize === '' || p.talle === selectedSize;
-      const matchesPrice = Number(p.precio) <= priceLimit;
-
-      return matchesSize && matchesPrice;
-    });
-
-    if (sort === 'precio-asc') result = [...result].sort((a, b) => a.precio - b.precio);
-    if (sort === 'precio-desc') result = [...result].sort((a, b) => b.precio - a.precio);
-    if (sort === 'nombre') result = [...result].sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-    return result;
-  }, [products, selectedSize, priceLimit, sort]);
-
-  useEffect(() => {
-    setPage(1);
-    setShowAll(false);
-  }, [selectedCategory, selectedSize, maxPrice, sort]);
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const visible = showAll ? filtered : filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  // Navegación cambiando la ruta /categorias/:idCategoria
   const handleSelectCategory = (catId) => {
     setSelectedCategory(catId);
-    if (catId && catId !== '') {
-      navigate(`/categorias/${catId}`);
-    } else {
-      navigate('/categorias');
-    }
+    catId && navigate(`/categorias/${catId}`);
+    !catId && navigate('/categorias');
   };
 
   const handleReset = () => {
@@ -82,6 +42,17 @@ export const CategoryPage = () => {
     setMaxPrice(null);
     navigate('/categorias');
   };
+
+  // Carga reactiva de productos vía API
+  useEffect(() => {
+    query && searchProductsByName(query)
+      .then((data) => setProducts(data))
+      .catch(() => setProducts([]));
+
+    !query && getCategoryProducts(idCategoria)
+      .then((data) => setProducts(data))
+      .catch(() => setProducts([]));
+  }, [query, idCategoria]);
 
   return (
     <div className="category-page-wrapper">
@@ -107,7 +78,6 @@ export const CategoryPage = () => {
 
             <dl className="hero-stats">
               <div><dt>Productos activos</dt><dd>{products.length}</dd></div>
-              <div><dt>Talles</dt><dd>{sizes.length}</dd></div>
             </dl>
           </div>
         </div>
@@ -117,30 +87,34 @@ export const CategoryPage = () => {
         <SidebarFilters
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
-          onProductsFiltered={(data) => setProducts(data || [])}
-          bounds={bounds}
-          priceLimit={priceLimit}
-          onFilterPrice={setMaxPrice}
+          onProductsFiltered={(data) => setProducts(data)}
           maxPrice={maxPrice}
-          onPriceResults={setPriceIds}
-          sizes={sizes}
+          onFilterPrice={setMaxPrice}
+          onPriceResults={(data) => data && setProducts(data)}
           selectedSize={selectedSize}
           onSelectSize={setSelectedSize}
           onReset={handleReset}
         />
 
-        <ProductGridSection
-          products={visible}
-          total={filtered.length}
-          sort={sort}
-          onSort={setSort}
-          page={page}
-          pageCount={pageCount}
-          onPage={setPage}
-          showAll={showAll}
-          onShowAll={() => setShowAll(true)}
-          onSelectProduct={(id) => navigate(`/producto/${id}`)}
-        />
+        {products.length === 0 ? (
+          <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
+            <h2>No se encontraron productos</h2>
+            <p>Intenta con otro término de búsqueda o limpia los filtros.</p>
+          </div>
+        ) : (
+          <ProductGridSection
+            products={visible}
+            total={products.length}
+            sort={sort}
+            onSort={setSort}
+            page={page}
+            pageCount={pageCount}
+            onPage={setPage}
+            showAll={showAll}
+            onShowAll={() => setShowAll(true)}
+            onSelectProduct={(id) => navigate(`/producto/${id}`)}
+          />
+        )}
       </main>
     </div>
   );

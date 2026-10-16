@@ -17,6 +17,9 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
+
+import io.jsonwebtoken.lang.Collections;
+
 import java.util.Base64;
 
 import lombok.RequiredArgsConstructor;
@@ -301,15 +304,57 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public List<ProductoRequest> getProductosByPrecio(Double precioMax) {
+    public List<ProductoRequest> getProductosByPrecio(Double precioMin, Double precioMax) {
 
-        if (precioMax == null || precioMax < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El precio máximo debe ser mayor o igual a 0");
+        // Validaciones de negocio delegadas al backend
+        if (precioMin == null || precioMax == null || precioMin < 0 || precioMax < precioMin) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rango de precios inválido");
         }
 
-        List<Producto> productos = productoRepository.findByPrecioBetween(0.0, precioMax);
+        List<Producto> productos = productoRepository.findByPrecioBetween(precioMin, precioMax);
 
         return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<ProductoRequest> buscarProductosPorNombre(String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Producto> productos = productoRepository.findByNombreContainingIgnoreCase(q);
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<ProductoRequest> getProductosByTalle(String talle) {
+        
+        if (talle == null || talle.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (talle == null || talle.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El talle especificado no es válido");
+        }
+        
+
+        List<Producto> productos = productoRepository.findByTalleIgnoreCase(talle);
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<String> getTallesDisponibles() {
+        List<Producto> productosConTalle = productoRepository.findDistinctByTalleNotNull();
+
+        if (productosConTalle.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron talles disponibles");
+        }
+
+        return productosConTalle.stream()
+                .map(Producto::getTalle)
+                .filter(talle -> talle != null && !talle.isBlank())
+                .distinct()
+                .toList();
     }
 
 }

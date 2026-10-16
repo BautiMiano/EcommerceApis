@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("productos")
-@CrossOrigin ("http://localhost:5173")
+@CrossOrigin("http://localhost:5173")
 
 @RequiredArgsConstructor
 
@@ -79,8 +79,27 @@ public class ProductoController {
         return this.productoService.getMisProductos();
     }
 
-    @GetMapping("/precio/{max}")
-    public List<ProductoRequest> getProductosByPrecio(@PathVariable Double max) {
-        return this.productoService.getProductosByPrecio(max);
+    @GetMapping("/precio")
+    public ResponseEntity<List<ProductoRequest>> getProductosByPrecio(
+            @RequestParam(defaultValue = "0") Double precioMin,
+            @RequestParam Double precioMax) {
+        return ResponseEntity.ok(productoService.getProductosByPrecio(precioMin, precioMax));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProductoRequest>> buscarProductos(@RequestParam(name = "q") String q) {
+        return ResponseEntity.ok(productoService.buscarProductosPorNombre(q));
+    }
+
+    @GetMapping("/talles")
+    public ResponseEntity<List<String>> getTallesDisponibles() {
+        return ResponseEntity.ok(productoService.getTallesDisponibles());
+    }
+    
+    // Endpoint para buscar por talle individual
+    @GetMapping("/talle/{talle}")
+    public ResponseEntity<List<ProductoRequest>> getProductosByTalle(@PathVariable String talle) {
+        return ResponseEntity.ok(productoService.getProductosByTalle(talle));
     }
 }
+
