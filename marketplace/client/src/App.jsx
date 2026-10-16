@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import './App.css'
-import Home from './views/Home'
-import ChatFlotante from './components/ChatFlotante/ChatFlotante'
-=======
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
@@ -14,17 +9,11 @@ import Login from './views/Login.jsx';
 import CrearPublicacion from './views/CrearPublicacion.jsx';
 import MisProductos from './views/MisProductos.jsx';
 import Footer from './components/Footer/Footer.jsx';
->>>>>>> origin/main
+import ChatFlotante from './components/ChatFlotante/ChatFlotante';
 
 function App() {
   return (
     <>
-<<<<<<< HEAD
-    <Home />
-    <ChatFlotante />
-    </>
-  )
-=======
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -42,11 +31,11 @@ function App() {
         <Route path="/mis-productos" element={<MisProductos />} />
       </Routes>
       <Footer />
+      <ChatFlotante />
 
       <ToastContainer position="top-right" />
     </>
   );
->>>>>>> origin/main
 }
 
 export default App;
