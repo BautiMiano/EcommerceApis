@@ -5,8 +5,7 @@ import PasswordStrength from './PasswordStrength'
 import TermsCheckbox from './TermsCheckbox'
 import TermsModal from './TermsModal'
 import Button from './Button'
-
-const API_URL = 'http://localhost:4002'
+import { registrarUsuario } from '../api'
 
 const campos = [
   { name: 'nombre', label: 'Nombre *', type: 'text', placeholder: 'Ej: Marcelo' },
@@ -44,7 +43,7 @@ const RegisterForm = ({ onRegistroExitoso }) => {
     setTerminos(e.target.checked)
   }
 
-  const registrar = (rol) => {
+  const registrar = async (rol) => {
     if (Object.values(form).some((valor) => valor.trim() === '')) {
       toast.error('Completá todos los campos.')
       return
@@ -62,32 +61,32 @@ const RegisterForm = ({ onRegistroExitoso }) => {
       return
     }
 
-    fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      const data = await registrarUsuario({
         nombreUsuario: form.nombreUsuario,
         nombre: form.nombre,
         apellido: form.apellido,
         mail: form.mail,
         contrasena: form.contrasena,
         rol: rol,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.access_token) {
-          localStorage.setItem('token', data.access_token)
-          toast.success('¡Cuenta creada con éxito!')
-          onRegistroExitoso()
-        } else {
-          toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
-        }
       })
-      .catch((error) => {
-        console.error('Error al registrar', error)
+
+      if (data && data.access_token) {
+        localStorage.setItem('token', data.access_token)
+        toast.success('¡Cuenta creada con éxito!')
+        onRegistroExitoso()
+      } else {
+        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+      }
+    } catch (error) {
+      console.error('Error al registrar', error)
+      // Si hay status, el backend respondió con error; si no, no hubo conexión.
+      if (error.status) {
+        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+      } else {
         toast.error('No se pudo conectar con el servidor.')
-      })
+      }
+    }
   }
 
   const handleSubmit = (e) => {

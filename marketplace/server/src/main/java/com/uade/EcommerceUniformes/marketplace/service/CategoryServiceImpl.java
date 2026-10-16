@@ -32,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categories.stream()
                 .map(category -> {
                     CategoryDto response = new CategoryDto();
+                    response.setId(category.getId());
                     response.setCategoryName(category.getNombre());
                     response.setActivo(category.getActivo());
                     return response;
@@ -49,6 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
                 ));
 
         CategoryDto response = new CategoryDto();
+        response.setId(category.getId());
         response.setCategoryName(category.getNombre());
         response.setActivo(category.getActivo());
 

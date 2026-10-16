@@ -165,12 +165,66 @@ public class ProductoServiceImpl implements ProductoService {
         productoRepository.save(producto);
 
         ProductoRequest productoRequest = new ProductoRequest();
+        productoRequest.setId(producto.getId());
         productoRequest.setNombre(producto.getNombre());
         productoRequest.setDescripcion(producto.getDescripcion());
         productoRequest.setPrecio(producto.getPrecio());
         productoRequest.setTalle(producto.getTalle());
         productoRequest.setStock(producto.getStock());
         return productoRequest;
+    }
+
+    @Override
+    public ProductoRequest updateProducto(Long productoId, ProductoRequest request) {
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
+
+        if (!usuarioLogueado.isActivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Usuario desactivado no puede editar productos");
+        }
+
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
+        boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
+        if (!esDueño && !esAdmin) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "No tenés permiso para editar este producto");
+        }
+
+        if (request.getNombre() == null || request.getNombre().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El nombre del producto no puede estar vacío");
+        }
+        if (request.getPrecio() == null || request.getPrecio() < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El precio no puede ser negativo");
+        }
+        if (request.getCategoryId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El producto debe tener una categoria asociada");
+        }
+
+        Category categoria = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Categoria no encontrada con id: " + request.getCategoryId()));
+
+        producto.setNombre(request.getNombre().trim());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setTalle(request.getTalle());
+        producto.setCategoria(categoria);
+        productoRepository.save(producto);
+
+        return productoResponse(producto);
     }
 
     @Override
@@ -315,40 +369,47 @@ public class ProductoServiceImpl implements ProductoService {
 
     return productos.stream()
             .map(producto -> {
-
-                ProductoRequest response = new ProductoRequest();
-
-                response.setNombre(producto.getNombre());
-                response.setDescripcion(producto.getDescripcion());
-                response.setPrecio(producto.getPrecio());
-                response.setTalle(producto.getTalle());
-                response.setStock(producto.getStock());
-                response.setActivo(producto.isActivo());
-                
-                if(producto.getImagenes()!= null){
-                     List<String> imagenes = producto.getImagenes().stream()
-                            .map(imagen -> {
-
-                                try {
-                                    byte[] bytes = imagen.getImagen()
-                                            .getBytes(1, (int) imagen.getImagen().length());
-
-                                    return Base64.getEncoder().encodeToString(bytes);
-
-                                } catch (Exception e) {
-                                    return null;
-                                }
-
-                            })
-                            .toList();
-
-                    response.setImagenes(imagenes);
-                    }
-                
-
-                return response;
+                return productoResponse(producto);
             })
             .toList();
+    }
+
+    private ProductoRequest productoResponse(Producto producto) {
+        ProductoRequest response = new ProductoRequest();
+        response.setId(producto.getId());
+        response.setNombre(producto.getNombre());
+        response.setDescripcion(producto.getDescripcion());
+        response.setPrecio(producto.getPrecio());
+        response.setTalle(producto.getTalle());
+        response.setStock(producto.getStock());
+        response.setActivo(producto.isActivo());
+
+        if (producto.getCategoria() != null) {
+            response.setCategoryId(producto.getCategoria().getId());
+        }
+
+        if (producto.getImagenes() != null) {
+            List<String> imagenes = producto.getImagenes().stream()
+                    .filter(imagen -> Boolean.TRUE.equals(imagen.getActivo()))
+                    .map(imagen -> {
+                        try {
+                            byte[] bytes = imagen.getImagen()
+                                    .getBytes(1, (int) imagen.getImagen().length());
+                            String tipoContenido = imagen.getTipoContenido() == null
+                                    ? "application/octet-stream"
+                                    : imagen.getTipoContenido();
+                            return "data:" + tipoContenido + ";base64,"
+                                    + Base64.getEncoder().encodeToString(bytes);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
+                    .filter(imagen -> imagen != null)
+                    .toList();
+            response.setImagenes(imagenes);
+        }
+
+        return response;
     }
     
     

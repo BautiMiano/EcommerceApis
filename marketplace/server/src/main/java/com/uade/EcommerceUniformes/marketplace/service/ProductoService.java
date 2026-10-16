@@ -11,6 +11,7 @@ public interface ProductoService {
     ProductoRequest getProductoById(Long productoId);
     List<ProductoRequest> getProductosByCategoria(Long categoryId);
     ProductoRequest createProducto(ProductoRequest request);
+    ProductoRequest updateProducto(Long productoId, ProductoRequest request);
     void desactivarProducto(Long productoId);
     public void activarProducto(Long productoId);
     public void modificarStock(ProductoRequest request);
