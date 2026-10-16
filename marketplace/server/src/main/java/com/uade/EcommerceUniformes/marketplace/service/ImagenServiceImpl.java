@@ -20,6 +20,14 @@ public class ImagenServiceImpl implements ImagenService {
     private UsuarioLogueadoService usuarioLogueadoService;
 
     public Imagen createImagen(Imagen imagen) {
+
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
+        if (!imagen.getProducto().getVendedor().getId().equals(usuarioLogueado.getId()) && !esAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para agregar imágenes a este producto");
+        }
+
         return imagenRepository.save(imagen);
     }
 

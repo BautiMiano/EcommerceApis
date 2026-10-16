@@ -3,12 +3,15 @@ package com.uade.EcommerceUniformes.marketplace.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
@@ -19,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("productos")
+@CrossOrigin("http://localhost:5173")
+
 @RequiredArgsConstructor
 
 public class ProductoController {
@@ -43,6 +48,13 @@ public class ProductoController {
     @PostMapping
     public ProductoRequest createProducto(@RequestBody ProductoRequest request) {
         return this.productoService.createProducto(request);
+    }
+
+    @PutMapping("/{productoId}")
+    public ProductoRequest updateProducto(
+            @PathVariable Long productoId,
+            @RequestBody ProductoRequest request) {
+        return this.productoService.updateProducto(productoId, request);
     }
 
     @PatchMapping("/desactivar/{productoId}")
@@ -74,4 +86,28 @@ public class ProductoController {
     public List<ProductoRequest> getMisProductos() {
         return this.productoService.getMisProductos();
     }
+
+    @GetMapping("/precio")
+    public ResponseEntity<List<ProductoRequest>> getProductosByPrecio(
+            @RequestParam(defaultValue = "0") Double precioMin,
+            @RequestParam Double precioMax) {
+        return ResponseEntity.ok(productoService.getProductosByPrecio(precioMin, precioMax));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProductoRequest>> buscarProductos(@RequestParam(name = "q") String q) {
+        return ResponseEntity.ok(productoService.buscarProductosPorNombre(q));
+    }
+
+    @GetMapping("/talles")
+    public ResponseEntity<List<String>> getTallesDisponibles() {
+        return ResponseEntity.ok(productoService.getTallesDisponibles());
+    }
+    
+    // Endpoint para buscar por talle individual
+    @GetMapping("/talle/{talle}")
+    public ResponseEntity<List<ProductoRequest>> getProductosByTalle(@PathVariable String talle) {
+        return ResponseEntity.ok(productoService.getProductosByTalle(talle));
+    }
 }
+

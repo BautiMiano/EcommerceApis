@@ -1,0 +1,18 @@
+.size-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.size-chip {
+  min-width: 40px;
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid #e4e4e4;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.size-chip:hover { border-color: #000; }
+.size-chip.is-selected { background: #000; border-color: #000; color: #fff; }
+.size-chip:focus-visible { outline: 2px solid #000; outline-offset: 2px; }

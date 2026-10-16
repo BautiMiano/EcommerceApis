@@ -7,7 +7,9 @@ import java.util.Base64;
 
 import javax.sql.rowset.serial.SerialBlob;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
@@ -28,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/imagenes")
 @RequiredArgsConstructor
+@CrossOrigin ("http://localhost:5173")
 public class ImagenController {
 
     private final ImagenService imagenService;
@@ -44,10 +48,13 @@ public class ImagenController {
         Blob blob = new SerialBlob(bytes);
 
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
 
         Imagen imagen = Imagen.builder()
                 .imagen(blob)
+                .tipoContenido(file.getContentType())
                 .producto(producto)
                 .activo(true)
                 .build();

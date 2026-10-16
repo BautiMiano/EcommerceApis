@@ -37,7 +37,8 @@ public class Producto {
     private String talle;
     private int stock;
     private int stockReservado;
-    private boolean activo;
+    @Builder.Default
+    private boolean activo = true;
     private boolean desactivadoPorCategoria;
 
     @Enumerated(EnumType.STRING)
@@ -50,7 +51,7 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "descuento_id")
     private Descuento descuento;
-    private boolean descuentoAplicadoPorAdmin; 
+    private boolean descuentoAplicadoPorAdmin;
 
     @OneToMany(mappedBy = "producto")
     private List<Imagen> imagenes;
