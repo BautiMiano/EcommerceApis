@@ -88,6 +88,7 @@ export const CategoryPage = () => {
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
           onProductsFiltered={(data) => setProducts(data)}
+          priceLimit={maxPrice}
           maxPrice={maxPrice}
           onFilterPrice={setMaxPrice}
           onPriceResults={(data) => data && setProducts(data)}
@@ -104,14 +105,7 @@ export const CategoryPage = () => {
         ) : (
           <ProductGridSection
             products={visible}
-            total={products.length}
-            sort={sort}
-            onSort={setSort}
-            page={page}
-            pageCount={pageCount}
-            onPage={setPage}
-            showAll={showAll}
-            onShowAll={() => setShowAll(true)}
+            total={filteredProducts.length}
             onSelectProduct={(id) => navigate(`/producto/${id}`)}
           />
         )}

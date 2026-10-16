@@ -6,8 +6,11 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
   const aviso = sinStock ? 'Sin stock' : product.stock <= 10 ? 'Últimas unidades' : null;
   const imagen = product.imagenes && product.imagenes[0];
 
+  // Clase dinamica para aplicar los estilos de deshabilitado
+  const cardClassName = `product-card-kinetic ${sinStock ? 'out-of-stock' : ''}`;
+
   return (
-    <article className="product-card-kinetic">
+    <article className={cardClassName}>
       <div className="product-image-box">
         {aviso && <span className="badge-certified">{aviso}</span>}
         {imagen ? (
@@ -33,7 +36,7 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
             ${Number(product.precio).toLocaleString('es-AR')} ARS
           </div>
           <button
-            onClick={() => onSelectProduct(product.id)}
+            onClick={() => !sinStock && onSelectProduct(product.id)}
             className="btn-buy-kinetic"
             disabled={sinStock}
           >

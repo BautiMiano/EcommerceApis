@@ -55,6 +55,12 @@ export const getCategoryProducts = (categoryId) => {
     .catch(() => []);
 };
 
+export const getProductoById = (productoId) =>{
+  return fetch(`${API_BASE_URL}/productos/${productoId}`)
+    .then((res) => res.json())
+    .catch(() => null);
+}
+
 // Obtener productos por rango de precio
 export const getProductosByPrice = (precioMin, precioMax) => {
   return fetch(`${API_BASE_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
