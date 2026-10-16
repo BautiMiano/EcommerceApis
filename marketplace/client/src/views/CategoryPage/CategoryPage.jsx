@@ -105,7 +105,7 @@ export const CategoryPage = () => {
         ) : (
           <ProductGridSection
             products={visible}
-            total={filteredProducts.length}
+            total={products.length}
             onSelectProduct={(id) => navigate(`/producto/${id}`)}
           />
         )}
