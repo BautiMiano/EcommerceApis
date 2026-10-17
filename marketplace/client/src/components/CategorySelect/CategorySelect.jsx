@@ -4,7 +4,7 @@ import CategoryOption from "../CategoryOption/CategoryOption"
 import { getCategories } from "../../utils/api"
 import './CategorySelect.css'
 
-const CategorySelect = () => {
+const CategorySelect = ({seleccionarCategoria}) => {
 
     const [abierto, setAbierto] = useState(false)
     const [categoria, setCategoria] = useState('Seleccioná una categoría...')
@@ -18,8 +18,9 @@ const CategorySelect = () => {
 
     const handleToggle = () => {setAbierto(!abierto)}
 
-    const handleSelect = (nombre) => {
+    const handleSelect = (id, nombre) => {
         setCategoria(nombre)
+        seleccionarCategoria(id)
         setAbierto(false)
     }
 
@@ -32,6 +33,7 @@ const CategorySelect = () => {
                         categorias.map((value, index)=>(
                             <CategoryOption
                             key={index}
+                            id={value.idCategoria}
                             nombre={value.nombreCategoria}
                             handleSelect={handleSelect}
                             />
