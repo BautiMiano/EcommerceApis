@@ -112,6 +112,12 @@ export const obtenerMisFavoritos = () =>
     headers: obtenerHeaders(),
   }, 'No se pudieron obtener tus favoritos.')
 
+export const eliminarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(),
+  }, 'No se pudo quitar el producto de favoritos.')
+
 // ---------- Imágenes ----------
 
 export const subirImagen = (archivo, productoId) => {

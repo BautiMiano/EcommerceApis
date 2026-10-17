@@ -3,13 +3,13 @@ import StockStatus from "../StockStatus/StockStatus"
 import Button from "../Button/Button"
 import './FavoriteCard.css'
 
-const FavoriteCard = ({nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor}) => {
+const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito}) => {
     return(
         <article className="favorite-card">
             <div className="favorite-card-media">
                 <div className="favorite-card-media-arriba">
                     <ProductTag categoria={categoria} descuento={descuento} />
-                    <button className="favorite-card-corazon">
+                    <button className="favorite-card-corazon" onClick={()=>quitarFavorito(id)}>
                         <img src="/icons/corazon-rojo.svg" alt="Quitar de favoritos" />
                     </button>
                 </div>

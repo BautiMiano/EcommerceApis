@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import SearchBar from "../SearchBar/SearchBar"
 import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
-import { obtenerMisFavoritos } from "../../utils/api"
+import { obtenerMisFavoritos, eliminarFavorito } from "../../utils/api"
 import './FavoritesCatalog.css'
 
 // Pasa cada favorito que devuelve el back al formato que usa FavoriteCard
@@ -34,6 +34,12 @@ const FavoritesCatalog = () => {
 
     const handleChange = (e) => {setBusqueda(e.target.value)}
 
+    const quitarFavorito = (id) => {
+        eliminarFavorito(id)
+            .then(() => setFavoritos(favoritos.filter((value) => value.id !== id)))
+            .catch((error) => alert(error.message))
+    }
+
     const favoritosFiltrados = favoritos.filter((value)=>(
         (value.nombre + ' ' + value.categoria + ' ' + value.vendedor)
         .toLowerCase()
@@ -52,7 +58,7 @@ const FavoritesCatalog = () => {
                         {favoritosFiltrados.length + ' de ' + favoritos.length + ' productos'}
                     </p>
                 </div>
-                <FavoritesGrid favoritos={favoritosFiltrados} />
+                <FavoritesGrid favoritos={favoritosFiltrados} quitarFavorito={quitarFavorito} />
             </div>
         </section>
     )

@@ -1,7 +1,7 @@
 import FavoriteCard from "../FavoriteCard/FavoriteCard"
 import './FavoritesGrid.css'
 
-const FavoritesGrid = ({favoritos}) => {
+const FavoritesGrid = ({favoritos, quitarFavorito}) => {
 
     if(favoritos.length === 0){
         return(
@@ -18,6 +18,7 @@ const FavoritesGrid = ({favoritos}) => {
                 favoritos.map((value)=>(
                     <FavoriteCard
                     key={value.id}
+                    id={value.id}
                     nombre={value.nombre}
                     descripcion={value.descripcion}
                     precio={value.precio}
@@ -27,6 +28,7 @@ const FavoritesGrid = ({favoritos}) => {
                     stockDisponible={value.stockDisponible}
                     descuento={value.descuento}
                     vendedor={value.vendedor}
+                    quitarFavorito={quitarFavorito}
                     />
                 ))
             }
