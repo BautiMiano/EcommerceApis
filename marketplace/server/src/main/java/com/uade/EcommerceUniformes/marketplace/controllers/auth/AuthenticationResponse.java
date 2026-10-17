@@ -1,6 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.controllers.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,4 +16,7 @@ public class AuthenticationResponse {
 
     @JsonProperty("access_token")
     private String accessToken;
+
+    @JsonProperty("rol")
+    private Rol rol;
 }

@@ -17,6 +17,7 @@ const handleSubmit = async (e) => {
     const data = await loginUser({ mail, contrasena });
 
     localStorage.setItem('token', data.access_token);
+    localStorage.setItem('rol', data.rol);
     onLoginExitoso(); 
 
     } catch (err) {

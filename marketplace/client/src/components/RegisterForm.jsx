@@ -73,6 +73,7 @@ const RegisterForm = ({ onRegistroExitoso }) => {
 
       if (data && data.access_token) {
         localStorage.setItem('token', data.access_token)
+        localStorage.setItem('rol', data.rol)
         toast.success('¡Cuenta creada con éxito!')
         onRegistroExitoso()
       } else {
