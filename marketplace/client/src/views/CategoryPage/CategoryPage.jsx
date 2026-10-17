@@ -76,7 +76,7 @@ export const CategoryPage = () => {
               </p>
             </div>
 
-            <dl className="hero-stats">
+            <dl className="catalog-hero-stats">
               <div><dt>Productos activos</dt><dd>{products.length}</dd></div>
             </dl>
           </div>
