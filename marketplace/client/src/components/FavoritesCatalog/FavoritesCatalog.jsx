@@ -1,110 +1,36 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import SearchBar from "../SearchBar/SearchBar"
 import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
+import { obtenerMisFavoritos } from "../../utils/api"
 import './FavoritesCatalog.css'
 
-const favoritos = [
-    {
-        id: 12,
-        nombre: 'Chaqueta de cocinero clásica',
-        descripcion: 'Gabardina de algodón con botones desmontables.',
-        precio: '$38.500',
-        talle: 'M',
-        categoria: 'Gastronomía',
-        estado: 'NUEVO',
-        stockDisponible: 24,
-        descuento: 0,
-        vendedor: 'Atelier Gastronómico'
-    },
-    {
-        id: 15,
-        nombre: 'Ambo quirúrgico antifluido',
-        descripcion: 'Tela de secado rápido con tratamiento repelente a fluidos.',
-        precio: '$42.900',
-        talle: 'L',
-        categoria: 'Salud',
-        estado: 'NUEVO',
-        stockDisponible: 12,
-        descuento: 0,
-        vendedor: 'MedWear Argentina'
-    },
-    {
-        id: 27,
-        nombre: 'Botín de seguridad con puntera de acero',
-        descripcion: 'Suela antideslizante y dieléctrica, homologado bajo norma IRAM.',
-        precio: '$67.200',
-        talle: '42',
-        categoria: 'Industria',
-        estado: 'NUEVO',
-        stockDisponible: 4,
-        descuento: 0,
-        vendedor: 'FootArmor Tech'
-    },
-    {
-        id: 18,
-        nombre: 'Mameluco de grafa con reflectivos',
-        descripcion: 'Costuras reforzadas y cintas reflectivas de alta visibilidad.',
-        precio: '$54.800',
-        talle: 'XL',
-        categoria: 'Mantenimiento',
-        estado: 'NUEVO',
-        stockDisponible: 17,
-        descuento: 0,
-        vendedor: 'Confecciones Industriales SA'
-    },
-    {
-        id: 34,
-        nombre: 'Chaleco reflectivo de alta visibilidad',
-        descripcion: 'Malla liviana con cierre de abrojo y bandas de 5 cm.',
-        precio: '$7.920',
-        talle: 'Único',
-        categoria: 'Reparto y Logística',
-        estado: 'NUEVO',
-        stockDisponible: 56,
-        descuento: 20,
-        vendedor: 'Logística Textil'
-    },
-    {
-        id: 31,
-        nombre: 'Campera de reparto impermeable',
-        descripcion: 'Capucha desmontable y costuras termoselladas.',
-        precio: '$71.900',
-        talle: 'L',
-        categoria: 'Reparto y Logística',
-        estado: 'NUEVO',
-        stockDisponible: 0,
-        descuento: 0,
-        vendedor: 'Logística Textil'
-    },
-    {
-        id: 47,
-        nombre: 'Delantal de jean con tiras de cuero',
-        descripcion: 'En muy buen estado, sin manchas ni roturas.',
-        precio: '$9.500',
-        talle: 'Único',
-        categoria: 'Gastronomía',
-        estado: 'USADO',
-        stockDisponible: 2,
-        descuento: 0,
-        vendedor: 'Atelier Gastronómico'
-    },
-    {
-        id: 44,
-        nombre: 'Camisa Oxford de trabajo manga larga',
-        descripcion: 'Algodón peinado con bolsillo portalapicera.',
-        precio: '$22.230',
-        talle: 'M',
-        categoria: 'Industria',
-        estado: 'NUEVO',
-        stockDisponible: 30,
-        descuento: 10,
-        vendedor: 'Confecciones Industriales SA'
+// Pasa cada favorito que devuelve el back al formato que usa FavoriteCard
+const armarFavorito = (favorito) => {
+    const producto = favorito.producto
+    return {
+        id: producto.id,
+        nombre: producto.nombre,
+        descripcion: producto.descripcion,
+        precio: '$' + producto.precio.toLocaleString('es-AR'),
+        talle: producto.talle,
+        categoria: producto.categoria ? producto.categoria.nombre : 'Sin categoría',
+        estado: producto.estado,
+        stockDisponible: producto.stock - producto.stockReservado,
+        descuento: producto.descuento ? producto.descuento.porcentaje : 0,
+        vendedor: producto.vendedor.nombreUsuario
     }
-]
+}
 
 const FavoritesCatalog = () => {
 
+    const [favoritos, setFavoritos] = useState([])
     const [busqueda, setBusqueda] = useState('')
+
+    useEffect(() => {
+        obtenerMisFavoritos()
+            .then((data) => setFavoritos(data.map(armarFavorito)))
+            .catch(() => setFavoritos([]))
+    }, [])
 
     const handleChange = (e) => {setBusqueda(e.target.value)}
 

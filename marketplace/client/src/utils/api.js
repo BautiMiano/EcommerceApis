@@ -105,6 +105,13 @@ export const agregarStock = (productoId, cantidad) =>
     body: JSON.stringify({ id: productoId, stock: cantidad }),
   }, 'No se pudo agregar stock.')
 
+// ---------- Favoritos ----------
+
+export const obtenerMisFavoritos = () =>
+  solicitar('/favoritos/mis-favoritos', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener tus favoritos.')
+
 // ---------- Imágenes ----------
 
 export const subirImagen = (archivo, productoId) => {
