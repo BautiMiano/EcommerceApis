@@ -7,6 +7,12 @@
   font-size: 3.5rem;
 }
 
+.favorites-section-vacio {
+  margin: 20px 0 0 0;
+  font-size: 15px;
+  color: #5b6472;
+}
+
 .favorites-section-tarjetas {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;

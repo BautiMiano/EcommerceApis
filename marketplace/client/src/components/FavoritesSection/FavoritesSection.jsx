@@ -1,53 +1,43 @@
-import Eyebrow from "../Eyebrow/Eyebrow"
+import { useState, useEffect } from "react"
 import BuyerProductCard from "../BuyerProductCard/BuyerProductCard"
+import { obtenerMisFavoritos } from "../../utils/api"
 import './FavoritesSection.css'
 
-const favoritos = [
-    {
-        categoria: 'GASTRONOMÍA',
-        nombre: 'Chaqueta de cocinero clásica',
-        descripcion: 'Gabardina de algodón con botones desmontables y bolsillo para termómetro.',
-        talle: 'M',
-        precio: '$38.500'
-    },
-    {
-        categoria: 'SALUD',
-        nombre: 'Ambo quirúrgico antifluido',
-        descripcion: 'Tela de secado rápido con tratamiento repelente a fluidos.',
-        talle: 'L',
-        precio: '$42.900'
-    },
-    {
-        categoria: 'INDUSTRIA',
-        nombre: 'Botín de seguridad con puntera de acero',
-        descripcion: 'Suela antideslizante y dieléctrica, homologado bajo norma IRAM.',
-        talle: '42',
-        precio: '$67.200'
-    },
-    {
-        categoria: 'MANTENIMIENTO',
-        nombre: 'Mameluco de grafa con reflectivos',
-        descripcion: 'Costuras reforzadas y cintas reflectivas de alta visibilidad.',
-        talle: 'XL',
-        precio: '$54.800'
-    }
-]
-
 const FavoritesSection = () => {
+
+    const [favoritos, setFavoritos] = useState([])
+
+    useEffect(() => {
+        obtenerMisFavoritos()
+            .then((data) => setFavoritos(data.slice(0, 4)))
+            .catch(() => setFavoritos([]))
+    }, [])
+
+    if(favoritos.length === 0){
+        return(
+            <section className="favorites-section">
+                <div className="contenedor">
+                    <h2 className="favorites-section-titulo">TUS FAVORITOS</h2>
+                    <p className="favorites-section-vacio">Todavía no guardaste productos en favoritos.</p>
+                </div>
+            </section>
+        )
+    }
+
     return(
         <section className="favorites-section">
             <div className="contenedor">
                 <h2 className="favorites-section-titulo">TUS FAVORITOS</h2>
                 <div className="favorites-section-tarjetas">
                     {
-                        favoritos.map((value, index)=>(
+                        favoritos.map((value)=>(
                             <BuyerProductCard
-                            key={index}
-                            categoria={value.categoria}
-                            nombre={value.nombre}
-                            descripcion={value.descripcion}
-                            talle={value.talle}
-                            precio={value.precio}
+                            key={value.id}
+                            categoria={value.producto.categoria ? value.producto.categoria.nombre.toUpperCase() : 'SIN CATEGORÍA'}
+                            nombre={value.producto.nombre}
+                            descripcion={value.producto.descripcion}
+                            talle={value.producto.talle}
+                            precio={'$' + value.producto.precio.toLocaleString('es-AR')}
                             />
                         ))
                     }
