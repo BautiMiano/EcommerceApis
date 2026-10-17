@@ -1,59 +1,159 @@
-const API_BASE_URL = 'http://localhost:4002';
+// Centraliza todas las solicitudes al backend. Las vistas y componentes solo importan y llaman estas funciones.
+const API_URL = 'http://localhost:4002'
 
-export const registerUser = (userData) => {
-    return fetch(`${API_BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-    })
-    .then((res) => {
-        return res.json();
-    })
-    .catch((err) => {
-        console.error('Error en la petición:', err);
-    throw err; 
-    });
-};
+const obtenerHeaders = (incluyeJson = false) => {
+  const token = localStorage.getItem('token')
+  const headers = incluyeJson ? { 'Content-Type': 'application/json' } : {}
 
-export const loginUser = async (credenciales) => {
-    const response = await fetch('http://localhost:4002/auth/authenticate', {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credenciales),
-});
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
 
-if (!response.ok) {
-    throw new Error('Correo o contraseña incorrectos');
+  return headers
 }
 
-return await response.json();
-};
+const obtenerMensajeError = async (response, mensajePorDefecto) => {
+  try {
+    const cuerpo = await response.json()
+    return cuerpo.message || cuerpo.error || mensajePorDefecto
+  } catch {
+    return mensajePorDefecto
+  }
+}
 
+const solicitar = async (ruta, opciones = {}, mensajePorDefecto = 'No se pudo completar la operación.') => {
+  const response = await fetch(`${API_URL}${ruta}`, opciones)
 
+  if (!response.ok) {
+    const mensaje = await obtenerMensajeError(response, mensajePorDefecto)
+    const error = new Error(mensaje)
+    error.status = response.status
+    throw error
+  }
+
+  if (response.status === 204) {
+    return null
+  }
+
+  // Algunos endpoints devuelven texto plano (por ejemplo, "Producto activado correctamente").
+  const contentType = response.headers.get('content-type') || ''
+  return contentType.includes('application/json')
+    ? response.json()
+    : response.text()
+}
+
+// ---------- Auth ----------
+
+export const registrarUsuario = (datos) =>
+  solicitar('/auth/register', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(datos),
+  }, 'No se pudo crear la cuenta.')
+
+// ---------- Categorías ----------
+
+export const getCategories = () =>
+  solicitar('/categories', {}, 'No se pudieron obtener las categorías.')
+
+// ---------- Productos ----------
+
+export const crearProducto = (producto) =>
+  solicitar('/productos', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(producto),
+  }, 'No se pudo crear la publicación.')
+
+export const obtenerMisProductos = async () => {
+  try {
+    return await solicitar('/productos/mis-productos', {
+      headers: obtenerHeaders(),
+    }, 'No se pudieron obtener tus productos.')
+  } catch (error) {
+    // El backend responde 404 cuando el vendedor todavía no tiene productos.
+    if (error.status === 404) {
+      return []
+    }
+    throw error
+  }
+}
+
+export const actualizarProducto = (productoId, producto) =>
+  solicitar(`/productos/${productoId}`, {
+    method: 'PUT',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(producto),
+  }, 'No se pudo actualizar el producto.')
+
+export const activarProducto = (productoId) =>
+  solicitar(`/productos/activar/${productoId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar el producto.')
+
+export const desactivarProducto = (productoId) =>
+  solicitar(`/productos/desactivar/${productoId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar el producto.')
+
+export const agregarStock = (productoId, cantidad) =>
+  solicitar('/productos/stock', {
+    method: 'PATCH',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ id: productoId, stock: cantidad }),
+  }, 'No se pudo agregar stock.')
+
+// ---------- Imágenes ----------
+
+export const subirImagen = (archivo, productoId) => {
+  const formData = new FormData()
+  formData.append('file', archivo)
+  formData.append('productoId', productoId)
+
+  // Sin Content-Type: el navegador lo arma con el boundary del multipart.
+  return solicitar('/imagenes', {
+    method: 'POST',
+    headers: obtenerHeaders(),
+    body: formData,
+  }, 'No se pudo subir una de las imágenes.')
+}
+
+// ---------- Login ----------
+
+export const loginUser = async (credenciales) => {
+  const response = await fetch(`${API_URL}/auth/authenticate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credenciales),
+  })
+
+  if (!response.ok) {
+    throw new Error('Correo o contraseña incorrectos')
+  }
+
+  return await response.json()
+}
+
+// ---------- Búsqueda y filtros de productos ----------
 
 // Búsqueda global de productos por nombre
 export const searchProductsByName = (query) => {
-  return fetch(`${API_BASE_URL}/productos/buscar?q=${encodeURIComponent(query)}`)
+  return fetch(`${API_URL}/productos/buscar?q=${encodeURIComponent(query)}`)
     .then((res) => res.json())
-    .catch(() => []);
-};
-
-// Obtener todas las categorías
-export const getCategories = () => {
-  return fetch(`${API_BASE_URL}/categories`)
-    .then((res) => res.json())
-    .catch(() => []);
-};
+    .catch(() => [])
+}
 
 // Obtener productos por categoría
 export const getCategoryProducts = (categoryId) => {
-  const endpoint = categoryId ? `/productos/categoria/${categoryId}` : '/productos';
-  return fetch(`${API_BASE_URL}${endpoint}`)
+  const endpoint = categoryId ? `/productos/categoria/${categoryId}` : '/productos'
+  return fetch(`${API_URL}${endpoint}`)
     .then((res) => res.json())
-    .catch(() => []);
-};
+    .catch(() => [])
+}
 
 export const getProductoById = (productoId) =>{
   return fetch(`${API_BASE_URL}/productos/${productoId}`)
@@ -63,21 +163,21 @@ export const getProductoById = (productoId) =>{
 
 // Obtener productos por rango de precio
 export const getProductosByPrice = (precioMin, precioMax) => {
-  return fetch(`${API_BASE_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
+  return fetch(`${API_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
     .then((res) => res.json())
-    .catch(() => []);
-};
+    .catch(() => [])
+}
 
 // Obtener lista de talles disponibles desde el backend
 export const getTalles = () => {
-  return fetch(`${API_BASE_URL}/productos/talles`)
+  return fetch(`${API_URL}/productos/talles`)
     .then((res) => res.json())
-    .catch(() => []);
-};
+    .catch(() => [])
+}
 
 // Obtener productos filtrados por talle desde el backend
 export const getProductosByTalle = (talle) => {
-  return fetch(`${API_BASE_URL}/productos/talle/${encodeURIComponent(talle)}`)
+  return fetch(`${API_URL}/productos/talle/${encodeURIComponent(talle)}`)
     .then((res) => res.json())
-    .catch(() => []);
-};
+    .catch(() => [])
+}

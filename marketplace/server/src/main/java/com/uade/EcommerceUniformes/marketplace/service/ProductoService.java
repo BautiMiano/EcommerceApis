@@ -15,6 +15,8 @@ public interface ProductoService {
 
     ProductoRequest createProducto(ProductoRequest request);
 
+    ProductoRequest updateProducto(Long productoId, ProductoRequest request);
+
     void desactivarProducto(Long productoId);
 
     public void activarProducto(Long productoId);

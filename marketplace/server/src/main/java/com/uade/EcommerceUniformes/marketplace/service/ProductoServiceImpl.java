@@ -20,7 +20,6 @@ import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 
 import io.jsonwebtoken.lang.Collections;
 
-import java.util.Base64;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,7 +54,11 @@ public class ProductoServiceImpl implements ProductoService {
                         try {
                             if (img.getImagen() != null) {
                                 byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
-                                return Base64.getEncoder().encodeToString(bytes);
+                                String tipoContenido = img.getTipoContenido() == null
+                                        ? "application/octet-stream"
+                                        : img.getTipoContenido();
+                                return "data:" + tipoContenido + ";base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -169,12 +172,66 @@ public class ProductoServiceImpl implements ProductoService {
         productoRepository.save(producto);
 
         ProductoRequest productoRequest = new ProductoRequest();
+        productoRequest.setId(producto.getId());
         productoRequest.setNombre(producto.getNombre());
         productoRequest.setDescripcion(producto.getDescripcion());
         productoRequest.setPrecio(producto.getPrecio());
         productoRequest.setTalle(producto.getTalle());
         productoRequest.setStock(producto.getStock());
         return productoRequest;
+    }
+
+    @Override
+    public ProductoRequest updateProducto(Long productoId, ProductoRequest request) {
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
+
+        if (!usuarioLogueado.isActivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Usuario desactivado no puede editar productos");
+        }
+
+        boolean esDueño = producto.getVendedor().getId().equals(usuarioLogueado.getId());
+        boolean esAdmin = usuarioLogueado.getRolUsuario() == Rol.ADMIN;
+        if (!esDueño && !esAdmin) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "No tenés permiso para editar este producto");
+        }
+
+        if (request.getNombre() == null || request.getNombre().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El nombre del producto no puede estar vacío");
+        }
+        if (request.getPrecio() == null || request.getPrecio() < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El precio no puede ser negativo");
+        }
+        if (request.getCategoryId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El producto debe tener una categoria asociada");
+        }
+
+        Category categoria = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Categoria no encontrada con id: " + request.getCategoryId()));
+
+        producto.setNombre(request.getNombre().trim());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setTalle(request.getTalle());
+        producto.setCategoria(categoria);
+        productoRepository.save(producto);
+
+        return toResponse(producto);
     }
 
     @Override
@@ -225,6 +282,11 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (producto.isActivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está activo");
+        }
+
+        if (producto.getCategoria() != null && !producto.getCategoria().getActivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se puede activar un producto cuya categoría está desactivada");
         }
 
         producto.setActivo(true);
@@ -332,11 +394,6 @@ public class ProductoServiceImpl implements ProductoService {
         if (talle == null || talle.trim().isEmpty()) {
             return Collections.emptyList();
         }
-
-        if (talle == null || talle.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El talle especificado no es válido");
-        }
-        
 
         List<Producto> productos = productoRepository.findByTalleIgnoreCase(talle);
         return productos.stream().map(this::toResponse).toList();

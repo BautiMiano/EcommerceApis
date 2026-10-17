@@ -1,16 +1,19 @@
+
 package com.uade.EcommerceUniformes.marketplace.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 import com.uade.EcommerceUniformes.marketplace.entity.Category;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CategoryDto;
 import com.uade.EcommerceUniformes.marketplace.repository.CategoryRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
-import org.springframework.transaction.annotation.Transactional;
-import com.uade.EcommerceUniformes.marketplace.entity.dto.CategoryDto;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -21,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private ProductoRepository productoRepository;
 
-
+    @Override
     public List<CategoryDto> getCategories() {
 
         List<Category> categories = categoryRepository.findAll();
@@ -38,13 +41,16 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
+    @Override
     public CategoryDto getCategorById(Long categoryId) {
+
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Categoria no encontrada con id: " + categoryId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Categoria no encontrada con id: " + categoryId
+                ));
 
         CategoryDto response = new CategoryDto();
-
         response.setCategoryId(category.getId());
         response.setCategoryName(category.getNombre());
         response.setActivo(category.getActivo());
@@ -52,15 +58,18 @@ public class CategoryServiceImpl implements CategoryService {
         return response;
     }
 
+    @Override
     public CategoryDto createCategory(String nombre) {
 
         List<Category> categories = categoryRepository.findAll();
 
         if (categories.stream().anyMatch(
-                category -> category.getNombre().equals(nombre)))
+                category -> category.getNombre().equals(nombre))) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "La categoria que se intenta agregar ya esta creada");
+                    "La categoria que se intenta agregar ya esta creada"
+            );
+        }
 
         Category category = new Category();
         category.setNombre(nombre);
@@ -68,55 +77,74 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
 
         CategoryDto response = new CategoryDto();
-
         response.setCategoryName(category.getNombre());
 
         return response;
     }
 
+    @Override
     @Transactional
     public void desactivarCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Categoria no encontrada con id: " + id));
 
-        if (category.getActivo() == false) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "La categoria con id: " + id + " ya se encuentra desactivada");
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Categoria no encontrada con id: " + id
+                ));
+
+        if (!category.getActivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La categoria con id: " + id + " ya se encuentra desactivada"
+            );
         }
+
         category.setActivo(false);
         categoryRepository.save(category);
 
         List<Producto> productos = productoRepository.findByCategoriaId(id);
+
         for (Producto producto : productos) {
-            if (producto.isActivo()) { // los que ya estaban desactivados no se tocan
+
+            if (producto.isActivo()) {
                 producto.setActivo(false);
-                producto.setDesactivadoPorCategoria(true); // quedan marcados
+                producto.setDesactivadoPorCategoria(true);
             }
         }
+
         productoRepository.saveAll(productos);
     }
 
+    @Override
     @Transactional
     public void activarCategory(Long id) {
+
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "La categoria con id: " + id + " no se encuentra"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "La categoria con id: " + id + " no se encuentra"
+                ));
 
         if (category.getActivo()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "La categoria con id: " + id + " ya se encuentra activada");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La categoria con id: " + id + " ya se encuentra activada"
+            );
         }
+
         category.setActivo(true);
         categoryRepository.save(category);
 
         List<Producto> productos = productoRepository.findByCategoriaId(id);
+
         for (Producto producto : productos) {
-            if (producto.isDesactivadoPorCategoria()) { // solo los desactivados por la categoría
+
+            if (producto.isDesactivadoPorCategoria()) {
                 producto.setActivo(true);
                 producto.setDesactivadoPorCategoria(false);
             }
         }
+
         productoRepository.saveAll(productos);
     }
 }

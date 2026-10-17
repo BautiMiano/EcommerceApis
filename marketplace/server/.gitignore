@@ -32,7 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+src/main/resources/application.properties
 config/application.properties
 target/
 
 /node_modules/
+

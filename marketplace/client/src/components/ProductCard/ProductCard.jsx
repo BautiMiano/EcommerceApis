@@ -14,7 +14,7 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
       <div className="product-image-box">
         {aviso && <span className="badge-certified">{aviso}</span>}
         {imagen ? (
-          <img src={`data:image/jpeg;base64,${imagen}`} alt={product.nombre} />
+          <img src={imagen} alt={product.nombre} />
         ) : (
           <span className="material-symbols-outlined product-image-empty">image</span>
         )}

@@ -25,6 +25,8 @@ public class Imagen {
     @JsonIgnore
     private Blob imagen;
 
+    private String tipoContenido;
+
     private Boolean activo = true;
 
 

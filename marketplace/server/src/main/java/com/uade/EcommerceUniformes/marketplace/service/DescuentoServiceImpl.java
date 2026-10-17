@@ -73,7 +73,7 @@ public void asignarDescuentoAProducto(Long descuentoId, Long productoId){
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para asignar un descuento a este producto");
     }
     producto.setDescuento(descuento);
-    producto.setDescuentoAplicadoPorAdmin(esAdmin);   
+    producto.setDescuentoAplicadoPorAdmin(esAdmin);
     productoRepository.save(producto);
     }
     
@@ -98,13 +98,13 @@ public void eliminarDescuentoDeProducto(Long productoId) {
                 HttpStatus.BAD_REQUEST,
                 "El producto no tiene un descuento asignado");
     }
-    if (producto.isDescuentoAplicadoPorAdmin() && !esAdmin) {          
+    if (producto.isDescuentoAplicadoPorAdmin() && !esAdmin) {
         throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN,
                 "El descuento fue aplicado por un administrador y solo un administrador puede quitarlo");
     }
     producto.setDescuento(null);
-    producto.setDescuentoAplicadoPorAdmin(false);                      
+    producto.setDescuentoAplicadoPorAdmin(false);
     productoRepository.save(producto);
 }
 }

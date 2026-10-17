@@ -12,7 +12,7 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-info">
-          <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
+          <img src="./icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
         <p>
           © 2026 Uniforma S.A. Todos los derechos reservados. Conexión segura
           TLS 1.3 | Homologación AFIP Data Fiscal

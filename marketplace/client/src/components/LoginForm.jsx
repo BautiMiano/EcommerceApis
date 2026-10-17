@@ -13,16 +13,20 @@ const handleSubmit = async (e) => {
     setError(null);
 
     try {
+      const data = await loginUser({ mail, contrasena });
 
-    const data = await loginUser({ mail, contrasena });
+      const token = data.access_token;
+      const userRole = data.role;
 
-    localStorage.setItem('token', data.access_token);
-    onLoginExitoso(); 
+      token && localStorage.setItem('token', token);
+      userRole && localStorage.setItem('userRole', userRole);
+
+      onLoginExitoso && onLoginExitoso(data);
 
     } catch (err) {
-    setError(err.message);
+      setError(err.message);
     }
-};
+  };
 
 return (
     <form onSubmit={handleSubmit} className="register-form"> 
