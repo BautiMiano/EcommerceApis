@@ -1,14 +1,20 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import SelectTrigger from "../SelectTrigger/SelectTrigger"
 import CategoryOption from "../CategoryOption/CategoryOption"
+import { getCategories } from "../../utils/api"
 import './CategorySelect.css'
-
-const categorias = ['Gastronomía', 'Salud', 'Industria', 'Mantenimiento', 'Reparto y Logística']
 
 const CategorySelect = () => {
 
     const [abierto, setAbierto] = useState(false)
     const [categoria, setCategoria] = useState('Seleccioná una categoría...')
+    const [categorias, setCategorias] = useState([])
+
+    useEffect(() => {
+        getCategories()
+            .then((data) => setCategorias(data))
+            .catch(() => setCategorias([]))
+    }, [])
 
     const handleToggle = () => {setAbierto(!abierto)}
 
@@ -26,7 +32,7 @@ const CategorySelect = () => {
                         categorias.map((value, index)=>(
                             <CategoryOption
                             key={index}
-                            nombre={value}
+                            nombre={value.nombreCategoria}
                             handleSelect={handleSelect}
                             />
                         ))
