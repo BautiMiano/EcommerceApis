@@ -1,0 +1,91 @@
+package com.uade.EcommerceUniformes.marketplace.controllers;
+
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Base64;
+
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.uade.EcommerceUniformes.marketplace.entity.Imagen;
+import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ImagenResponse;
+import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
+import com.uade.EcommerceUniformes.marketplace.service.ImagenService;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/imagenes")
+@RequiredArgsConstructor
+@CrossOrigin ("http://localhost:5173")
+public class ImagenController {
+
+    private final ImagenService imagenService;
+    private final ProductoRepository productoRepository;
+
+    @PostMapping
+    public String addImagePost(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("productoId") Long productoId)
+            throws IOException, SQLException {
+
+        byte[] bytes = file.getBytes();
+
+        Blob blob = new SerialBlob(bytes);
+
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con id: " + productoId));
+
+        Imagen imagen = Imagen.builder()
+                .imagen(blob)
+                .tipoContenido(file.getContentType())
+                .producto(producto)
+                .activo(true)
+                .build();
+
+        imagenService.createImagen(imagen);
+
+        return "created";
+    }
+
+    @GetMapping
+    public ResponseEntity<ImagenResponse> displayImage(
+            @RequestParam("id") Long id)
+            throws SQLException {
+        Imagen imagen = imagenService.viewById(id);
+
+        String encodedString = Base64.getEncoder()
+                .encodeToString(imagen.getImagen().getBytes(1, (int) imagen.getImagen().length()));
+
+        return ResponseEntity.ok()
+                .body(ImagenResponse.builder().file(encodedString).id(id).build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> desactivarImagen(@PathVariable Long id) {
+        imagenService.desactivarImagen(id);
+        return ResponseEntity.ok("Imagen desactivada correctamente");
+    }
+
+    @PatchMapping("/{id}/activar")
+    public ResponseEntity<String> activarImagen(@PathVariable Long id) {
+        imagenService.activarImagen(id);
+        return ResponseEntity.ok("Imagen activada correctamente");
+    }
+}
