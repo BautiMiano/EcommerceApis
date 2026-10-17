@@ -8,6 +8,8 @@ import Register from './views/Register.jsx';
 import Login from './views/Login.jsx';
 import CrearPublicacion from './views/CrearPublicacion.jsx';
 import MisProductos from './views/MisProductos.jsx';
+import MisFavoritos from './views/MisFavoritos.jsx';
+import MiCarrito from './views/MiCarrito.jsx';
 import Footer from './components/Footer/Footer.jsx';
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
         <Route path="/producto/:id" element={<h2>Detalle del Producto</h2>} />
         <Route path="/crear-publicacion" element={<CrearPublicacion />} />
         <Route path="/mis-productos" element={<MisProductos />} />
+        <Route path="/favoritos" element={<MisFavoritos />} />
+        <Route path="/carrito" element={<MiCarrito />} />
       </Routes>
       <Footer />
 
