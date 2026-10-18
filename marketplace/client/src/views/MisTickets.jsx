@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import TicketCard from '../components/TicketCard/TicketCard'
+import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
 import { obtenerMisTickets } from '../utils/api'
 import './MisTickets.css'
 
@@ -8,6 +9,7 @@ const MisTickets = () => {
     const [tickets, setTickets] = useState([])
     const [cargando, setCargando] = useState(true)
     const [error, setError] = useState('')
+    const [filtro, setFiltro] = useState('TODOS')
 
     useEffect(() => {
         obtenerMisTickets()
@@ -15,6 +17,16 @@ const MisTickets = () => {
             .catch((err) => setError(err.message))
             .finally(() => setCargando(false))
     }, [])
+
+    const conteos = {
+        TODOS: tickets.length,
+        ABIERTO: tickets.filter((ticket) => ticket.estado === 'ABIERTO').length,
+        RESPONDIDO: tickets.filter((ticket) => ticket.estado === 'RESPONDIDO').length,
+    }
+
+    const ticketsFiltrados = tickets
+        .filter((ticket) => filtro === 'TODOS' || ticket.estado === filtro)
+        .sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
 
     return (
         <main className="mis-tickets">
@@ -27,6 +39,10 @@ const MisTickets = () => {
                 <Link className="mis-tickets-nuevo" to="/tickets/nuevo">+ Nuevo ticket</Link>
             </div>
 
+            {tickets.length > 0 && (
+                <TicketFiltro filtro={filtro} conteos={conteos} onCambiar={setFiltro} />
+            )}
+
             {cargando && <p className="mis-tickets-mensaje">Cargando tus tickets...</p>}
             {!cargando && error && <p className="mis-tickets-mensaje" role="alert">{error}</p>}
             {!cargando && !error && tickets.length === 0 && (
@@ -34,7 +50,7 @@ const MisTickets = () => {
             )}
 
             <ul className="mis-tickets-lista">
-                {tickets.map((ticket) => (
+                {ticketsFiltrados.map((ticket) => (
                     <TicketCard key={ticket.id} ticket={ticket} />
                 ))}
             </ul>
