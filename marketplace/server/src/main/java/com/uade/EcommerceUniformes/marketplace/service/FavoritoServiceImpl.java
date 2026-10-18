@@ -31,7 +31,7 @@ public class FavoritoServiceImpl implements FavoritoService {
 
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
-        return favoritoRepository.findByUsuarioIdAndActivo(usuarioLogueado.getId(), true);
+        return favoritoRepository.findByUsuarioId(usuarioLogueado.getId());
     }
 
     @Override
@@ -47,14 +47,7 @@ public class FavoritoServiceImpl implements FavoritoService {
                 = favoritoRepository.findByUsuarioIdAndProductoId(usuarioLogueado.getId(), producto.getId());
 
         if (favoritoExistente.isPresent()) {
-            Favorito favorito = favoritoExistente.get();
-
-            if (favorito.isActivo()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
-            }
-
-            favorito.setActivo(true);
-            return favoritoRepository.save(favorito);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
         }
 
         Favorito favorito = new Favorito();
@@ -73,12 +66,6 @@ public class FavoritoServiceImpl implements FavoritoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "El producto no se encuentra en tus favoritos"));
 
-        if (!favorito.isActivo()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en tus favoritos");
-        }
-
-        favorito.setActivo(false);
-
-        favoritoRepository.save(favorito);
+        favoritoRepository.delete(favorito);
     }
 }
