@@ -1,7 +1,7 @@
 import FavoriteCard from "../FavoriteCard/FavoriteCard"
 import './FavoritesGrid.css'
 
-const FavoritesGrid = ({favoritos, quitarFavorito}) => {
+const FavoritesGrid = ({favoritos, quitarFavorito, moverAlCarrito}) => {
 
     if(favoritos.length === 0){
         return(
@@ -29,6 +29,7 @@ const FavoritesGrid = ({favoritos, quitarFavorito}) => {
                     descuento={value.descuento}
                     vendedor={value.vendedor}
                     quitarFavorito={quitarFavorito}
+                    moverAlCarrito={moverAlCarrito}
                     />
                 ))
             }

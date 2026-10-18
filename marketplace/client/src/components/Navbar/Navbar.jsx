@@ -19,6 +19,7 @@ export const Navbar = () => {
   const cerrarSesion = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
+    localStorage.removeItem('usuarioId');
     setLogueado(false);
     navigate('/');
   };

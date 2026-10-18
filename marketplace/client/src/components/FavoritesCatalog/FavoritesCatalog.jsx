@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import SearchBar from "../SearchBar/SearchBar"
 import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
-import { obtenerMisFavoritos, eliminarFavorito } from "../../utils/api"
+import { obtenerMisFavoritos, eliminarFavorito, obtenerCarritoDeUsuario, agregarProductoAlCarrito } from "../../utils/api"
 import './FavoritesCatalog.css'
 
 // Pasa cada favorito que devuelve el back al formato que usa FavoriteCard
@@ -40,6 +40,14 @@ const FavoritesCatalog = () => {
             .catch((error) => alert(error.message))
     }
 
+    // Busca el carrito del usuario y le agrega 1 unidad del producto
+    const moverAlCarrito = (id) => {
+        obtenerCarritoDeUsuario(localStorage.getItem('usuarioId'))
+            .then((carrito) => agregarProductoAlCarrito(carrito.id, id, 1))
+            .then(() => alert('Producto agregado al carrito'))
+            .catch((error) => alert(error.message))
+    }
+
     const favoritosFiltrados = favoritos.filter((value)=>(
         (value.nombre + ' ' + value.categoria + ' ' + value.vendedor)
         .toLowerCase()
@@ -58,7 +66,11 @@ const FavoritesCatalog = () => {
                         {favoritosFiltrados.length + ' de ' + favoritos.length + ' productos'}
                     </p>
                 </div>
-                <FavoritesGrid favoritos={favoritosFiltrados} quitarFavorito={quitarFavorito} />
+                <FavoritesGrid
+                favoritos={favoritosFiltrados}
+                quitarFavorito={quitarFavorito}
+                moverAlCarrito={moverAlCarrito}
+                />
             </div>
         </section>
     )

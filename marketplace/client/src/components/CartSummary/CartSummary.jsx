@@ -9,7 +9,7 @@ const metodos = [
     {valor: 'TRANSFERENCIA', nombre: 'Transferencia bancaria'}
 ]
 
-const CartSummary = () => {
+const CartSummary = ({total, unidades}) => {
 
     const [metodo, setMetodo] = useState('MERCADOPAGO')
 
@@ -19,8 +19,8 @@ const CartSummary = () => {
         <aside className="cart-summary">
             <h3 className="cart-summary-titulo">RESUMEN</h3>
             <div className="cart-summary-fila">
-                <p>Productos (7 u.)</p>
-                <p>$351.500</p>
+                <p>{'Productos (' + unidades + ' u.)'}</p>
+                <p>{'$' + total.toLocaleString('es-AR')}</p>
             </div>
             <div className="cart-summary-fila">
                 <p>Envío</p>
@@ -28,7 +28,7 @@ const CartSummary = () => {
             </div>
             <div className="cart-summary-total">
                 <p>TOTAL</p>
-                <p className="cart-summary-total-valor">$351.500 <span>ARS</span></p>
+                <p className="cart-summary-total-valor">{'$' + total.toLocaleString('es-AR')} <span>ARS</span></p>
             </div>
             <p className="cart-summary-etiqueta">MÉTODO DE PAGO:</p>
             <ul className="cart-summary-metodos">

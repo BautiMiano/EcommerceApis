@@ -19,4 +19,7 @@ public class AuthenticationResponse {
 
     @JsonProperty("rol")
     private Rol rol;
+
+    @JsonProperty("usuarioId")
+    private Long usuarioId;
 }

@@ -3,7 +3,7 @@ import StockStatus from "../StockStatus/StockStatus"
 import Button from "../Button/Button"
 import './FavoriteCard.css'
 
-const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito}) => {
+const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito, moverAlCarrito}) => {
     return(
         <article className="favorite-card">
             <div className="favorite-card-media">
@@ -32,6 +32,7 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado
                 icono="/icons/bolsa-blanca.svg"
                 iconoAlt="Ícono de carrito"
                 variante="oscuro"
+                handleClick={()=>moverAlCarrito(id)}
                 />
             </div>
         </article>

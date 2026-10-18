@@ -118,6 +118,34 @@ export const eliminarFavorito = (productoId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo quitar el producto de favoritos.')
 
+// ---------- Carrito ----------
+
+export const obtenerCarritoDeUsuario = (usuarioId) =>
+  solicitar(`/carritos/usuario/${usuarioId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener tu carrito.')
+
+export const agregarProductoAlCarrito = (carritoId, productoId, cantidad) =>
+  solicitar(`/carritos/${carritoId}/agregar-productos`, {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+  }, 'No se pudo agregar el producto al carrito.')
+
+export const actualizarCantidadCarrito = (carritoId, productoId, cantidad) =>
+  solicitar(`/carritos/${carritoId}/actualizar-cantidad`, {
+    method: 'PUT',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+  }, 'No se pudo actualizar la cantidad.')
+
+export const eliminarProductoDelCarrito = (carritoId, productoId) =>
+  solicitar(`/carritos/${carritoId}/eliminar-producto-carrito`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId }),
+  }, 'No se pudo eliminar el producto del carrito.')
+
 // ---------- Imágenes ----------
 
 export const subirImagen = (archivo, productoId) => {

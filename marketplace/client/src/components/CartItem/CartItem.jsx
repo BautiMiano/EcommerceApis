@@ -1,6 +1,6 @@
 import './CartItem.css'
 
-const CartItem = ({nombre, categoria, talle, vendedor, precioUnitario, cantidad, subtotal}) => {
+const CartItem = ({productoId, nombre, categoria, talle, vendedor, precioUnitario, cantidad, subtotal, cambiarCantidad, eliminarProducto}) => {
     return(
         <li className="cart-item">
             <div className="cart-item-imagen">
@@ -16,12 +16,12 @@ const CartItem = ({nombre, categoria, talle, vendedor, precioUnitario, cantidad,
             </div>
             <div className="cart-item-acciones">
                 <div className="cart-item-cantidad">
-                    <button>−</button>
+                    <button onClick={()=>cambiarCantidad(productoId, cantidad - 1)}>−</button>
                     <p>{cantidad}</p>
-                    <button>+</button>
+                    <button onClick={()=>cambiarCantidad(productoId, cantidad + 1)}>+</button>
                 </div>
                 <p className="cart-item-subtotal">{subtotal}</p>
-                <button className="cart-item-eliminar">
+                <button className="cart-item-eliminar" onClick={()=>eliminarProducto(productoId)}>
                     <img src="/icons/tacho-gris.svg" alt="Eliminar del carrito" />
                 </button>
             </div>

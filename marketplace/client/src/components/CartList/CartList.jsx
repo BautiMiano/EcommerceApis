@@ -1,67 +1,42 @@
+import { useNavigate } from "react-router-dom"
 import CartItem from "../CartItem/CartItem"
 import Button from "../Button/Button"
 import './CartList.css'
 
-const items = [
-    {
-        productoId: 12,
-        nombre: 'Chaqueta de cocinero clásica',
-        categoria: 'Gastronomía',
-        talle: 'M',
-        vendedor: 'Atelier Gastronómico',
-        precioUnitario: '$38.500',
-        cantidad: 2,
-        subtotal: '$77.000'
-    },
-    {
-        productoId: 15,
-        nombre: 'Ambo quirúrgico antifluido',
-        categoria: 'Salud',
-        talle: 'L',
-        vendedor: 'MedWear Argentina',
-        precioUnitario: '$42.900',
-        cantidad: 1,
-        subtotal: '$42.900'
-    },
-    {
-        productoId: 27,
-        nombre: 'Botín de seguridad con puntera de acero',
-        categoria: 'Industria',
-        talle: '42',
-        vendedor: 'FootArmor Tech',
-        precioUnitario: '$67.200',
-        cantidad: 1,
-        subtotal: '$67.200'
-    },
-    {
-        productoId: 18,
-        nombre: 'Mameluco de grafa con reflectivos',
-        categoria: 'Mantenimiento',
-        talle: 'XL',
-        vendedor: 'Confecciones Industriales SA',
-        precioUnitario: '$54.800',
-        cantidad: 3,
-        subtotal: '$164.400'
-    }
-]
+const CartList = ({items, unidades, cambiarCantidad, eliminarProducto}) => {
 
-const CartList = () => {
+    const navigate = useNavigate()
+
+    const handleClick = () => {navigate('/categorias')}
+
+    if(items.length === 0){
+        return(
+            <article className="cart-list">
+                <h3 className="cart-list-titulo">TUS PRODUCTOS</h3>
+                <p className="cart-list-resumen">Tu carrito está vacío.</p>
+            </article>
+        )
+    }
+
     return(
         <article className="cart-list">
             <h3 className="cart-list-titulo">TUS PRODUCTOS</h3>
-            <p className="cart-list-resumen">4 productos · 7 unidades</p>
+            <p className="cart-list-resumen">{items.length + ' productos · ' + unidades + ' unidades'}</p>
             <ul className="cart-list-items">
                 {
                     items.map((value)=>(
                         <CartItem
                         key={value.productoId}
-                        nombre={value.nombre}
-                        categoria={value.categoria}
+                        productoId={value.productoId}
+                        nombre={value.nombreProducto}
+                        categoria={value.categoria ? value.categoria : 'Sin categoría'}
                         talle={value.talle}
                         vendedor={value.vendedor}
-                        precioUnitario={value.precioUnitario}
+                        precioUnitario={'$' + value.precioUnitario.toLocaleString('es-AR')}
                         cantidad={value.cantidad}
-                        subtotal={value.subtotal}
+                        subtotal={'$' + value.subtotal.toLocaleString('es-AR')}
+                        cambiarCantidad={cambiarCantidad}
+                        eliminarProducto={eliminarProducto}
                         />
                     ))
                 }
@@ -72,6 +47,7 @@ const CartList = () => {
                 icono="/icons/flecha-negra.svg"
                 iconoAlt="Flecha"
                 variante="linea"
+                handleClick={handleClick}
                 />
             </div>
         </article>

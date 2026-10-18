@@ -18,6 +18,7 @@ const handleSubmit = async (e) => {
 
     localStorage.setItem('token', data.access_token);
     localStorage.setItem('rol', data.rol);
+    localStorage.setItem('usuarioId', data.usuarioId);
     onLoginExitoso(); 
 
     } catch (err) {
