@@ -10,6 +10,7 @@ import CrearPublicacion from './views/CrearPublicacion.jsx';
 import MisProductos from './views/MisProductos.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import ChatFlotante from './components/ChatFlotante/ChatFlotante';
+import MisTickets from './views/MisTickets.jsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/producto/:id" element={<h2>Detalle del Producto</h2>} />
         <Route path="/crear-publicacion" element={<CrearPublicacion />} />
         <Route path="/mis-productos" element={<MisProductos />} />
+        <Route path="/mis-tickets" element={<MisTickets />} />
       </Routes>
       <Footer />
       <ChatFlotante />
