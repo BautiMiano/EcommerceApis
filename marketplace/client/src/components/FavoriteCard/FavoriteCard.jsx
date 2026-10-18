@@ -1,9 +1,15 @@
+import { useNavigate } from "react-router-dom"
 import ProductTag from "../ProductTag/ProductTag"
 import StockStatus from "../StockStatus/StockStatus"
 import Button from "../Button/Button"
 import './FavoriteCard.css'
 
 const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito, moverAlCarrito}) => {
+
+    const navigate = useNavigate()
+
+    const verProducto = () => {navigate(`/producto/${id}`)}
+
     return(
         <article className="favorite-card">
             <div className="favorite-card-media">
@@ -13,7 +19,7 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado
                         <img src="/icons/corazon-rojo.svg" alt="Quitar de favoritos" />
                     </button>
                 </div>
-                <img className="favorite-card-imagen" src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} />
+                <img className="favorite-card-imagen" src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} onClick={verProducto} />
             </div>
             <div className="favorite-card-cuerpo">
                 <div className="favorite-card-vendedor">
@@ -21,7 +27,7 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado
                     <p>{vendedor}</p>
                     <p className="favorite-card-estado">{estado}</p>
                 </div>
-                <h3 className="favorite-card-titulo">{nombre}</h3>
+                <h3 className="favorite-card-titulo" onClick={verProducto}>{nombre}</h3>
                 <p className="favorite-card-precio">{precio} <span>ARS</span></p>
                 <p className="favorite-card-descripcion">{descripcion}</p>
                 <p className="favorite-card-etiqueta">TALLE:</p>
