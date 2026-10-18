@@ -13,6 +13,7 @@ import ChatFlotante from './components/ChatFlotante/ChatFlotante';
 import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
+import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/mis-tickets" element={<MisTickets />} />
         <Route path="/tickets/nuevo" element={<NuevoTicket />} />
         <Route path="/admin/tickets" element={<TicketsAdmin />} />
+        <Route path="/admin/tickets/:id" element={<TicketDetalleAdmin />} />
       </Routes>
       <Footer />
       <ChatFlotante />

@@ -54,4 +54,12 @@ public class TicketController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PatchMapping("/{ticketId}/responder")
+    public ResponseEntity<Void> responderTicket(
+            @PathVariable Long ticketId,
+            @RequestBody RespuestaTicketRequest request) {
+        ticketService.responderTicket(ticketId, request);
+        return ResponseEntity.ok().build();
+    }
 }
