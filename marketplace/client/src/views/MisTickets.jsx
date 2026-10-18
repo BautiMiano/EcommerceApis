@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import TicketCard from '../components/TicketCard/TicketCard'
 import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
 import { obtenerMisTickets } from '../utils/api'
+import { contarPorEstado } from '../utils/tickets'
 import './MisTickets.css'
 
 const MisTickets = () => {
@@ -18,11 +19,7 @@ const MisTickets = () => {
             .finally(() => setCargando(false))
     }, [])
 
-    const conteos = {
-        TODOS: tickets.length,
-        ABIERTO: tickets.filter((ticket) => ticket.estado === 'ABIERTO').length,
-        RESPONDIDO: tickets.filter((ticket) => ticket.estado === 'RESPONDIDO').length,
-    }
+    const conteos = contarPorEstado(tickets)
 
     const ticketsFiltrados = tickets
         .filter((ticket) => filtro === 'TODOS' || ticket.estado === filtro)

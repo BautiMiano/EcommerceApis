@@ -175,3 +175,34 @@ export const getProductosByTalle = (talle) => {
     .then((res) => res.json())
     .catch(() => [])
 }
+
+// ---------- Tickets ----------
+
+export const obtenerMisTickets = () =>
+  solicitar('/tickets/mis-tickets', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener tus tickets.')
+
+export const crearTicket = (ticket) =>
+  solicitar('/tickets', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(ticket),
+  }, 'No se pudo enviar el ticket.')
+
+  export const obtenerTodosLosTickets = () =>
+  solicitar('/tickets', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener los tickets.')
+
+export const obtenerTicket = (ticketId) =>
+  solicitar(`/tickets/${ticketId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener el ticket.')
+
+export const responderTicket = (ticketId, respuesta) =>
+  solicitar(`/tickets/${ticketId}/responder`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ respuesta }),
+  }, 'No se pudo enviar la respuesta.')

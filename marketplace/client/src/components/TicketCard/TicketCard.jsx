@@ -1,8 +1,7 @@
 import TicketEstado from '../TicketEstado/TicketEstado'
-import './TicketCard.css'
 
-const formatearFecha = (fecha) =>
-    new Date(fecha).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
+import { formatearFecha } from '../../utils/tickets'
+import './TicketCard.css'
 
 const TicketCard = ({ ticket }) => {
     return (

@@ -1,0 +1,28 @@
+.ticket-fila td {
+  padding: 16px 18px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #4a4a4a;
+}
+
+.ticket-fila .ticket-fila-asunto {
+  font-weight: 600;
+  color: #000000;
+}
+
+.ticket-fila-accion {
+  text-align: right;
+}
+
+.ticket-fila-boton {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid #000000;
+  border-radius: 50px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
