@@ -1,25 +1,9 @@
 import { useState, useEffect } from "react"
 import SearchBar from "../SearchBar/SearchBar"
 import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
-import { obtenerMisFavoritos, eliminarFavorito, obtenerCarritoDeUsuario, agregarProductoAlCarrito } from "../../utils/api"
+import { obtenerMisFavoritos, eliminarFavorito } from "../../utils/api"
+import { armarFavorito, moverAlCarrito } from "../../utils/favoritos"
 import './FavoritesCatalog.css'
-
-// Pasa cada favorito que devuelve el back al formato que usa FavoriteCard
-const armarFavorito = (favorito) => {
-    const producto = favorito.producto
-    return {
-        id: producto.id,
-        nombre: producto.nombre,
-        descripcion: producto.descripcion,
-        precio: '$' + producto.precio.toLocaleString('es-AR'),
-        talle: producto.talle,
-        categoria: producto.categoria ? producto.categoria.nombre : 'Sin categoría',
-        estado: producto.estado,
-        stockDisponible: producto.stock - producto.stockReservado,
-        descuento: producto.descuento ? producto.descuento.porcentaje : 0,
-        vendedor: producto.vendedor.nombreUsuario
-    }
-}
 
 const FavoritesCatalog = () => {
 
@@ -37,14 +21,6 @@ const FavoritesCatalog = () => {
     const quitarFavorito = (id) => {
         eliminarFavorito(id)
             .then(() => setFavoritos(favoritos.filter((value) => value.id !== id)))
-            .catch((error) => alert(error.message))
-    }
-
-    // Busca el carrito del usuario y le agrega 1 unidad del producto
-    const moverAlCarrito = (id) => {
-        obtenerCarritoDeUsuario(localStorage.getItem('usuarioId'))
-            .then((carrito) => agregarProductoAlCarrito(carrito.id, id, 1))
-            .then(() => alert('Producto agregado al carrito'))
             .catch((error) => alert(error.message))
     }
 

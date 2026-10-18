@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
-import BuyerProductCard from "../BuyerProductCard/BuyerProductCard"
-import { obtenerMisFavoritos } from "../../utils/api"
+import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
+import { obtenerMisFavoritos, eliminarFavorito } from "../../utils/api"
+import { armarFavorito, moverAlCarrito } from "../../utils/favoritos"
 import './FavoritesSection.css'
 
 const FavoritesSection = () => {
@@ -9,9 +10,15 @@ const FavoritesSection = () => {
 
     useEffect(() => {
         obtenerMisFavoritos()
-            .then((data) => setFavoritos(data.slice(0, 4)))
+            .then((data) => setFavoritos(data.map(armarFavorito)))
             .catch(() => setFavoritos([]))
     }, [])
+
+    const quitarFavorito = (id) => {
+        eliminarFavorito(id)
+            .then(() => setFavoritos(favoritos.filter((value) => value.id !== id)))
+            .catch((error) => alert(error.message))
+    }
 
     if(favoritos.length === 0){
         return(
@@ -29,18 +36,11 @@ const FavoritesSection = () => {
             <div className="contenedor">
                 <h2 className="favorites-section-titulo">TUS FAVORITOS</h2>
                 <div className="favorites-section-tarjetas">
-                    {
-                        favoritos.map((value)=>(
-                            <BuyerProductCard
-                            key={value.id}
-                            categoria={value.producto.categoria ? value.producto.categoria.nombre.toUpperCase() : 'SIN CATEGORÍA'}
-                            nombre={value.producto.nombre}
-                            descripcion={value.producto.descripcion}
-                            talle={value.producto.talle}
-                            precio={'$' + value.producto.precio.toLocaleString('es-AR')}
-                            />
-                        ))
-                    }
+                    <FavoritesGrid
+                    favoritos={favoritos.slice(0, 4)}
+                    quitarFavorito={quitarFavorito}
+                    moverAlCarrito={moverAlCarrito}
+                    />
                 </div>
             </div>
         </section>
