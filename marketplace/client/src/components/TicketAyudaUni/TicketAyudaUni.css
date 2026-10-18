@@ -1,0 +1,27 @@
+.ticket-ayuda-uni {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+}
+
+.ticket-ayuda-uni-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ticket-ayuda-uni-titulo h2 {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ticket-ayuda-uni p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
