@@ -68,9 +68,9 @@ public class AuthenticationService {
         String jwtToken = jwtService.generateToken(usuario);
 
         return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .rol(usuario.getRolUsuario())
                 .usuarioId(usuario.getId())
+                .accessToken(jwtToken)
+                .role(usuario.getRolUsuario().name()) 
                 .build();
     }
 
@@ -88,9 +88,9 @@ public class AuthenticationService {
         String jwtToken = jwtService.generateToken(usuario);
 
         return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .rol(usuario.getRolUsuario())
                 .usuarioId(usuario.getId())
+                .accessToken(jwtToken)
+                .role(usuario.getRolUsuario().name())
                 .build();
     }
 }

@@ -6,9 +6,10 @@ import HomeComprador from "../HomeComprador"
 
 const Home = () => {
 
-    const rol = localStorage.getItem('rol')
+    const token = localStorage.getItem('token')
+    const rol = localStorage.getItem('userRole')
 
-    if(rol === 'COMPRADOR'){
+    if(token && rol === 'COMPRADOR'){
         return <HomeComprador />
     }
 
