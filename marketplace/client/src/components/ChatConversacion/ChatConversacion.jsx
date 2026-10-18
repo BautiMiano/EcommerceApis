@@ -29,8 +29,8 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
                 return res.json()
             })
             .then(data => {
-                setIdActual(data.conversacionId)
-                setMensajes(prev => [...prev, {autor: 'ASISTENTE', texto: data.repuesta}])
+                setMensajes(data.mensajes)
+                setCargando(false)
             })
             .catch(err => {
                 console.error(err)
@@ -66,6 +66,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
                 return res.json()
             })
             .then(data => {
+                setIdActual(data.conversacionId)
                 setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta }])
             })
             .catch(err => {
