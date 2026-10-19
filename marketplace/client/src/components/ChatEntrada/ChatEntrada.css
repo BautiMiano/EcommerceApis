@@ -1,0 +1,52 @@
+.chat-entrada {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 0 20px 0;
+  background-color: #fbf9f9;
+}
+
+.chat-entrada-etiqueta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.chat-entrada-texto {
+  flex-grow: 1;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 1px solid #d4d4d4;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.chat-entrada-texto:focus {
+  outline: 2px solid #000000;
+  outline-offset: 1px;
+}
+
+.chat-entrada-boton {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.chat-entrada-boton:disabled {
+  background-color: #d4d4d4;
+  cursor: not-allowed;
+}

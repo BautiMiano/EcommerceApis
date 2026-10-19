@@ -1,0 +1,44 @@
+.ticket-mensaje {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid #e5e5e5;
+  background-color: #ffffff;
+}
+
+.ticket-mensaje-datos {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.ticket-mensaje-datos > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ticket-mensaje-fecha {
+  text-align: right;
+}
+
+.ticket-mensaje-etiqueta {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #4a4a4a;
+}
+
+.ticket-mensaje-valor {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ticket-mensaje p {
+  font-size: 16px;
+  line-height: 1.7;
+}

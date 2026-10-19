@@ -1,0 +1,31 @@
+.chat-conversacion-volver {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border: 1px solid #000000;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chat-conversacion-estado {
+  margin: 20px 0 0 0;
+  font-size: 14px;
+  color: #4a4a4a;
+  text-align: center;
+}
+.chat-conversacion {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-conversacion-escribiendo {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 13px;
+  color: #4a4a4a;
+}

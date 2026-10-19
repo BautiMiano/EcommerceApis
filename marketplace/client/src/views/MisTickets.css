@@ -1,0 +1,61 @@
+.mis-tickets {
+  width: min(100% - 32px, 980px);
+  margin: 0 auto;
+  padding: 48px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mis-tickets-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.mis-tickets-etiqueta {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #4a4a4a;
+}
+
+.mis-tickets-encabezado h1 {
+  margin: 10px 0;
+  font-size: clamp(34px, 7vw, 52px);
+  text-transform: uppercase;
+}
+
+.mis-tickets-encabezado p {
+  font-size: 15px;
+  color: #4a4a4a;
+}
+
+.mis-tickets-nuevo {
+  padding: 14px 20px;
+  border: 2px solid #000000;
+  border-radius: 999px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.mis-tickets-lista {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mis-tickets-mensaje {
+  font-size: 15px;
+  color: #4a4a4a;
+}
