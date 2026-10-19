@@ -93,8 +93,8 @@ const PedidosRecibidos = () => {
   return (
     <div className="panel-pagina">
       <SellerPageHeader titulo="PEDIDOS RECIBIDOS" descripcion="Gestioná los pedidos de tus compradores.">
-        <label className="pedidos-periodo">
-          <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <label className="panel-periodo">
+          <span className="material-symbols-outlined panel-periodo-calendario" aria-hidden="true">calendar_month</span>
           <span className="visually-hidden">Período</span>
           <select value={dias} onChange={(event) => cambiarFiltro(() => cambiarPeriodo(Number(event.target.value)))}>
             <option value={0}>Todo el historial</option>
@@ -102,6 +102,7 @@ const PedidosRecibidos = () => {
             <option value={30}>Últimos 30 días</option>
             <option value={90}>Últimos 90 días</option>
           </select>
+          <span className="material-symbols-outlined panel-periodo-flecha" aria-hidden="true">expand_more</span>
         </label>
       </SellerPageHeader>
 

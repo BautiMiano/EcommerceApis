@@ -151,6 +151,45 @@
   font-weight: 500;
 }
 
+/* Selector de período con ícono de calendario. Sin el estilo nativo (appearance: none),
+   porque Safari ignora el padding del select y el ícono quedaba encima del texto */
+.panel-periodo {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.panel-periodo .material-symbols-outlined {
+  position: absolute;
+  pointer-events: none;
+}
+
+.panel-periodo-calendario {
+  left: 0.875rem;
+}
+
+.panel-periodo-flecha {
+  right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.panel-periodo select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.75rem 2.5rem 0.75rem 2.875rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.5rem;
+  background-color: var(--uf-blanco);
+  color: var(--uf-negro);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.panel-periodo select:focus-visible {
+  outline: 0.125rem solid var(--uf-naranja);
+}
+
 /* Buscador con lupa, como en los filtros de los mockups */
 .panel-buscador {
   position: relative;
