@@ -3,13 +3,22 @@ import PageTitle from '../components/PageTitle';
 import LoginForm from '../components/LoginForm'; 
 import RegisterLink from '../components/RegisterLink';
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const navigate = useNavigate();
 
-  // Guarda el id del usuario para poder buscar su carrito
+  // Guardamos los datos de sesión de manera consistente
   const handleLoginExitoso = (data) => {
-    localStorage.setItem('usuarioId', data.usuarioId);
-    navigate('/home');
+    data.access_token && localStorage.setItem('token', data.access_token);
+    data.role && localStorage.setItem('userRole', data.role);
+    data.usuarioId && localStorage.setItem('userId', data.usuarioId);
+
+    setUser && setUser({
+      token: data.access_token,
+      role: data.role,
+      userId: data.usuarioId
+    });
+
+    navigate('/');
   };
 
   return (
@@ -23,11 +32,10 @@ const Login = () => {
   
         <LoginForm onLoginExitoso={handleLoginExitoso} />
         
-        <RegisterLink onClick={() => navigate('/register')} />
+        <RegisterLink onClick={() => navigate('/registro')} />
       </main>
-      
     </div>
   );
-}
+};
 
 export default Login;

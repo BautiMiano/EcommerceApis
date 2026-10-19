@@ -22,9 +22,10 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
 
     const estaAutenticado = Boolean(token);
-    estaAutenticado && setUser({ token, role: userRole });
+    estaAutenticado && setUser({ token, role: userRole, userId });
   }, []);
 
   const handleLogout = () => {
