@@ -3,8 +3,11 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.StockTalle;
 import com.uade.EcommerceUniformes.marketplace.entity.Talle;
+import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
@@ -305,16 +309,35 @@ public class CarritoServiceImpl implements CarritoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicar el metodo de pago");
         }
 
+        // Una orden por vendedor: así cada vendedor maneja el estado de su pedido sin afectar a los demás
+        Map<Long, List<ItemCarrito>> itemsPorVendedor = carrito.getItems().stream()
+                .collect(Collectors.groupingBy(
+                        item -> item.getProducto().getVendedor().getId(), LinkedHashMap::new, Collectors.toList()));
+
+        for (List<ItemCarrito> itemsDelVendedor : itemsPorVendedor.values()) {
+            crearOrden(carrito.getUsuario(), itemsDelVendedor, request.getMetodoDePago());
+        }
+
+        // La compra queda en la orden: el mismo carrito se vacía para seguir comprando
+        carrito.getItems().clear();
+        carrito.setEstado(EstadoCarrito.ARMADO);
+        carrito.setFechaInicioPago(null);
+
+        return convertirACarritoResponse(carritoRepository.save(carrito));
+    }
+
+    // Crea la orden confirmada con los ítems de un mismo vendedor y descuenta su stock
+    private void crearOrden(Usuario comprador, List<ItemCarrito> items, MetodoDePago metodoDePago) {
         OrdenDeCompra orden = new OrdenDeCompra();
-        orden.setUsuario(carrito.getUsuario());
+        orden.setUsuario(comprador);
         orden.setFechaCompra(new Date(System.currentTimeMillis()));
         orden.setEstado(EstadoOrden.CONFIRMADA);
-        orden.setMetodoDePago(request.getMetodoDePago());
+        orden.setMetodoDePago(metodoDePago);
         orden.setItems(new ArrayList<>());
 
         double total = 0;
 
-        for (ItemCarrito itemCarrito : carrito.getItems()) {
+        for (ItemCarrito itemCarrito : items) {
             productoService.descontarStockDefinitivo(
                     itemCarrito.getProducto().getId(), itemCarrito.getTalle(), itemCarrito.getCantidad());
 
@@ -331,13 +354,6 @@ public class CarritoServiceImpl implements CarritoService {
 
         orden.setTotal(total);
         ordenDeCompraRepository.save(orden);
-
-        // La compra queda en la orden: el mismo carrito se vacía para seguir comprando
-        carrito.getItems().clear();
-        carrito.setEstado(EstadoCarrito.ARMADO);
-        carrito.setFechaInicioPago(null);
-
-        return convertirACarritoResponse(carritoRepository.save(carrito));
     }
 
     @Override
