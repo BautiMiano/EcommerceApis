@@ -1,6 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.entity.dto;
 
 import java.util.Date;
+import java.util.Objects;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Ticket;
 
@@ -21,7 +22,10 @@ public class TicketResponse {
     private String vendedor;
 
     /** Arma la respuesta a partir del ticket, sin exponer al usuario completo. */
-    public static TicketResponse desde(Ticket ticket) {
+        public static TicketResponse desde(Ticket ticket) {
+        String nombre = Objects.toString(ticket.getUsuario().getNombre(), "");
+        String apellido = Objects.toString(ticket.getUsuario().getApellido(), "");
+
         return new TicketResponse(
                 ticket.getId(),
                 ticket.getAsunto(),
@@ -30,6 +34,6 @@ public class TicketResponse {
                 ticket.getFechaCreacion(),
                 ticket.getFechaRespuesta(),
                 ticket.getEstado() != null ? ticket.getEstado().name() : null,
-                ticket.getUsuario().getNombre() + " " + ticket.getUsuario().getApellido());
+                (nombre + " " + apellido).trim());
     }
 }

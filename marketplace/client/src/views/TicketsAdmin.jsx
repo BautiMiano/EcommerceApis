@@ -26,10 +26,9 @@ const TicketsAdmin = () => {
     const ticketsFiltrados = tickets
         .filter((ticket) => filtro === 'TODOS' || ticket.estado === filtro)
         .filter((ticket) =>
-            ticket.asunto.toLowerCase().includes(texto) ||
-            ticket.vendedor.toLowerCase().includes(texto))
-        .sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion))
-
+            (ticket.asunto || '').toLowerCase().includes(texto) ||
+            (ticket.vendedor || '').toLowerCase().includes(texto))
+            
     return (
         <main className="tickets-admin">
             <div className="tickets-admin-encabezado">
