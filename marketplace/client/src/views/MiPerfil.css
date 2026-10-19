@@ -1,81 +1,81 @@
 .mi-perfil-grilla {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
+  grid-template-columns: 22.5rem minmax(0, 1fr);
   align-items: start;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .mi-perfil-cuenta {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 .mi-perfil-identidad {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--uf-borde);
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 0.0625rem solid var(--uf-borde);
 }
 
 .mi-perfil-avatar {
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 84px;
-  height: 84px;
+  width: 5.25rem;
+  height: 5.25rem;
   border-radius: 50%;
   background-color: #e8e8e8;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 700;
 }
 
 .mi-perfil-nombre {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
 .mi-perfil-usuario {
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   color: var(--uf-texto-suave);
 }
 
 .mi-perfil-contacto {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.75rem;
   list-style: none;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .mi-perfil-contacto li {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 0.875rem;
   word-break: break-word;
 }
 
 .mi-perfil-editar {
-  padding: 13px;
-  font-size: 15px;
+  padding: 0.8125rem;
+  font-size: 0.9375rem;
 }
 
 .mi-perfil-pestanas {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--uf-borde);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid var(--uf-borde);
 }
 
 .mi-perfil-pestana {
-  padding: 12px 20px;
+  padding: 0.75rem 1.25rem;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 0.1875rem solid transparent;
   border-radius: 0;
   background: none;
   color: var(--uf-texto-suave);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .mi-perfil-pestana-activa {
@@ -85,24 +85,24 @@
 }
 
 .mi-perfil-pestana:focus-visible {
-  outline: 2px solid var(--uf-naranja);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: -0.125rem;
 }
 
 .mi-perfil-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .mi-perfil-subtitulo {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 .mi-perfil-campos {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
+  gap: 1rem 1.5rem;
 }
 
 .mi-perfil-campos-tres {
@@ -115,17 +115,17 @@
 }
 
 .mi-perfil-acciones .panel-boton {
-  padding: 13px 26px;
-  font-size: 15px;
+  padding: 0.8125rem 1.625rem;
+  font-size: 0.9375rem;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 62.5em) {
   .mi-perfil-grilla {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 43.75em) {
   .mi-perfil-campos,
   .mi-perfil-campos-tres {
     grid-template-columns: 1fr;

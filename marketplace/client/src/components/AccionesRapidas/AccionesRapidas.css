@@ -1,33 +1,33 @@
 .acciones-rapidas {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.125rem;
 }
 
 .acciones-rapidas-cabecera {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 20px;
+  gap: 0.25rem 1.25rem;
 }
 
 .acciones-rapidas-cabecera .panel-texto-suave {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .acciones-rapidas-grilla {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 0.875rem;
 }
 
 .acciones-rapidas-item {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid var(--uf-borde);
-  border-radius: 10px;
+  gap: 1rem;
+  padding: 1rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.625rem;
   background-color: var(--uf-blanco);
   color: var(--uf-negro);
   font: inherit;
@@ -40,21 +40,21 @@
 }
 
 .acciones-rapidas-item:focus-visible {
-  outline: 2px solid var(--uf-naranja);
+  outline: 0.125rem solid var(--uf-naranja);
 }
 
 .acciones-rapidas-icono {
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   background-color: #f3f3f3;
 }
 
 .acciones-rapidas-icono .material-symbols-outlined {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-variation-settings: 'wght' 300;
 }
 
@@ -62,19 +62,19 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.125rem;
 }
 
 .acciones-rapidas-texto strong {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .acciones-rapidas-texto small {
   color: var(--uf-texto-suave);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25em) {
   .acciones-rapidas-grilla {
     grid-template-columns: 1fr;
   }

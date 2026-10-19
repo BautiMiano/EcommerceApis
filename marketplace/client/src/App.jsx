@@ -52,7 +52,7 @@ function App() {
           {/* CATÁLOGO: VISITANTES Y COMPRADORES (EL VENDEDOR VUELVE A SU PANEL) */}
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} permitirVisitantes />}>
             <Route path="/categorias" element={<CategoryPage />} />
-            <Route path="/categorias/:id" element={<CategoryPage />} />
+            <Route path="/categorias/:idCategoria" element={<CategoryPage />} />
           </Route>
 
           {/* EXCLUSIVAS DEL COMPRADOR */}

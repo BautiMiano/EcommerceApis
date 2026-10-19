@@ -169,7 +169,7 @@ const PedidosRecibidos = () => {
                         <th scope="col"># Pedido</th>
                         <th scope="col">Fecha</th>
                         <th scope="col">Comprador</th>
-                        <th scope="col">Productos</th>
+                        <th scope="col" className="pedidos-col-productos">Productos</th>
                         <th scope="col">Total</th>
                         <th scope="col">Estado</th>
                         <th scope="col">Acciones</th>
@@ -184,7 +184,7 @@ const PedidosRecibidos = () => {
                             <p>{venta.comprador}</p>
                             <p className="panel-texto-suave">{venta.compradorMail}</p>
                           </td>
-                          <td>
+                          <td className="pedidos-col-productos">
                             <div className="pedidos-miniaturas">
                               {venta.items.slice(0, MAX_MINIATURAS).map((item) => (
                                 <div key={item.productoId + '-' + item.talle} className="panel-miniatura pedidos-miniatura">

@@ -6,38 +6,38 @@
 
 .pedidos-periodo .material-symbols-outlined {
   position: absolute;
-  left: 14px;
+  left: 0.875rem;
   pointer-events: none;
 }
 
 .pedidos-periodo select {
-  padding: 12px 16px 12px 46px;
-  border: 1px solid var(--uf-borde);
-  border-radius: 8px;
+  padding: 0.75rem 1rem 0.75rem 2.875rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.5rem;
   background-color: var(--uf-blanco);
   font: inherit;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .pedidos-periodo select:focus-visible {
-  outline: 2px solid var(--uf-naranja);
+  outline: 0.125rem solid var(--uf-naranja);
 }
 
 .pedidos-pestanas {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   overflow-x: auto;
-  border-bottom: 1px solid var(--uf-borde);
+  border-bottom: 0.0625rem solid var(--uf-borde);
 }
 
 .pedidos-pestana {
-  padding: 10px 14px;
+  padding: 0.625rem 0.875rem;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 0.1875rem solid transparent;
   border-radius: 0;
   background: none;
   color: #3d4451;
-  font-size: 15px;
+  font-size: 0.9375rem;
   white-space: nowrap;
 }
 
@@ -48,34 +48,39 @@
 }
 
 .pedidos-pestana:focus-visible {
-  outline: 2px solid var(--uf-naranja);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: -0.125rem;
 }
 
 .pedidos-barra {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .pedidos-buscador {
   flex: 1;
-  max-width: 480px;
+  max-width: 30rem;
 }
 
 .pedidos-contenido {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .pedidos-contenido-con-detalle {
-  grid-template-columns: minmax(0, 1fr) 400px;
+  grid-template-columns: minmax(0, 1fr) 25rem;
+}
+
+/* Con el detalle abierto no entra toda la tabla: las miniaturas se ven en el panel */
+.pedidos-contenido-con-detalle .pedidos-col-productos {
+  display: none;
 }
 
 .pedidos-lista {
-  padding: 0 0 16px;
+  padding: 0 0 1rem;
   overflow: hidden;
 }
 
@@ -84,7 +89,7 @@
 }
 
 .pedidos-lista .panel-paginacion {
-  padding: 16px 16px 0;
+  padding: 1rem 1rem 0;
 }
 
 .pedidos-fila-activa td {
@@ -94,31 +99,31 @@
 .pedidos-miniaturas {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .pedidos-miniatura {
-  width: 46px;
-  height: 46px;
+  width: 2.875rem;
+  height: 2.875rem;
 }
 
 .pedidos-mas {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 46px;
-  border: 1px solid var(--uf-borde);
-  border-radius: 8px;
-  font-size: 13px;
+  width: 2.25rem;
+  height: 2.875rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 68.75em) {
   .pedidos-contenido-con-detalle {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5em) {
   .pedidos-barra {
     flex-direction: column;
   }

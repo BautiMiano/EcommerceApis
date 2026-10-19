@@ -2,16 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 48px 24px;
-  border: 1px dashed var(--uf-borde);
-  border-radius: 12px;
+  gap: 0.625rem;
+  padding: 3rem 1.5rem;
+  border: 0.0625rem dashed var(--uf-borde);
+  border-radius: 0.75rem;
   background-color: var(--uf-blanco);
   text-align: center;
 }
 
 .panel-estado-icono {
-  font-size: 40px;
+  font-size: 2.5rem;
   color: var(--uf-texto-suave);
 }
 
@@ -24,13 +24,13 @@
 }
 
 .panel-estado-titulo {
-  font-size: 26px;
+  font-size: 1.625rem;
 }
 
 .panel-estado-texto {
-  max-width: 420px;
+  max-width: 26.25rem;
   color: var(--uf-texto-suave);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 @keyframes panel-estado-girar {

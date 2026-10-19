@@ -2,11 +2,11 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr) 1.5fr;
   align-items: end;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25em) {
   .productos-filtro {
     grid-template-columns: 1fr 1fr;
   }
