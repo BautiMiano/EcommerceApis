@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CaritaUni from '../CaritaUni/CaritaUni'
 import ChatPanel from '../ChatPanel/ChatPanel'
+import { obtenerSesion } from '../../utils/sesion'
 import './ChatFlotante.css'
 
 const ChatFlotante = () => {
@@ -11,8 +12,15 @@ const ChatFlotante = () => {
         setAbierto(true)
         setMostrarGlobo(false)
     }
+
+    const { logueado, rol } = obtenerSesion()
+
+    if (rol === 'ADMIN') {
+        return null
+    }
+
     if (abierto) {
-        return <ChatPanel onCerrar={() => setAbierto(false)} />
+        return <ChatPanel onCerrar={() => setAbierto(false)} logueado={logueado} />
     }
 
     return (
