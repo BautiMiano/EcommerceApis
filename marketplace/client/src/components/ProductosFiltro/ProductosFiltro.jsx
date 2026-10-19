@@ -1,29 +1,51 @@
-const ProductosFiltro = ({ busqueda, filtroEstado, onBusquedaChange, onFiltroChange }) => {
-  return (
-    <div className="mis-productos-filtros">
-      <div className="mis-productos-field">
-        <label htmlFor="busqueda-productos">Buscar publicaciones</label>
-        <input
-          id="busqueda-productos"
-          type="search"
-          value={busqueda}
-          onChange={(event) => onBusquedaChange(event.target.value)}
-          placeholder="Buscar por nombre o descripción"
-        />
-      </div>
+import './ProductosFiltro.css'
 
-      <div className="mis-productos-field">
-        <label htmlFor="filtro-estado">Estado</label>
-        <select
-          id="filtro-estado"
-          value={filtroEstado}
-          onChange={(event) => onFiltroChange(event.target.value)}
-        >
+const ProductosFiltro = ({ filtros, categorias, onChange }) => {
+  const handleChange = (event) => onChange({ ...filtros, [event.target.name]: event.target.value })
+
+  return (
+    <div className="productos-filtro">
+      <label className="panel-campo">
+        Estado
+        <select name="estado" value={filtros.estado} onChange={handleChange}>
           <option value="TODOS">Todos</option>
           <option value="ACTIVOS">Activos</option>
-          <option value="INACTIVOS">Inactivos</option>
+          <option value="INACTIVOS">Pausados</option>
         </select>
-      </div>
+      </label>
+
+      <label className="panel-campo">
+        Categoría
+        <select name="categoria" value={filtros.categoria} onChange={handleChange}>
+          <option value="">Todas</option>
+          {categorias.map((categoria) => (
+            <option key={categoria.idCategoria} value={categoria.idCategoria}>
+              {categoria.nombreCategoria}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="panel-campo">
+        Stock
+        <select name="stock" value={filtros.stock} onChange={handleChange}>
+          <option value="TODOS">Todos</option>
+          <option value="bajo">Stock bajo</option>
+          <option value="agotado">Sin stock</option>
+        </select>
+      </label>
+
+      <label className="panel-buscador productos-filtro-busqueda">
+        <span className="material-symbols-outlined" aria-hidden="true">search</span>
+        <span className="visually-hidden">Buscar productos</span>
+        <input
+          type="search"
+          name="busqueda"
+          value={filtros.busqueda}
+          onChange={handleChange}
+          placeholder="Buscar productos por nombre, SKU..."
+        />
+      </label>
     </div>
   )
 }

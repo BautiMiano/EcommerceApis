@@ -1,0 +1,118 @@
+.seller-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100vh;
+  padding: 28px 14px;
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+}
+
+.seller-sidebar-arriba {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+/* El logo original tiene fondo blanco: invertido y con el tono corregido queda blanco y naranja sobre negro */
+.seller-sidebar-logo {
+  position: relative;
+  display: block;
+  width: 150px;
+  height: 84px;
+  overflow: hidden;
+}
+
+.seller-sidebar-logo img {
+  position: absolute;
+  top: -42px;
+  left: -75px;
+  width: 300px;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.seller-sidebar-logo:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+  outline-offset: 4px;
+}
+
+.seller-sidebar-cerrar {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 12px;
+  padding: 6px;
+  background: none;
+  color: var(--uf-blanco);
+}
+
+.seller-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.seller-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--uf-blanco);
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+  text-decoration: none;
+}
+
+.seller-sidebar-link .material-symbols-outlined {
+  font-size: 26px;
+  font-variation-settings: 'wght' 300;
+}
+
+.seller-sidebar-link:hover {
+  background-color: #141414;
+}
+
+.seller-sidebar-link:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+  outline-offset: -2px;
+}
+
+.seller-sidebar-link-activo,
+.seller-sidebar-link-activo:hover {
+  background-color: #1f1f1f;
+  font-weight: 500;
+}
+
+.seller-sidebar-divisor {
+  width: calc(100% - 20px);
+  margin: 18px auto;
+  border: none;
+  border-top: 1px solid #3a3a3a;
+}
+
+@media (max-width: 900px) {
+  .seller-sidebar {
+    position: fixed;
+    left: 0;
+    z-index: 40;
+    width: var(--uf-sidebar);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .seller-layout-menu-abierto .seller-sidebar {
+    transform: translateX(0);
+  }
+
+  .seller-sidebar-cerrar {
+    display: block;
+  }
+}

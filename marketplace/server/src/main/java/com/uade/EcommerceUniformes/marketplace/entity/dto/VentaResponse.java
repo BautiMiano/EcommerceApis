@@ -20,7 +20,10 @@ public class VentaResponse {
     private Date fechaCompra;
     private EstadoOrden estado;
     private String comprador;
+    private String compradorMail;
     private int cantidadProductos;
     private double total;
     private List<ItemVentaResponse> items;
+    // Estados a los que el vendedor puede pasar el pedido desde el actual
+    private List<EstadoOrden> estadosSiguientes;
 }

@@ -1,0 +1,133 @@
+.mi-perfil-grilla {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.mi-perfil-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mi-perfil-identidad {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--uf-borde);
+}
+
+.mi-perfil-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.mi-perfil-nombre {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mi-perfil-usuario {
+  margin-bottom: 8px;
+  color: var(--uf-texto-suave);
+}
+
+.mi-perfil-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  font-size: 15px;
+}
+
+.mi-perfil-contacto li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  word-break: break-word;
+}
+
+.mi-perfil-editar {
+  padding: 13px;
+  font-size: 15px;
+}
+
+.mi-perfil-pestanas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--uf-borde);
+}
+
+.mi-perfil-pestana {
+  padding: 12px 20px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--uf-texto-suave);
+  font-size: 15px;
+}
+
+.mi-perfil-pestana-activa {
+  border-bottom-color: var(--uf-negro);
+  color: var(--uf-negro);
+  font-weight: 600;
+}
+
+.mi-perfil-pestana:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+  outline-offset: -2px;
+}
+
+.mi-perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mi-perfil-subtitulo {
+  font-size: 24px;
+}
+
+.mi-perfil-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.mi-perfil-campos-tres {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mi-perfil-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mi-perfil-acciones .panel-boton {
+  padding: 13px 26px;
+  font-size: 15px;
+}
+
+@media (max-width: 1000px) {
+  .mi-perfil-grilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .mi-perfil-campos,
+  .mi-perfil-campos-tres {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -15,12 +15,14 @@ import {
   eliminarFavorito,
   obtenerMisFavoritos
 } from '../../utils/api.js';
+import { stockDisponibleDe, talleUnicoDe } from '../../utils/talles.js';
 import './ProductDetailSection.css';
 
 Modal.setAppElement('#root');
 
 export const ProductDetailSection = ({ product }) => {
-  const [selectedSize, setSelectedSize] = useState(product?.talle || '');
+  // Si el producto ofrece un solo talle con stock, ya queda elegido
+  const [selectedSize, setSelectedSize] = useState(talleUnicoDe(product?.talles) || '');
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +30,7 @@ export const ProductDetailSection = ({ product }) => {
 
   // Lectura de sesión y rol
   const tokenGuardado = localStorage.getItem('token');
-  const userIdGuardado = localStorage.getItem('userId');
+  const userIdGuardado = localStorage.getItem('usuarioId');
   const estaAutenticado = Boolean(tokenGuardado);
 
   const rawRole = String(localStorage.getItem('userRole') || '').toUpperCase();
@@ -56,10 +58,13 @@ export const ProductDetailSection = ({ product }) => {
 
     esVendedor && toast.warn('Las cuentas con rol Vendedor no pueden realizar compras.');
 
-    const puedeComprar = esComprador && Boolean(userIdGuardado) && userIdGuardado !== 'null';
+    const faltaTalle = esComprador && !selectedSize;
+    faltaTalle && toast.warn('Elegí un talle antes de agregar al carrito.');
+
+    const puedeComprar = esComprador && !faltaTalle && Boolean(userIdGuardado) && userIdGuardado !== 'null';
 
     puedeComprar && obtenerCarritoDeUsuario(userIdGuardado)
-      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, quantity))
+      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, selectedSize, quantity))
       .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
       .catch((error) => toast.error(error.message));
   };
@@ -96,8 +101,18 @@ export const ProductDetailSection = ({ product }) => {
       });
   };
 
+  // La cantidad no puede superar el stock disponible del talle elegido
+  const talleElegido = (product.talles || []).find((t) => t.talle === selectedSize);
+  const stockDelTalle = talleElegido ? stockDisponibleDe(talleElegido) : 0;
+
+  const handleSelectSize = (talle) => {
+    setSelectedSize(talle);
+    setQuantity(1);
+  };
+
   const handleIncreaseQuantity = () => {
-    setQuantity(quantity + 1);
+    const canIncrease = quantity < stockDelTalle;
+    canIncrease && setQuantity(quantity + 1);
   };
 
   const handleDecreaseQuantity = () => {
@@ -122,7 +137,7 @@ export const ProductDetailSection = ({ product }) => {
         <ProductSizeSelector
           product={product}
           selectedSize={selectedSize}
-          onSelectSize={setSelectedSize}
+          onSelectSize={handleSelectSize}
         />
 
         <ProductQuantitySelector

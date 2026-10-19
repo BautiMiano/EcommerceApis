@@ -1,0 +1,20 @@
+.producto-fila-producto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 240px;
+}
+
+.producto-fila-nombre {
+  font-weight: 600;
+}
+
+.producto-fila-descripcion {
+  display: -webkit-box;
+  max-width: 220px;
+  overflow: hidden;
+  color: var(--uf-texto-suave);
+  font-size: 13px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}

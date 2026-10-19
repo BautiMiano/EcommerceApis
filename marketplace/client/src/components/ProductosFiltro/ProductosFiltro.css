@@ -1,0 +1,17 @@
+.productos-filtro {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 1.5fr;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+  .productos-filtro {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .productos-filtro-busqueda {
+    grid-column: 1 / -1;
+  }
+}

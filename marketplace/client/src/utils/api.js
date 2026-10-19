@@ -98,12 +98,81 @@ export const desactivarProducto = (productoId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo desactivar el producto.')
 
-export const agregarStock = (productoId, cantidad) =>
-  solicitar('/productos/stock', {
+// Devuelve el producto o lanza el error con su status (404 si no existe)
+export const getProductoById = (productoId) =>
+  solicitar(`/productos/${productoId}`, {}, 'No se pudo obtener el producto.')
+
+export const desactivarImagen = (imagenId) =>
+  solicitar(`/imagenes/${imagenId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo quitar la imagen.')
+
+// ---------- Ventas del vendedor ----------
+
+export const obtenerMisVentas = () =>
+  solicitar('/ordenesDeCompra/mis-ventas', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener tus pedidos.')
+
+export const obtenerMiVenta = (ordenId) =>
+  solicitar(`/ordenesDeCompra/mis-ventas/${ordenId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener el pedido.')
+
+// El backend solo acepta pasar al estado siguiente (o cancelar antes del envío)
+export const cambiarEstadoVenta = (ordenId, estado) =>
+  solicitar(`/ordenesDeCompra/mis-ventas/${ordenId}/estado`, {
     method: 'PATCH',
     headers: obtenerHeaders(true),
-    body: JSON.stringify({ id: productoId, stock: cantidad }),
-  }, 'No se pudo agregar stock.')
+    body: JSON.stringify({ estado }),
+  }, 'No se pudo actualizar el estado del pedido.')
+
+// ---------- Descuentos ----------
+// Un descuento se crea con su porcentaje y después se asigna al producto
+
+export const crearDescuento = (porcentaje) =>
+  solicitar('/descuentos', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ porcentaje }),
+  }, 'No se pudo crear el descuento.')
+
+export const asignarDescuento = (descuentoId, productoId) =>
+  solicitar(`/descuentos/asignar-descuento/${descuentoId}`, {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(productoId),
+  }, 'No se pudo aplicar el descuento.')
+
+export const quitarDescuento = (productoId) =>
+  solicitar('/descuentos/eliminar-descuento/producto/', {
+    method: 'DELETE',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(productoId),
+  }, 'No se pudo quitar el descuento.')
+
+// ---------- Perfil ----------
+
+export const obtenerMiPerfil = () =>
+  solicitar('/usuarios/me', {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener tu perfil.')
+
+// Devuelve un token nuevo, porque el mail es el usuario del login
+export const actualizarMiPerfil = (datos) =>
+  solicitar('/usuarios/me', {
+    method: 'PUT',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify(datos),
+  }, 'No se pudo actualizar tu perfil.')
+
+export const cambiarMiContrasena = (contrasenaActual, contrasenaNueva) =>
+  solicitar('/usuarios/me/contrasena', {
+    method: 'PATCH',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ contrasenaActual, contrasenaNueva }),
+  }, 'No se pudo cambiar la contraseña.')
 
 // ---------- Favoritos ----------
 
@@ -118,39 +187,39 @@ export const eliminarFavorito = (productoId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo quitar el producto de favoritos.')
 
-  export const agregarFavorito = (productoId) =>
+export const agregarFavorito = (productoId) =>
   solicitar(`/favoritos/${productoId}`, {
     method: 'POST',
     headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
-  }, 'No se pudo agregar el producto a favoritos.');
-
+  }, 'No se pudo agregar el producto a favoritos.')
 
 // ---------- Carrito ----------
+// Cada ítem del carrito es un producto en un talle: por eso todas las operaciones llevan el talle.
 
 export const obtenerCarritoDeUsuario = (usuarioId) =>
   solicitar(`/carritos/usuario/${usuarioId}`, {
     headers: obtenerHeaders(),
   }, 'No se pudo obtener tu carrito.')
 
-export const agregarProductoAlCarrito = (carritoId, productoId, cantidad) =>
+export const agregarProductoAlCarrito = (carritoId, productoId, talle, cantidad) =>
   solicitar(`/carritos/${carritoId}/agregar-productos`, {
     method: 'POST',
     headers: obtenerHeaders(true),
-    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+    body: JSON.stringify({ productoId: productoId, talle: talle, cantidad: cantidad }),
   }, 'No se pudo agregar el producto al carrito.')
 
-export const actualizarCantidadCarrito = (carritoId, productoId, cantidad) =>
+export const actualizarCantidadCarrito = (carritoId, productoId, talle, cantidad) =>
   solicitar(`/carritos/${carritoId}/actualizar-cantidad`, {
     method: 'PUT',
     headers: obtenerHeaders(true),
-    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+    body: JSON.stringify({ productoId: productoId, talle: talle, cantidad: cantidad }),
   }, 'No se pudo actualizar la cantidad.')
 
-export const eliminarProductoDelCarrito = (carritoId, productoId) =>
+export const eliminarProductoDelCarrito = (carritoId, productoId, talle) =>
   solicitar(`/carritos/${carritoId}/eliminar-producto-carrito`, {
     method: 'DELETE',
     headers: obtenerHeaders(true),
-    body: JSON.stringify({ productoId: productoId }),
+    body: JSON.stringify({ productoId: productoId, talle: talle }),
   }, 'No se pudo eliminar el producto del carrito.')
 
 // ---------- Imágenes ----------
@@ -203,12 +272,6 @@ export const getCategoryProducts = (categoryId) => {
     .catch(() => [])
 }
 
-export const getProductoById = (productoId) =>{
-  return fetch(`${API_URL}/productos/${productoId}`)
-    .then((res) => res.json())
-    .catch(() => null);
-}
-
 // Obtener productos por rango de precio
 export const getProductosByPrice = (precioMin, precioMax) => {
   return fetch(`${API_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
@@ -229,14 +292,6 @@ export const getProductosByTalle = (talle) => {
     .then((res) => res.json())
     .catch(() => [])
 }
-
-
-
-// ---------- Detalle del producto ----------
-export const getCarritoByUsuarioId = (usuarioId) =>
-  solicitar(`/carritos/usuario/${usuarioId}`, {
-    headers: obtenerHeaders(),
-  }, 'No se pudo obtener el carrito del usuario.');
 
 
 

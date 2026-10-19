@@ -1,0 +1,343 @@
+/* ---------- Identidad del panel del vendedor ---------- */
+.seller-layout {
+  --uf-negro: #000000;
+  --uf-blanco: #ffffff;
+  --uf-fondo: #f5f5f5;
+  --uf-borde: #e5e5e5;
+  --uf-texto-suave: #5b6472;
+  --uf-naranja: #e0702c;
+  --uf-naranja-suave: #fdf0e8;
+  --uf-rojo: #d32f2f;
+  --uf-verde: #2e7d32;
+  --uf-sidebar: 232px;
+
+  display: grid;
+  grid-template-columns: var(--uf-sidebar) 1fr;
+  min-height: 100vh;
+  background-color: var(--uf-blanco);
+}
+
+.seller-layout-principal {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.seller-layout-contenido {
+  flex: 1;
+  padding: 24px 28px 40px;
+}
+
+.seller-layout-fondo {
+  display: none;
+}
+
+/* ---------- Piezas compartidas por las pantallas del panel ---------- */
+.panel-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.panel-tarjeta {
+  background-color: var(--uf-blanco);
+  border: 1px solid var(--uf-borde);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.panel-tarjeta-titulo {
+  font-size: 30px;
+}
+
+.panel-tarjeta-subtitulo {
+  margin-top: 2px;
+  color: var(--uf-texto-suave);
+  font-size: 14px;
+}
+
+.panel-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--uf-negro);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.panel-boton .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.panel-boton-primario {
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+}
+
+.panel-boton-primario:hover:not(:disabled) {
+  background-color: #262626;
+}
+
+.panel-boton-secundario {
+  background-color: var(--uf-blanco);
+  color: var(--uf-negro);
+}
+
+.panel-boton-secundario:hover:not(:disabled) {
+  background-color: var(--uf-fondo);
+}
+
+.panel-boton-chico {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+.panel-boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.panel-boton:focus-visible,
+.panel-campo input:focus-visible,
+.panel-campo select:focus-visible,
+.panel-campo textarea:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+  outline-offset: 2px;
+}
+
+.panel-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.panel-campo input,
+.panel-campo select,
+.panel-campo textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--uf-borde);
+  border-radius: 8px;
+  background-color: var(--uf-blanco);
+  font: inherit;
+  font-weight: 400;
+}
+
+.panel-campo input:disabled {
+  background-color: var(--uf-fondo);
+  color: var(--uf-texto-suave);
+}
+
+.panel-campo-opcional {
+  color: var(--uf-texto-suave);
+  font-weight: 400;
+}
+
+.panel-campo-error {
+  color: var(--uf-rojo);
+  font-weight: 500;
+}
+
+/* Buscador con lupa, como en los filtros de los mockups */
+.panel-buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.panel-buscador .material-symbols-outlined {
+  position: absolute;
+  left: 12px;
+  color: var(--uf-texto-suave);
+  pointer-events: none;
+}
+
+.panel-buscador input {
+  width: 100%;
+  padding: 10px 12px 10px 42px;
+  border: 1px solid var(--uf-borde);
+  border-radius: 8px;
+  background-color: var(--uf-fondo);
+  font: inherit;
+}
+
+.panel-tabla-contenedor {
+  overflow-x: auto;
+}
+
+.panel-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.panel-tabla th {
+  padding: 12px;
+  background-color: var(--uf-fondo);
+  color: #262626;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.panel-tabla th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.panel-tabla th:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.panel-tabla td {
+  padding: 12px;
+  border-bottom: 1px solid var(--uf-borde);
+  vertical-align: middle;
+}
+
+/* Badge con punto de color: estados de pedidos y de publicaciones */
+.panel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.panel-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.panel-badge-naranja {
+  background-color: #fff3e0;
+  color: #e07000;
+}
+
+.panel-badge-azul {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.panel-badge-verde {
+  background-color: #e8f5e9;
+  color: var(--uf-verde);
+}
+
+.panel-badge-rojo {
+  background-color: #ffebee;
+  color: var(--uf-rojo);
+}
+
+.panel-badge-gris {
+  background-color: var(--uf-fondo);
+  color: var(--uf-texto-suave);
+}
+
+/* Miniatura de producto en tablas y listas */
+.panel-miniatura {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border: 1px solid var(--uf-borde);
+  border-radius: 8px;
+  background-color: var(--uf-fondo);
+  color: var(--uf-texto-suave);
+}
+
+.panel-miniatura img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.panel-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  color: var(--uf-texto-suave);
+  font-size: 14px;
+}
+
+.panel-paginacion-botones {
+  display: flex;
+  gap: 8px;
+}
+
+.panel-paginacion-botones button {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--uf-borde);
+  border-radius: 8px;
+  background-color: var(--uf-blanco);
+}
+
+.panel-paginacion-botones .panel-paginacion-actual {
+  border-color: var(--uf-negro);
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+}
+
+.panel-paginacion-botones button:disabled:not(.panel-paginacion-actual) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Texto solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.panel-texto-suave {
+  color: var(--uf-texto-suave);
+  font-size: 13px;
+}
+
+/* ---------- Móvil: el sidebar pasa a ser un menú desplegable ---------- */
+@media (max-width: 900px) {
+  .seller-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .seller-layout-contenido {
+    padding: 20px 16px 32px;
+  }
+
+  .seller-layout-menu-abierto .seller-layout-fondo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    border: none;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+}

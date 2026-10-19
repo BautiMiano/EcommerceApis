@@ -19,6 +19,12 @@ public class ProductoRequest {
     @JsonProperty("descripcion")
     private String descripcion;
 
+    @JsonProperty("sku")
+    private String sku;
+
+    @JsonProperty("marca")
+    private String marca;
+
     @JsonProperty("precio")
     private Double precio;
 
@@ -49,7 +55,24 @@ public class ProductoRequest {
     @JsonProperty("descuentoId")
     private Long descuentoId;
 
+    // Solo en las respuestas: datos para mostrar sin pedir la categoría, el vendedor o el descuento aparte
+    @JsonProperty("categoria")
+    private String categoria;
+
+    @JsonProperty("vendedor")
+    private String vendedor;
+
+    @JsonProperty("descuentoPorcentaje")
+    private Double descuentoPorcentaje;
+
+    // Si lo aplicó un admin, el vendedor no lo puede cambiar
+    @JsonProperty("descuentoAplicadoPorAdmin")
+    private Boolean descuentoAplicadoPorAdmin;
 
     @JsonProperty("imagenes")
     private List<String> imagenes;
+
+    // Ids de las imágenes activas, en el mismo orden que "imagenes" (para poder desactivarlas)
+    @JsonProperty("imagenIds")
+    private List<Long> imagenIds;
 }

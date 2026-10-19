@@ -40,6 +40,8 @@ public class Producto {
     private String nombre;
     private String descripcion;
     private double precio;
+    private String sku;
+    private String marca;
 
     // Stock propio de cada talle que ofrece el producto
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)

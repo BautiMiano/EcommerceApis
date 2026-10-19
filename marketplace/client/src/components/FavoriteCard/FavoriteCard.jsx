@@ -4,11 +4,20 @@ import StockStatus from "../StockStatus/StockStatus"
 import Button from "../Button/Button"
 import './FavoriteCard.css'
 
-const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito, moverAlCarrito}) => {
+const FavoriteCard = ({id, nombre, descripcion, precio, talle, talleUnico, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito, moverAlCarrito}) => {
 
     const navigate = useNavigate()
 
     const verProducto = () => {navigate(`/producto/${id}`)}
+
+    // Con un solo talle se mueve directo; con varios, el comprador lo elige en el detalle
+    const handleMoverAlCarrito = () => {
+        if(talleUnico){
+            moverAlCarrito(id, talleUnico)
+            return
+        }
+        verProducto()
+    }
 
     return(
         <article className="favorite-card">
@@ -34,11 +43,11 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, categoria, estado
                 <p className="favorite-card-talle">{talle}</p>
                 <StockStatus stockDisponible={stockDisponible} />
                 <Button
-                texto="Mover al carrito"
+                texto={talleUnico ? "Mover al carrito" : "Elegir talle"}
                 icono="/icons/bolsa-blanca.svg"
                 iconoAlt="Ícono de carrito"
                 variante="oscuro"
-                handleClick={()=>moverAlCarrito(id)}
+                handleClick={handleMoverAlCarrito}
                 />
             </div>
         </article>

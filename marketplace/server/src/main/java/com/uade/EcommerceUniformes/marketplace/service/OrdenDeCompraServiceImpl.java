@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 import com.uade.EcommerceUniformes.marketplace.entity.ItemDeOrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ItemVentaResponse;
@@ -36,6 +38,9 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
 
     @Autowired
     private ItemDeOrdenDeCompraRepository itemDeOrdenDeCompraRepository;
+
+    @Autowired
+    private ProductoService productoService;
 
     
     public List<OrdenDeCompra> getOrdenesDeCompra() {
@@ -100,15 +105,57 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
 
     public VentaResponse getMiVentaById(Long ordenId) {
         Usuario vendedor = usuarioLogueadoService.obtenerUsuarioLogueado();
+        OrdenDeCompra orden = obtenerOrden(ordenId);
+        return aVentaResponse(orden, itemsDelVendedor(orden, vendedor));
+    }
 
-        OrdenDeCompra orden = ordenDeCompraRepository.findById(ordenId)
+    @Transactional
+    public VentaResponse cambiarEstadoMiVenta(Long ordenId, EstadoOrden nuevoEstado) {
+        Usuario vendedor = usuarioLogueadoService.obtenerUsuarioLogueado();
+        OrdenDeCompra orden = obtenerOrden(ordenId);
+        List<ItemDeOrdenDeCompra> items = itemsDelVendedor(orden, vendedor);
+
+        if (nuevoEstado == null || !estadosSiguientes(orden.getEstado()).contains(nuevoEstado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede pasar el pedido de " + orden.getEstado() + " a " + nuevoEstado
+            );
+        }
+
+        // Al cancelar, las unidades vuelven al stock de cada talle
+        if (nuevoEstado == EstadoOrden.CANCELADA) {
+            for (ItemDeOrdenDeCompra item : orden.getItems()) {
+                productoService.devolverStock(item.getProducto().getId(), item.getTalle(), item.getCantidad());
+            }
+        }
+
+        orden.setEstado(nuevoEstado);
+        ordenDeCompraRepository.save(orden);
+        return aVentaResponse(orden, items);
+    }
+
+    /** Avance del pedido: PENDIENTE → CONFIRMADA → ENVIADA → ENTREGADA, y se puede cancelar antes del envío. */
+    private List<EstadoOrden> estadosSiguientes(EstadoOrden estado) {
+        return switch (estado) {
+            case PENDIENTE -> List.of(EstadoOrden.CONFIRMADA, EstadoOrden.CANCELADA);
+            case CONFIRMADA -> List.of(EstadoOrden.ENVIADA, EstadoOrden.CANCELADA);
+            case ENVIADA -> List.of(EstadoOrden.ENTREGADA);
+            case ENTREGADA, CANCELADA -> List.of();
+        };
+    }
+
+    private OrdenDeCompra obtenerOrden(Long ordenId) {
+        return ordenDeCompraRepository.findById(ordenId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Orden de compra no encontrada con id: " + ordenId
                 ));
+    }
 
+    // Los ítems del vendedor en la orden; si no tiene ninguno, la orden no es suya
+    private List<ItemDeOrdenDeCompra> itemsDelVendedor(OrdenDeCompra orden, Usuario vendedor) {
         List<ItemDeOrdenDeCompra> items = itemDeOrdenDeCompraRepository
-                .findByOrdenIdAndProductoVendedorId(ordenId, vendedor.getId());
+                .findByOrdenIdAndProductoVendedorId(orden.getId(), vendedor.getId());
 
         if (items.isEmpty()) {
             throw new ResponseStatusException(
@@ -116,8 +163,7 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
                     "No tiene permisos para acceder a esta orden de compra"
             );
         }
-
-        return aVentaResponse(orden, items);
+        return items;
     }
 
     // Arma la venta solo con los ítems del vendedor, sin exponer productos ni montos de otros vendedores
@@ -145,8 +191,10 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
                 orden.getFechaCompra(),
                 orden.getEstado(),
                 nombreComprador,
+                comprador.getMail(),
                 cantidadProductos,
                 total,
-                itemsVenta);
+                itemsVenta,
+                estadosSiguientes(orden.getEstado()));
     }
 }

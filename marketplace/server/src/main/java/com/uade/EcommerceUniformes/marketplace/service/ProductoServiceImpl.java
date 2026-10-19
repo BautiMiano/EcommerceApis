@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.service;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -41,7 +42,8 @@ public class ProductoServiceImpl implements ProductoService {
     private final UsuarioLogueadoService usuarioLogueadoService;
     private final StockTalleRepository stockTalleRepository;
 
-    private ProductoRequest toResponse(Producto producto) {
+    @Override
+    public ProductoRequest toResponse(Producto producto) {
         ProductoRequest response = new ProductoRequest();
         response.setId(producto.getId());
 
@@ -51,6 +53,8 @@ public class ProductoServiceImpl implements ProductoService {
 
         response.setNombre(producto.getNombre());
         response.setDescripcion(producto.getDescripcion());
+        response.setSku(producto.getSku());
+        response.setMarca(producto.getMarca());
         response.setPrecio(producto.getPrecio());
         response.setTalles(producto.getTalles().stream()
                 .sorted(Comparator.comparing(StockTalle::getTalle))
@@ -58,29 +62,44 @@ public class ProductoServiceImpl implements ProductoService {
                 .toList());
         response.setStock(producto.getStockTotal());
         response.setActivo(producto.isActivo());
+        response.setEstado(producto.getEstado());
+        response.setVendedorId(producto.getVendedor().getId());
+        response.setVendedor(producto.getVendedor().getNombreUsuario());
+
+        if (producto.getCategoria() != null) {
+            response.setCategoria(producto.getCategoria().getNombre());
+        }
+
+        if (producto.getDescuento() != null) {
+            response.setDescuentoId(producto.getDescuento().getIdDescuento());
+            response.setDescuentoPorcentaje(producto.getDescuento().getPorcentaje());
+            response.setDescuentoAplicadoPorAdmin(producto.isDescuentoAplicadoPorAdmin());
+        }
 
         if (producto.getImagenes() != null) {
-            List<String> imagenesBase64 = producto.getImagenes().stream()
-                    .filter(img -> Boolean.TRUE.equals(img.getActivo()))
-                    .map(img -> {
-                        try {
-                            if (img.getImagen() != null) {
-                                byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
-                                String tipoContenido = img.getTipoContenido() == null
-                                        ? "application/octet-stream"
-                                        : img.getTipoContenido();
-                                return "data:" + tipoContenido + ";base64,"
-                                        + Base64.getEncoder().encodeToString(bytes);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    })
-                    .filter(b64 -> b64 != null)
-                    .toList();
+            // Se arman juntas las dos listas para que cada imagen quede alineada con su id
+            List<String> imagenesBase64 = new ArrayList<>();
+            List<Long> imagenIds = new ArrayList<>();
+
+            for (Imagen img : producto.getImagenes()) {
+                if (!Boolean.TRUE.equals(img.getActivo()) || img.getImagen() == null) {
+                    continue;
+                }
+                try {
+                    byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
+                    String tipoContenido = img.getTipoContenido() == null
+                            ? "application/octet-stream"
+                            : img.getTipoContenido();
+                    imagenesBase64.add("data:" + tipoContenido + ";base64,"
+                            + Base64.getEncoder().encodeToString(bytes));
+                    imagenIds.add(img.getId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
             response.setImagenes(imagenesBase64);
+            response.setImagenIds(imagenIds);
         }
 
         return response;
@@ -152,6 +171,8 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = new Producto();
         producto.setNombre(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
+        producto.setSku(textoOpcional(request.getSku()));
+        producto.setMarca(textoOpcional(request.getMarca()));
         producto.setPrecio(request.getPrecio());
         producto.setEstado(request.getEstado());
         producto.setVendedor(usuarioLogueado);
@@ -244,6 +265,11 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
+    // Guarda null en lugar de textos vacíos para los campos opcionales
+    private String textoOpcional(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
+    }
+
     private StockTalle obtenerStockTalle(Producto producto, Talle talle) {
         return producto.buscarTalle(talle)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -295,6 +321,8 @@ public class ProductoServiceImpl implements ProductoService {
 
         producto.setNombre(request.getNombre().trim());
         producto.setDescripcion(request.getDescripcion());
+        producto.setSku(textoOpcional(request.getSku()));
+        producto.setMarca(textoOpcional(request.getMarca()));
         producto.setPrecio(request.getPrecio());
         producto.setCategoria(categoria);
 
@@ -395,6 +423,15 @@ public class ProductoServiceImpl implements ProductoService {
         StockTalle stockTalle = obtenerStockTalle(producto, talle);
         stockTalle.setStock(stockTalle.getStock() - cantidad);
         stockTalle.setStockReservado(stockTalle.getStockReservado() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    @Override
+    public void devolverStock(Long productoId, Talle talle, int cantidad) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+        StockTalle stockTalle = obtenerStockTalle(producto, talle);
+        stockTalle.setStock(stockTalle.getStock() + cantidad);
         productoRepository.save(producto);
     }
 

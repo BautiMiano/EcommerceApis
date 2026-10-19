@@ -20,11 +20,11 @@ const CartSection = () => {
             .catch(() => setItems([]))
     }, [])
 
-    const cambiarCantidad = (productoId, cantidad) => {
+    const cambiarCantidad = (productoId, talle, cantidad) => {
         if(cantidad < 1){
             return
         }
-        actualizarCantidadCarrito(carritoId, productoId, cantidad)
+        actualizarCantidadCarrito(carritoId, productoId, talle, cantidad)
             .then((data) => {
                 setItems(data.items)
                 setTotal(data.total)
@@ -32,8 +32,8 @@ const CartSection = () => {
             .catch((error) => alert(error.message))
     }
 
-    const eliminarProducto = (productoId) => {
-        eliminarProductoDelCarrito(carritoId, productoId)
+    const eliminarProducto = (productoId, talle) => {
+        eliminarProductoDelCarrito(carritoId, productoId, talle)
             .then((data) => {
                 setItems(data.items)
                 setTotal(data.total)

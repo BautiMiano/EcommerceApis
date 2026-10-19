@@ -30,7 +30,13 @@ public interface ProductoService {
 
     void descontarStockDefinitivo(Long productoId, Talle talle, int cantidad);
 
+    /** Devuelve al stock las unidades de un pedido cancelado. */
+    void devolverStock(Long productoId, Talle talle, int cantidad);
+
     Optional<Producto> getProductoEntityById(Long productoId);
+
+    /** Arma la respuesta de un producto (con talles, stock total e imágenes) para reutilizarla en otros servicios. */
+    ProductoRequest toResponse(Producto producto);
 
     List<ProductoRequest> getMisProductos();
 

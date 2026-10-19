@@ -1,0 +1,26 @@
+.campo-contrasena {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.campo-contrasena input {
+  padding-right: 44px;
+}
+
+.campo-contrasena button {
+  position: absolute;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  background: none;
+}
+
+.campo-contrasena button .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.campo-contrasena button:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+}

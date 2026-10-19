@@ -35,10 +35,10 @@ const CampoFormulario = ({
   }
 
   return (
-    <div className="publicacion-field">
+    <div className="panel-campo">
       <label htmlFor={name}>{label}</label>
       {renderizarControl()}
-      {error && <small id={idError} className="publicacion-error">{error}</small>}
+      {error && <small id={idError} className="panel-campo-error">{error}</small>}
     </div>
   )
 }

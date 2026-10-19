@@ -1,4 +1,4 @@
-import React from 'react';
+import { textoTalles } from '../../utils/talles.js';
 import './ProductCard.css';
 
 export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
@@ -27,7 +27,9 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
           <p className="product-desc">{product.descripcion}</p>
           <div className="product-chips">
             <span className="stock-info">Stock: {product.stock} u.</span>
-            {product.talle && <span className="stock-info">Talle {product.talle}</span>}
+            {product.talles?.length > 0 && (
+              <span className="stock-info">Talle {textoTalles(product.talles)}</span>
+            )}
           </div>
         </div>
 

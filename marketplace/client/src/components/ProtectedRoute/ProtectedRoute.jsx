@@ -1,19 +1,19 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { obtenerSesion, rutaInicioPorRol } from '../../utils/sesion.js';
 
-export const ProtectedRoute = ({ rolProhibido }) => {
-  const token = localStorage.getItem('token');
-  const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+// Deja pasar solo a los roles indicados. Los visitantes pasan únicamente si permitirVisitantes es true;
+// si no, van al login. Un rol sin permiso vuelve a su propio inicio.
+// Es solo para la navegación: los permisos reales los valida el backend.
+export const ProtectedRoute = ({ rolesPermitidos, permitirVisitantes = false }) => {
+  const { logueado, rol } = obtenerSesion();
 
-  const estaLogueado = Boolean(token);
-  const esRolProhibido = estaLogueado && userRole.includes(rolProhibido.toUpperCase());
-  const tieneAcceso = !esRolProhibido;
+  if (!logueado) {
+    return permitirVisitantes ? <Outlet /> : <Navigate to="/login" replace />;
+  }
 
-  return (
-    <>
-=      {!tieneAcceso && <Navigate to="/" replace />}
+  if (!rolesPermitidos.includes(rol)) {
+    return <Navigate to={rutaInicioPorRol(rol)} replace />;
+  }
 
-=      {tieneAcceso && <Outlet />}
-    </>
-  );
+  return <Outlet />;
 };
