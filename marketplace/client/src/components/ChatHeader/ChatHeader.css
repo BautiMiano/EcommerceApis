@@ -1,0 +1,39 @@
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px 18px 20px;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.chat-header-titulos {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-header-titulos h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.chat-header-titulos span {
+  font-size: 13px;
+  color: #d4d4d4;
+}
+
+.chat-header-cerrar {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.chat-header-cerrar:hover {
+  background-color: #262626;
+}

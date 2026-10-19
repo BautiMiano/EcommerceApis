@@ -18,7 +18,8 @@ export const armarFavorito = (favorito) => {
     estado: producto.estado,
     stockDisponible: talles.reduce((total, t) => total + t.stock - t.stockReservado, 0),
     descuento: producto.descuentoPorcentaje || 0,
-    vendedor: producto.vendedor
+    vendedor: producto.vendedor,
+    imagen: producto.imagenes?.[0]
   }
 }
 

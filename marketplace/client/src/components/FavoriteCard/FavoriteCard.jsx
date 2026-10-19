@@ -4,7 +4,7 @@ import StockStatus from "../StockStatus/StockStatus"
 import Button from "../Button/Button"
 import './FavoriteCard.css'
 
-const FavoriteCard = ({id, nombre, descripcion, precio, talle, talleUnico, categoria, estado, stockDisponible, descuento, vendedor, quitarFavorito, moverAlCarrito}) => {
+const FavoriteCard = ({id, nombre, descripcion, precio, talle, talleUnico, categoria, estado, stockDisponible, descuento, vendedor, imagen, quitarFavorito, moverAlCarrito}) => {
 
     const navigate = useNavigate()
 
@@ -28,7 +28,9 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, talleUnico, categ
                         <img src="/icons/corazon-rojo.svg" alt="Quitar de favoritos" />
                     </button>
                 </div>
-                <img className="favorite-card-imagen" src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} onClick={verProducto} />
+                {imagen
+                    ? <img className="favorite-card-foto" src={imagen} alt={'Imagen de ' + nombre} onClick={verProducto} />
+                    : <img className="favorite-card-imagen" src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} onClick={verProducto} />}
             </div>
             <div className="favorite-card-cuerpo">
                 <div className="favorite-card-vendedor">
