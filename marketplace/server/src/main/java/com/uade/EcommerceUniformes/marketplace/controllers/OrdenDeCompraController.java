@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.VentaResponse;
 import com.uade.EcommerceUniformes.marketplace.service.OrdenDeCompraService;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import org.springframework.security.core.Authentication;
@@ -44,6 +45,16 @@ public class OrdenDeCompraController {
     @GetMapping("/mis-ordenes/{ordenId}")
     public Optional<OrdenDeCompra> getMisOrdenesDeCompraById(@PathVariable Long ordenId) {
         return ordenDeCompraSerivice.getMisOrdenesDeCompraById(ordenId);
+    }
+
+    @GetMapping("/mis-ventas")
+    public List<VentaResponse> getMisVentas() {
+        return ordenDeCompraSerivice.getMisVentas();
+    }
+
+    @GetMapping("/mis-ventas/{ordenId}")
+    public VentaResponse getMiVentaById(@PathVariable Long ordenId) {
+        return ordenDeCompraSerivice.getMiVentaById(ordenId);
     }
 
 

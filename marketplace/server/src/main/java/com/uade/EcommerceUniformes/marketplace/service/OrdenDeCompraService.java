@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenDeCompraRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.VentaResponse;
 
 public interface OrdenDeCompraService {
 
@@ -15,6 +16,10 @@ public interface OrdenDeCompraService {
     List<OrdenDeCompra> getOrdenesDeCompraByUsuarioId();
 
     Optional<OrdenDeCompra> getMisOrdenesDeCompraById(Long ordenId);
+
+    List<VentaResponse> getMisVentas();
+
+    VentaResponse getMiVentaById(Long ordenId);
 
 
 }

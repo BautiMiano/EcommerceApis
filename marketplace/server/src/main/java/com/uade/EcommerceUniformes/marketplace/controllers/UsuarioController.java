@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PerfilResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioService;
 
@@ -28,6 +29,11 @@ public class UsuarioController {
     @GetMapping
     public List<UsuarioDto> getUsuarios() {
         return usuarioService.getUsuario();
+    }
+
+    @GetMapping("/me")
+    public PerfilResponse getMiPerfil() {
+        return usuarioService.getMiPerfil();
     }
 
     @GetMapping("/{usuarioId}")

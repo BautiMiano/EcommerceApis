@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 
 public interface ProductoService {
@@ -23,11 +24,11 @@ public interface ProductoService {
 
     public void modificarStock(ProductoRequest request);
 
-    void reservarStock(Long productoId, int cantidad);
+    void reservarStock(Long productoId, Talle talle, int cantidad);
 
-    void liberarStock(Long productoId, int cantidad);
+    void liberarStock(Long productoId, Talle talle, int cantidad);
 
-    void descontarStockDefinitivo(Long productoId, int cantidad);
+    void descontarStockDefinitivo(Long productoId, Talle talle, int cantidad);
 
     Optional<Producto> getProductoEntityById(Long productoId);
 

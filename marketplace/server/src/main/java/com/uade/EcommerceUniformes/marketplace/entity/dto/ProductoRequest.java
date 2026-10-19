@@ -1,6 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.entity.dto;
 
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoProducto;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
@@ -21,14 +22,17 @@ public class ProductoRequest {
     @JsonProperty("precio")
     private Double precio;
 
-    @JsonProperty("talle")
-    private String talle;
+    // Talles que ofrece el producto, cada uno con su stock
+    @JsonProperty("talles")
+    private List<TalleStockDto> talles;
 
+    // Solo en las respuestas: suma del stock de todos los talles
     @JsonProperty("stock")
     private Integer stock;
 
-    @JsonProperty("stockReservado")
-    private Integer stockReservado;
+    // Solo en PATCH /productos/stock: el talle al que se le suma stock
+    @JsonProperty("talle")
+    private Talle talle;
 
     @JsonProperty("estado")
     private EstadoProducto estado;

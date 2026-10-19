@@ -37,6 +37,9 @@ public class SecurityConfig {
                         // Publicos
                         .requestMatchers("/auth/**", "/error").permitAll()
 
+                        // Perfil propio (ANTES de la regla de admin de GET /usuarios/**)
+                        .requestMatchers(HttpMethod.GET, "/usuarios/me").authenticated()
+
                         // Usuarios (solo admin)
                         .requestMatchers(HttpMethod.GET, "/usuarios/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/usuarios/**").hasRole("ADMIN")
@@ -50,6 +53,7 @@ public class SecurityConfig {
                         // Ordenes
                         .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ordenes/*").hasRole("COMPRADOR")
+                        .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/mis-ventas", "/ordenesDeCompra/mis-ventas/*").hasRole("VENDEDOR")
                         .requestMatchers(HttpMethod.GET, "/ordenesDeCompra").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/ordenesDeCompra/*").hasRole("ADMIN")
 

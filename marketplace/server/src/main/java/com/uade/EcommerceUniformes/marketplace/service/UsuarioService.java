@@ -3,6 +3,7 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.util.List;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PerfilResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 
 public interface UsuarioService {
@@ -17,5 +18,7 @@ public interface UsuarioService {
 
 
     public UsuarioDto cambiarRol(Long usuarioId, Rol nuevoRol);
+
+    public PerfilResponse getMiPerfil();
 
 }

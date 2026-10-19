@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoProducto;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 
 /**
  * Búsqueda de productos para el chatbot.
@@ -19,11 +20,13 @@ public interface ProductoChatRepository extends JpaRepository<Producto, Long> {
     @Query("""
             SELECT p FROM Producto p
             WHERE p.activo = true
-              AND (p.stock - p.stockReservado) > 0
+              AND EXISTS (SELECT s FROM StockTalle s
+                          WHERE s.producto = p
+                            AND (s.stock - s.stockReservado) > 0
+                            AND (:talle IS NULL OR s.talle = :talle))
               AND (:texto IS NULL
                    OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :texto, '%'))
                    OR LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')))
-              AND (:talle IS NULL OR LOWER(p.talle) = LOWER(:talle))
               AND (:categoria IS NULL OR LOWER(p.categoria.nombre) = LOWER(:categoria))
               AND (:precioMaximo IS NULL OR p.precio <= :precioMaximo)
               AND (:estado IS NULL OR p.estado = :estado)
@@ -31,7 +34,7 @@ public interface ProductoChatRepository extends JpaRepository<Producto, Long> {
             """)
         List<Producto> buscarParaChat(
             @Param("texto") String texto,
-            @Param("talle") String talle,
+            @Param("talle") Talle talle,
             @Param("categoria") String categoria,
             @Param("precioMaximo") Double precioMaximo,
             @Param("estado") EstadoProducto estado,

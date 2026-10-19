@@ -21,6 +21,8 @@ import com.uade.EcommerceUniformes.marketplace.entity.ItemDeOrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
+import com.uade.EcommerceUniformes.marketplace.entity.StockTalle;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
@@ -58,7 +60,7 @@ public class CarritoServiceImpl implements CarritoService {
                     item.getCantidad(),
                     item.getPrecioUnitario(),
                     item.getPrecioUnitario() * item.getCantidad(),
-                    item.getProducto().getTalle(),
+                    item.getTalle() != null ? item.getTalle().name() : null,
                     item.getProducto().getCategoria() != null ? item.getProducto().getCategoria().getNombre() : null,
                     item.getProducto().getVendedor().getNombreUsuario()
             ))
@@ -109,20 +111,28 @@ public class CarritoServiceImpl implements CarritoService {
         }
     }
 
-    private void exigirStockDisponible(Producto producto, int cantidadTotal) {
-        int disponible = producto.getStock() - producto.getStockReservado();
-        if (cantidadTotal > disponible) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "No hay stock suficiente para el producto: " + producto.getNombre());
+    private void exigirTalle(Talle talle) {
+        if (talle == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicar el talle");
         }
     }
 
-    private Optional<ItemCarrito> buscarItem(Carrito carrito, Long productoId) {
+    private void exigirStockDisponible(Producto producto, Talle talle, int cantidadTotal) {
+        StockTalle stockTalle = producto.buscarTalle(talle)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "El producto " + producto.getNombre() + " no tiene el talle " + talle));
+        if (cantidadTotal > stockTalle.getStockDisponible()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No hay stock suficiente para el producto: " + producto.getNombre() + " en talle " + talle);
+        }
+    }
+
+    private Optional<ItemCarrito> buscarItem(Carrito carrito, Long productoId, Talle talle) {
         if (carrito.getItems() == null) {
             return Optional.empty();
         }
         return carrito.getItems().stream()
-                .filter(i -> i.getProducto().getId().equals(productoId))
+                .filter(i -> i.getProducto().getId().equals(productoId) && i.getTalle() == talle)
                 .findFirst();
     }
 
@@ -159,14 +169,14 @@ public class CarritoServiceImpl implements CarritoService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No podes ver el carrito de otro usuario");
         }
 
-        Optional<Carrito> armado = carritoRepository.findByUsuarioIdAndEstado(usuarioId, EstadoCarrito.ARMADO);
+        Optional<Carrito> carrito = carritoRepository.findByUsuarioId(usuarioId);
 
-        // Compradores viejos que ya pagaron/expiraron y se quedaron sin carrito armado
-        if (armado.isEmpty() && logueado.getId().equals(usuarioId) && logueado.getRolUsuario() == Rol.COMPRADOR) {
-            armado = Optional.of(crearCarritoNuevo(logueado));
+        // Compradores viejos que se registraron sin carrito
+        if (carrito.isEmpty() && logueado.getId().equals(usuarioId) && logueado.getRolUsuario() == Rol.COMPRADOR) {
+            carrito = Optional.of(crearCarritoNuevo(logueado));
         }
 
-        return armado.map(this::convertirACarritoResponse);
+        return carrito.map(this::convertirACarritoResponse);
     }
 
     // ---------- modificaciones ----------
@@ -175,6 +185,7 @@ public class CarritoServiceImpl implements CarritoService {
     @Transactional
     public CarritoResponse addProductoToCarrito(Long carritoId, CarritoRequest request) {
         exigirCantidadValida(request.getCantidad());
+        exigirTalle(request.getTalle());
 
         Carrito carrito = obtenerCarritoPropio(carritoId);
         exigirArmado(carrito);
@@ -191,19 +202,20 @@ public class CarritoServiceImpl implements CarritoService {
             carrito.setItems(new ArrayList<>());
         }
 
-        Optional<ItemCarrito> existente = buscarItem(carrito, request.getProductoId());
+        Optional<ItemCarrito> existente = buscarItem(carrito, request.getProductoId(), request.getTalle());
 
         if (existente.isPresent()) {
             ItemCarrito item = existente.get();
             int nuevaCantidad = item.getCantidad() + request.getCantidad();
-            exigirStockDisponible(producto, nuevaCantidad);
+            exigirStockDisponible(producto, request.getTalle(), nuevaCantidad);
             item.setCantidad(nuevaCantidad);
         } else {
-            exigirStockDisponible(producto, request.getCantidad());
+            exigirStockDisponible(producto, request.getTalle(), request.getCantidad());
 
             ItemCarrito nuevoItem = new ItemCarrito();
             nuevoItem.setCarrito(carrito);
             nuevoItem.setProducto(producto);
+            nuevoItem.setTalle(request.getTalle());
             nuevoItem.setCantidad(request.getCantidad());
             nuevoItem.setPrecioUnitario(producto.getPrecio());
             carrito.getItems().add(nuevoItem);
@@ -216,15 +228,16 @@ public class CarritoServiceImpl implements CarritoService {
     @Transactional
     public CarritoResponse updateCantidadProducto(Long carritoId, CarritoRequest request) {
         exigirCantidadValida(request.getCantidad());
+        exigirTalle(request.getTalle());
 
         Carrito carrito = obtenerCarritoPropio(carritoId);
         exigirArmado(carrito);
 
-        ItemCarrito item = buscarItem(carrito, request.getProductoId())
+        ItemCarrito item = buscarItem(carrito, request.getProductoId(), request.getTalle())
                 .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
-        exigirStockDisponible(item.getProducto(), request.getCantidad());
+        exigirStockDisponible(item.getProducto(), item.getTalle(), request.getCantidad());
         item.setCantidad(request.getCantidad());
 
         return convertirACarritoResponse(carritoRepository.save(carrito));
@@ -233,10 +246,12 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional
     public CarritoResponse removeProductoFromCarrito(Long carritoId, CarritoRequest request) {
+        exigirTalle(request.getTalle());
+
         Carrito carrito = obtenerCarritoPropio(carritoId);
         exigirArmado(carrito);
 
-        ItemCarrito item = buscarItem(carrito, request.getProductoId())
+        ItemCarrito item = buscarItem(carrito, request.getProductoId(), request.getTalle())
                 .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
@@ -269,7 +284,7 @@ public class CarritoServiceImpl implements CarritoService {
         }
 
         for (ItemCarrito item : carrito.getItems()) {
-            productoService.reservarStock(item.getProducto().getId(), item.getCantidad());
+            productoService.reservarStock(item.getProducto().getId(), item.getTalle(), item.getCantidad());
         }
 
         carrito.setEstado(EstadoCarrito.PENDIENTE_PAGO);
@@ -301,11 +316,12 @@ public class CarritoServiceImpl implements CarritoService {
 
         for (ItemCarrito itemCarrito : carrito.getItems()) {
             productoService.descontarStockDefinitivo(
-                    itemCarrito.getProducto().getId(), itemCarrito.getCantidad());
+                    itemCarrito.getProducto().getId(), itemCarrito.getTalle(), itemCarrito.getCantidad());
 
             ItemDeOrdenDeCompra itemOrden = new ItemDeOrdenDeCompra();
             itemOrden.setOrden(orden);
             itemOrden.setProducto(itemCarrito.getProducto());
+            itemOrden.setTalle(itemCarrito.getTalle());
             itemOrden.setCantidad(itemCarrito.getCantidad());
             itemOrden.setPrecioUnitario(itemCarrito.getPrecioUnitario());
             orden.getItems().add(itemOrden);
@@ -316,13 +332,12 @@ public class CarritoServiceImpl implements CarritoService {
         orden.setTotal(total);
         ordenDeCompraRepository.save(orden);
 
-        carrito.setEstado(EstadoCarrito.PAGADO);
-        Carrito guardado = carritoRepository.save(carrito);
+        // La compra queda en la orden: el mismo carrito se vacía para seguir comprando
+        carrito.getItems().clear();
+        carrito.setEstado(EstadoCarrito.ARMADO);
+        carrito.setFechaInicioPago(null);
 
-        // El comprador queda con un carrito nuevo para seguir comprando
-        crearCarritoNuevo(carrito.getUsuario());
-
-        return convertirACarritoResponse(guardado);
+        return convertirACarritoResponse(carritoRepository.save(carrito));
     }
 
     @Override
@@ -336,12 +351,12 @@ public class CarritoServiceImpl implements CarritoService {
 
         for (Carrito carrito : vencidos) {
             for (ItemCarrito item : carrito.getItems()) {
-                productoService.liberarStock(item.getProducto().getId(), item.getCantidad());
+                productoService.liberarStock(item.getProducto().getId(), item.getTalle(), item.getCantidad());
             }
-            carrito.setEstado(EstadoCarrito.EXPIRADO);
+            // Vuelve a ARMADO con los mismos productos para que el comprador pueda reintentar el pago
+            carrito.setEstado(EstadoCarrito.ARMADO);
+            carrito.setFechaInicioPago(null);
             carritoRepository.save(carrito);
-
-            crearCarritoNuevo(carrito.getUsuario());
         }
     }
 }

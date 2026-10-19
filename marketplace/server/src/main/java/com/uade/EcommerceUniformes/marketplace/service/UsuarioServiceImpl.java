@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PerfilResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 
@@ -17,6 +18,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioLogueadoService usuarioLogueadoService;
+
+    public PerfilResponse getMiPerfil() {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        return new PerfilResponse(
+                usuario.getId(),
+                usuario.getNombreUsuario(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getMail(),
+                usuario.getRolUsuario());
+    }
 
     public List<UsuarioDto> getUsuario() {
 

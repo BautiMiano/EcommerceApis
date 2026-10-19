@@ -12,4 +12,6 @@ public interface ItemDeOrdenDeCompraRepository extends JpaRepository<ItemDeOrden
     List<ItemDeOrdenDeCompra> findByOrdenId(Long ordenId);
     Optional<ItemDeOrdenDeCompra> findByOrdenIdAndProductoId(Long ordenId, Long productoId);
     boolean existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(Long usuarioId, Long productoId, EstadoOrden estado);
+    List<ItemDeOrdenDeCompra> findByProductoVendedorIdOrderByOrdenIdDesc(Long vendedorId);
+    List<ItemDeOrdenDeCompra> findByOrdenIdAndProductoVendedorId(Long ordenId, Long vendedorId);
 }

@@ -49,7 +49,7 @@ public class VerMisOrdenesTool implements ChatTool {
         List<OrdenResultado.Item> items = orden.getItems().stream()
                 .map(item -> new OrdenResultado.Item(
                         item.getProducto().getNombre(),
-                        item.getProducto().getTalle(),
+                        item.getTalle() != null ? item.getTalle().name() : null,
                         item.getCantidad(),
                         item.getPrecioUnitario()))
                 .toList();

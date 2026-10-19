@@ -11,8 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,8 +30,9 @@ public class Carrito {
     @Enumerated(EnumType.STRING)
     private EstadoCarrito estado;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    // Cada usuario tiene un solo carrito, que se reutiliza después de cada compra
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Usuario usuario;
