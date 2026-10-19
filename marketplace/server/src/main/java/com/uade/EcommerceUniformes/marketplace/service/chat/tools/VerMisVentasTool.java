@@ -73,11 +73,12 @@ public class VerMisVentasTool implements ChatTool {
                         Collectors.summingDouble(this::subtotal)));
 
         List<VentasResultado.ProductoVendido> masVendidos = items.stream()
-                .collect(Collectors.groupingBy(i -> i.getProducto().getId()))
+                // Agrupa por producto y talle: cada talle cuenta como un producto vendido distinto
+                .collect(Collectors.groupingBy(i -> i.getProducto().getId() + "-" + i.getTalle()))
                 .values().stream()
                 .map(delMismoProducto -> new VentasResultado.ProductoVendido(
                         delMismoProducto.get(0).getProducto().getNombre(),
-                        delMismoProducto.get(0).getProducto().getTalle(),
+                        talleDe(delMismoProducto.get(0)),
                         delMismoProducto.stream().mapToInt(ItemDeOrdenDeCompra::getCantidad).sum(),
                         delMismoProducto.stream().mapToDouble(this::subtotal).sum()))
                 .sorted(Comparator.comparingInt(VentasResultado.ProductoVendido::unidades).reversed())
@@ -91,7 +92,7 @@ public class VerMisVentasTool implements ChatTool {
                         String.valueOf(i.getOrden().getFechaCompra()),
                         i.getOrden().getEstado().name(),
                         i.getProducto().getNombre(),
-                        i.getProducto().getTalle(),
+                        talleDe(i),
                         i.getCantidad(),
                         i.getPrecioUnitario(),
                         subtotal(i)))
@@ -103,6 +104,10 @@ public class VerMisVentasTool implements ChatTool {
 
     private double subtotal(ItemDeOrdenDeCompra item) {
         return item.getCantidad() * item.getPrecioUnitario();
+    }
+
+    private String talleDe(ItemDeOrdenDeCompra item) {
+        return item.getTalle() != null ? item.getTalle().name() : null;
     }
 
     /** Convierte la fecha de la orden a "año-mes", sea LocalDate o Date. */

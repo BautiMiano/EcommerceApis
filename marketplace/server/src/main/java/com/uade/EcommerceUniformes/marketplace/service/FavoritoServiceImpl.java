@@ -12,7 +12,6 @@ import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.FavoritoResponse;
-import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.FavoritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 
@@ -28,20 +27,8 @@ public class FavoritoServiceImpl implements FavoritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
-    private ProductoRequest toProductoResponse(Producto producto) {
-        ProductoRequest response = new ProductoRequest();
-        response.setId(producto.getId());
-        response.setNombre(producto.getNombre());
-        response.setDescripcion(producto.getDescripcion());
-        response.setPrecio(producto.getPrecio());
-        response.setTalle(producto.getTalle());
-        response.setStock(producto.getStock());
-        response.setActivo(producto.isActivo());
-        if (producto.getCategoria() != null) {
-            response.setCategoryId(producto.getCategoria().getId());
-        }
-        return response;
-    }
+    @Autowired
+    private ProductoService productoService;
 
     @Override
     public List<FavoritoResponse> getMisFavoritos() {
@@ -53,7 +40,7 @@ public class FavoritoServiceImpl implements FavoritoService {
         return favoritos.stream().map(fav -> {
             FavoritoResponse dto = new FavoritoResponse();
             dto.setId(fav.getId());
-            dto.setProducto(toProductoResponse(fav.getProducto()));
+            dto.setProducto(productoService.toResponse(fav.getProducto()));
             return dto;
         }).toList();
     }

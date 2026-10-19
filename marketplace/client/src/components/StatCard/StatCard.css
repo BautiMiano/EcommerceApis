@@ -1,0 +1,74 @@
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--uf-borde);
+  border-radius: 12px;
+  background-color: var(--uf-blanco);
+}
+
+.stat-card-icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #f3f3f3;
+}
+
+.stat-card-icono .material-symbols-outlined {
+  font-size: 30px;
+  font-variation-settings: 'wght' 300;
+}
+
+.stat-card-cuerpo {
+  min-width: 0;
+}
+
+.stat-card-etiqueta {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.stat-card-valor {
+  margin: 6px 0 4px;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 46px;
+  line-height: 1;
+}
+
+.stat-card-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.stat-card-tendencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.stat-card-tendencia .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.stat-card-sube {
+  color: var(--uf-verde);
+}
+
+.stat-card-baja {
+  color: var(--uf-rojo);
+}
+
+.stat-card-detalle {
+  color: var(--uf-texto-suave);
+}

@@ -1,6 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.repository;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,8 +15,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByPrecioBetween(Double min, Double max);
 
     List<Producto> findByNombreContainingIgnoreCase(String nombre);
-    List<Producto> findByTalleIgnoreCase(String talle);
-    List<Producto> findDistinctByTalleNotNull();
+    List<Producto> findDistinctByTalles_Talle(Talle talle);
  
     
 }

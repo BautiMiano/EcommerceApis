@@ -1,0 +1,8 @@
+.producto-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.producto-acciones .panel-boton {
+  min-width: 92px;
+}

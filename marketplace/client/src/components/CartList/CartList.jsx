@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import CartItem from "../CartItem/CartItem"
+import { etiquetaTalle } from "../../utils/talles"
 import Button from "../Button/Button"
 import './CartList.css'
 
@@ -26,11 +27,12 @@ const CartList = ({items, unidades, cambiarCantidad, eliminarProducto}) => {
                 {
                     items.map((value)=>(
                         <CartItem
-                        key={value.productoId}
+                        key={value.productoId + '-' + value.talle}
                         productoId={value.productoId}
                         nombre={value.nombreProducto}
                         categoria={value.categoria ? value.categoria : 'Sin categoría'}
                         talle={value.talle}
+                        etiquetaTalle={etiquetaTalle(value.talle)}
                         vendedor={value.vendedor}
                         precioUnitario={'$' + value.precioUnitario.toLocaleString('es-AR')}
                         cantidad={value.cantidad}

@@ -66,13 +66,13 @@ public class VerMisProductosTool implements ChatTool {
         return new MiProductoResultado(
                 p.getId(),
                 p.getNombre(),
-                p.getTalle(),
+                p.getTallesTexto(),
                 p.getCategoria() != null ? p.getCategoria().getNombre() : null,
                 p.getEstado() != null ? p.getEstado().name() : null,
                 p.getPrecio(),
-                p.getStock(),
-                p.getStockReservado(),
-                p.getStock() - p.getStockReservado(),
+                p.getStockTotal(),
+                p.getStockReservadoTotal(),
+                p.getStockDisponible(),
                 p.isActivo());
     }
 }

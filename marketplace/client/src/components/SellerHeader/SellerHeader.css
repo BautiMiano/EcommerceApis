@@ -1,0 +1,128 @@
+.seller-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  min-height: 88px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--uf-borde);
+  background-color: var(--uf-blanco);
+}
+
+.seller-header-menu {
+  display: none;
+  margin-right: auto;
+  padding: 6px;
+  background: none;
+}
+
+.seller-header-usuario {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.seller-header-avatar {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  color: var(--uf-negro);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.seller-header-datos {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.seller-header-datos strong {
+  font-size: 15px;
+}
+
+.seller-header-datos a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--uf-texto-suave);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.seller-header-datos a .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.seller-header-desplegar {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  background: none;
+}
+
+.seller-header-desplegar:focus-visible,
+.seller-header-datos a:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+}
+
+.seller-header-desplegable {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: 6px;
+  border: 1px solid var(--uf-borde);
+  border-radius: 10px;
+  background-color: var(--uf-blanco);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.seller-header-desplegable a,
+.seller-header-desplegable button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--uf-negro);
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.seller-header-desplegable a:hover,
+.seller-header-desplegable button:hover {
+  background-color: var(--uf-fondo);
+}
+
+@media (max-width: 900px) {
+  .seller-header {
+    min-height: 68px;
+    padding: 10px 16px;
+  }
+
+  .seller-header-menu {
+    display: block;
+  }
+
+  .seller-header-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .seller-header-datos {
+    display: none;
+  }
+}

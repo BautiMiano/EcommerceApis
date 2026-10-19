@@ -23,6 +23,7 @@ const FavoritesGrid = ({favoritos, quitarFavorito, moverAlCarrito}) => {
                     descripcion={value.descripcion}
                     precio={value.precio}
                     talle={value.talle}
+                    talleUnico={value.talleUnico}
                     categoria={value.categoria}
                     estado={value.estado}
                     stockDisponible={value.stockDisponible}

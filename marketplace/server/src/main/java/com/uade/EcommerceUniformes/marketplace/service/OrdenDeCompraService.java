@@ -3,8 +3,10 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 import com.uade.EcommerceUniformes.marketplace.entity.OrdenDeCompra;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenDeCompraRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.VentaResponse;
 
 public interface OrdenDeCompraService {
 
@@ -15,6 +17,12 @@ public interface OrdenDeCompraService {
     List<OrdenDeCompra> getOrdenesDeCompraByUsuarioId();
 
     Optional<OrdenDeCompra> getMisOrdenesDeCompraById(Long ordenId);
+
+    List<VentaResponse> getMisVentas();
+
+    VentaResponse getMiVentaById(Long ordenId);
+
+    VentaResponse cambiarEstadoMiVenta(Long ordenId, EstadoOrden nuevoEstado);
 
 
 }

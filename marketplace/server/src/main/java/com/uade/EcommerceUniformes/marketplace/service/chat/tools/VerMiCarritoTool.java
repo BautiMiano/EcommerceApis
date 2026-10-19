@@ -45,7 +45,7 @@ public class VerMiCarritoTool implements ChatTool {
         List<CarritoResultado.Item> items = carrito.getItems().stream()
                 .map(item -> new CarritoResultado.Item(
                         item.getProducto().getNombre(),
-                        item.getProducto().getTalle(),
+                        item.getTalle() != null ? item.getTalle().name() : null,
                         item.getCantidad(),
                         item.getPrecioUnitario(),
                         item.getCantidad() * item.getPrecioUnitario()))

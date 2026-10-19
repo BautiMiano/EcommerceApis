@@ -1,0 +1,140 @@
+.pedido-detalle {
+  position: sticky;
+  top: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px;
+}
+
+.pedido-detalle-cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  background: none;
+}
+
+.pedido-detalle-cerrar:focus-visible {
+  outline: 2px solid var(--uf-naranja);
+}
+
+.pedido-detalle-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-right: 32px;
+}
+
+.pedido-detalle-titulo {
+  font-size: 34px;
+}
+
+.pedido-detalle-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.pedido-detalle-subtitulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pedido-detalle-subtitulo .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.pedido-detalle-dato {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3d4451;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.pedido-detalle-dato .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--uf-texto-suave);
+}
+
+.pedido-detalle-dato a {
+  color: inherit;
+}
+
+.pedido-detalle-items {
+  list-style: none;
+  border: 1px solid var(--uf-borde);
+  border-radius: 8px;
+}
+
+.pedido-detalle-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid var(--uf-borde);
+  font-size: 13px;
+}
+
+.pedido-detalle-item:last-child {
+  border-bottom: none;
+}
+
+.pedido-detalle-item-datos {
+  display: flex;
+  flex-direction: column;
+  color: var(--uf-texto-suave);
+}
+
+.pedido-detalle-item-datos strong {
+  color: var(--uf-negro);
+  font-weight: 500;
+}
+
+.pedido-detalle-item-precio {
+  white-space: nowrap;
+}
+
+.pedido-detalle-totales {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 24px;
+  margin: 8px 0 0;
+  padding-left: 40%;
+  font-size: 14px;
+}
+
+.pedido-detalle-totales dd {
+  margin: 0;
+  text-align: right;
+}
+
+.pedido-detalle-total {
+  padding-top: 8px;
+  border-top: 1px solid var(--uf-borde);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pedido-detalle-estado {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .pedido-detalle {
+    position: static;
+  }
+}

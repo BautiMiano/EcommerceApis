@@ -4,11 +4,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.uade.EcommerceUniformes.marketplace.controllers.auth.AuthenticationResponse;
+import com.uade.EcommerceUniformes.marketplace.controllers.config.JwtService;
 import com.uade.EcommerceUniformes.marketplace.entity.Rol;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ActualizarPerfilRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CambioContrasenaRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PerfilResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.UsuarioDto;
 import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 
@@ -17,6 +23,73 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioLogueadoService usuarioLogueadoService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    // El mail es el usuario del JWT: si cambia, el token viejo deja de servir y se devuelve uno nuevo
+    public AuthenticationResponse actualizarMiPerfil(ActualizarPerfilRequest request) {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        if (request.getNombre() == null || request.getNombre().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre no puede estar vacío");
+        }
+        if (request.getMail() == null || !request.getMail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El mail no es válido");
+        }
+
+        String mailNuevo = request.getMail().trim();
+        boolean mailEnUso = usuarioRepository.findByMail(mailNuevo)
+                .filter(otro -> !otro.getId().equals(usuario.getId()))
+                .isPresent();
+        if (mailEnUso) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese mail ya está registrado");
+        }
+
+        usuario.setNombre(request.getNombre().trim());
+        usuario.setApellido(request.getApellido() == null ? null : request.getApellido().trim());
+        usuario.setMail(mailNuevo);
+        usuarioRepository.save(usuario);
+
+        return AuthenticationResponse.builder()
+                .usuarioId(usuario.getId())
+                .accessToken(jwtService.generateToken(usuario))
+                .role(usuario.getRolUsuario().name())
+                .build();
+    }
+
+    public void cambiarMiContrasena(CambioContrasenaRequest request) {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        if (request.getContrasenaActual() == null
+                || !passwordEncoder.matches(request.getContrasenaActual(), usuario.getContrasena())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña actual no es correcta");
+        }
+        if (request.getContrasenaNueva() == null || request.getContrasenaNueva().length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La nueva contraseña debe tener al menos 8 caracteres");
+        }
+
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasenaNueva()));
+        usuarioRepository.save(usuario);
+    }
+
+    public PerfilResponse getMiPerfil() {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+
+        return new PerfilResponse(
+                usuario.getId(),
+                usuario.getNombreUsuario(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getMail(),
+                usuario.getRolUsuario());
+    }
 
     public List<UsuarioDto> getUsuario() {
 

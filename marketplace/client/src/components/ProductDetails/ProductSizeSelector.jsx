@@ -1,30 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { getTalles } from '../../utils/api.js';
+import { TALLES_SELECCIONABLES, TALLE_UNICO, etiquetaTalle, stockDisponibleDe } from '../../utils/talles.js';
 import './ProductSizeSelector.css';
 
 export const ProductSizeSelector = ({ product, selectedSize, onSelectSize }) => {
-  const [tallesGlobales, setTallesGlobales] = useState([]);
+  const tallesProducto = product?.talles || [];
+  const esTalleUnico = tallesProducto.some((t) => t.talle === TALLE_UNICO);
 
-  // Talle único del producto enviado por el backend
-  const talleProductoActual = product?.talle || '';
-
-  // Cargar la lista general de talles desde la API
-  useEffect(() => {
-    getTalles()
-      .then((data) => setTallesGlobales(data))
-      .catch(() => setTallesGlobales([]));
-  }, []);
+  // Un producto de talle único muestra solo esa opción; los demás muestran S a XXL
+  const opciones = esTalleUnico ? [TALLE_UNICO] : TALLES_SELECCIONABLES;
 
   return (
     <div className="size-selector-container">
       <div className="size-header">
-        <strong>TALLE SELECCIONADO: {selectedSize || 'SELECCIONAR'}</strong>
+        <strong>TALLE SELECCIONADO: {selectedSize ? etiquetaTalle(selectedSize) : 'SELECCIONAR'}</strong>
       </div>
 
       <div className="sizes-grid">
-        {tallesGlobales.length > 0 && tallesGlobales.map((size) => {
-          // El talle está disponible solo si coincide con el del producto
-          const esTalleDisponible = size.toUpperCase() === talleProductoActual.toUpperCase();
+        {opciones.map((size) => {
+          const talleProducto = tallesProducto.find((t) => t.talle === size);
+          // Disponible solo si el producto ofrece ese talle y le queda stock
+          const esTalleDisponible = Boolean(talleProducto) && stockDisponibleDe(talleProducto) > 0;
           const esSeleccionado = selectedSize === size;
 
           return (
@@ -34,8 +28,9 @@ export const ProductSizeSelector = ({ product, selectedSize, onSelectSize }) => 
               disabled={!esTalleDisponible}
               className={`size-btn ${esSeleccionado ? 'selected' : ''} ${!esTalleDisponible ? 'disabled' : ''}`}
               onClick={() => esTalleDisponible && onSelectSize(size)}
+              aria-pressed={esSeleccionado}
             >
-              {size}
+              {etiquetaTalle(size)}
             </button>
           );
         })}
