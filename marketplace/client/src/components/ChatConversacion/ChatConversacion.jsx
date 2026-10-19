@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import ChatMensaje from '../ChatMensaje/ChatMensaje'
 import ChatEntrada from '../ChatEntrada/ChatEntrada'
+import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
 import './ChatConversacion.css'
 
 const ChatConversacion = ({ conversacionId, onVolver }) => {
@@ -15,28 +16,14 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
         if (conversacionId === null) {
             return
         }
-        const token = localStorage.getItem('token')
 
-        fetch(`/chat/conversaciones/${conversacionId}`, {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Error al obtener la conversación')
-                }
-                return res.json()
-            })
-            .then(data => {
-                setMensajes(data.mensajes)
-                setCargando(false)
-            })
+        obtenerConversacion(conversacionId)
+            .then(data => setMensajes(data.mensajes))
             .catch(err => {
                 console.error(err)
                 setError('No se pudo cargar la conversación')
-                setCargando(false)
             })
+            .finally(() => setCargando(false))
     }, [conversacionId])
 
     // NUEVO: cada vez que cambian los mensajes, baja hasta el último
@@ -45,26 +32,11 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
     }, [mensajes, enviando])
 
     // NUEVO: mandar un mensaje a Uni
-    const enviar = (texto) => {
+        const enviar = (texto) => {
         setMensajes(prev => [...prev, { autor: 'USUARIO', texto: texto }])
         setEnviando(true)
 
-        const token = localStorage.getItem('token')
-
-        fetch('/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-               body: JSON.stringify({ conversacionId: idActual, mensaje: texto })   // CAMBIA
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Error al enviar el mensaje')
-                }
-                return res.json()
-            })
+        enviarMensajeChat(idActual, texto)
             .then(data => {
                 setIdActual(data.conversacionId)
                 setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta }])
@@ -76,9 +48,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
                     texto: 'No pude responder en este momento. Probá de nuevo en unos segundos.'
                 }])
             })
-            .finally(() => {
-                setEnviando(false)
-            })
+            .finally(() => setEnviando(false))
     }
 
     return (

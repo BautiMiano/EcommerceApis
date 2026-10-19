@@ -325,3 +325,21 @@ export const responderTicket = (ticketId, respuesta) =>
     body: JSON.stringify({ respuesta }),
   }, 'No se pudo enviar la respuesta.')
 
+// ---------- Chat ----------
+
+export const obtenerConversaciones = () =>
+  solicitar('/chat/conversaciones', {
+    headers: obtenerHeaders(),
+  }, 'No se pudo cargar el historial.')
+
+export const obtenerConversacion = (conversacionId) =>
+  solicitar(`/chat/conversaciones/${conversacionId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo cargar la conversación.')
+
+export const enviarMensajeChat = (conversacionId, mensaje) =>
+  solicitar('/chat', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ conversacionId, mensaje }),
+  }, 'No se pudo enviar el mensaje.')

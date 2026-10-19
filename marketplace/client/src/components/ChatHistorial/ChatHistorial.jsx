@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ConversacionItem from '../ConversacionItem/ConversacionItem'
+import { obtenerConversaciones } from '../../utils/api'
 import './ChatHistorial.css'
 
 const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
@@ -8,28 +9,13 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        const token = localStorage.getItem('token')
-
-        fetch('/chat/conversaciones', {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Error al obtener conversaciones')
-                }
-                return res.json()
-            })
-            .then(data => {
-                setConversaciones(data)
-                setCargando(false)
-            })
+        obtenerConversaciones()
+            .then(data => setConversaciones(data))
             .catch(err => {
                 console.error(err)
                 setError('No se pudo cargar el historial')
-                setCargando(false)
             })
+            .finally(() => setCargando(false))
     }, [])
 
     return (
