@@ -19,6 +19,7 @@ import EditarProducto from './views/EditarProducto.jsx';
 import PedidosRecibidos from './views/PedidosRecibidos.jsx';
 import MiPerfil from './views/MiPerfil.jsx';
 import { cerrarSesion } from './utils/sesion.js';
+import 'react-toastify/dist/ReactToastify.css'
 
 // Tienda pública y del comprador: navbar arriba y footer abajo
 const TiendaLayout = ({ onLogout }) => (

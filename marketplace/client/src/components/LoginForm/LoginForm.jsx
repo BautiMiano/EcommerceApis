@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import FormField from './FormField';
-import Button from './Button';
-import { loginUser } from '../utils/api';
+import FormField from "../FormField/FormField";
+import Button from "../ButtonRL/Button";
+import { loginUser } from '../../utils/api';
+
 
 export default function LoginForm({ onLoginExitoso }) {
 const [mail, setMail] = useState('');

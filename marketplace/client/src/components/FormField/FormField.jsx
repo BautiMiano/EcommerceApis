@@ -1,4 +1,4 @@
-
+import './FormField.css';
 const FormField = ({ label, name, type, placeholder, value, onChange, ayuda, full, children }) => {
   return (
     <div className={`form-field ${full ? 'form-field-full' : ''}`}>
