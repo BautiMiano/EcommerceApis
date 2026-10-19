@@ -2,8 +2,12 @@ import { nivelStock } from './talles'
 
 export const formatoPrecio = (valor) => '$' + Math.round(Number(valor)).toLocaleString('es-AR')
 
-export const formatoFecha = (fecha) =>
-  new Date(fecha).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
+// "19 oct 2026", como en los mockups
+export const formatoFecha = (fecha) => {
+  const dia = new Date(fecha)
+  const mes = dia.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '')
+  return `${dia.getDate()} ${mes} ${dia.getFullYear()}`
+}
 
 // Estados que define EstadoOrden en el backend, en el orden en que avanza un pedido
 export const ESTADOS_ORDEN = ['PENDIENTE', 'CONFIRMADA', 'ENVIADA', 'ENTREGADA', 'CANCELADA']

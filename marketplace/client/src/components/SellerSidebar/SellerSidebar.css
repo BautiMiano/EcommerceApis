@@ -3,9 +3,9 @@
   top: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
   height: 100vh;
-  padding: 28px 14px;
+  padding: 1.75rem 0.875rem;
   background-color: var(--uf-negro);
   color: var(--uf-blanco);
 }
@@ -14,37 +14,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 28px;
+  margin-bottom: 1.75rem;
 }
 
 /* El logo original tiene fondo blanco: invertido y con el tono corregido queda blanco y naranja sobre negro */
 .seller-sidebar-logo {
   position: relative;
   display: block;
-  width: 150px;
-  height: 84px;
+  width: 9.375rem;
+  height: 5.25rem;
   overflow: hidden;
 }
 
 .seller-sidebar-logo img {
   position: absolute;
-  top: -42px;
-  left: -75px;
-  width: 300px;
+  top: -2.625rem;
+  left: -4.6875rem;
+  width: 18.75rem;
   filter: invert(1) hue-rotate(180deg);
 }
 
 .seller-sidebar-logo:focus-visible {
-  outline: 2px solid var(--uf-naranja);
-  outline-offset: 4px;
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: 0.25rem;
 }
 
 .seller-sidebar-cerrar {
   display: none;
   position: absolute;
-  top: 16px;
-  right: 12px;
-  padding: 6px;
+  top: 1rem;
+  right: 0.75rem;
+  padding: 0.375rem;
   background: none;
   color: var(--uf-blanco);
 }
@@ -52,27 +52,27 @@
 .seller-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .seller-sidebar-link {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 0.875rem;
   width: 100%;
-  padding: 14px 16px;
+  padding: 0.875rem 1rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   background: none;
   color: var(--uf-blanco);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 400;
   text-align: left;
   text-decoration: none;
 }
 
 .seller-sidebar-link .material-symbols-outlined {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-variation-settings: 'wght' 300;
 }
 
@@ -81,8 +81,8 @@
 }
 
 .seller-sidebar-link:focus-visible {
-  outline: 2px solid var(--uf-naranja);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: -0.125rem;
 }
 
 .seller-sidebar-link-activo,
@@ -92,13 +92,13 @@
 }
 
 .seller-sidebar-divisor {
-  width: calc(100% - 20px);
-  margin: 18px auto;
+  width: calc(100% - 1.25rem);
+  margin: 1.125rem auto;
   border: none;
-  border-top: 1px solid #3a3a3a;
+  border-top: 0.0625rem solid #3a3a3a;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25em) {
   .seller-sidebar {
     position: fixed;
     left: 0;

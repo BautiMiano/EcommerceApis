@@ -1,8 +1,8 @@
 .producto-fila-producto {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 240px;
+  gap: 0.875rem;
+  min-width: 15rem;
 }
 
 .producto-fila-nombre {
@@ -10,11 +10,9 @@
 }
 
 .producto-fila-descripcion {
-  display: -webkit-box;
-  max-width: 220px;
+  max-width: 13.75rem;
   overflow: hidden;
   color: var(--uf-texto-suave);
-  font-size: 13px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
 }

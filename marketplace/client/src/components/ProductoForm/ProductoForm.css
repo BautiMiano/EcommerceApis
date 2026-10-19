@@ -1,27 +1,27 @@
 .producto-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: minmax(0, 1fr) 21.875rem;
   align-items: start;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .producto-form-principal,
 .producto-form-lateral {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0.875rem;
 }
 
 .producto-form-lateral {
   position: sticky;
-  top: 104px;
+  top: 6.5rem;
 }
 
 .producto-form-seccion {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 20px;
+  gap: 0.875rem;
+  padding: 1.25rem;
 }
 
 .producto-form-requerido {
@@ -31,53 +31,53 @@
 .producto-form-basica {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
-  gap: 14px 18px;
+  gap: 0.875rem 1.125rem;
 }
 
 .producto-form-columna {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0.875rem;
 }
 
 .producto-form-descripcion textarea {
   height: 100%;
-  min-height: 150px;
+  min-height: 9.375rem;
   resize: vertical;
 }
 
 .producto-form-precio {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 1rem;
 }
 
 .producto-form-talles-cabecera {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 14px;
+  gap: 0.25rem 0.875rem;
 }
 
 .producto-form-recomendaciones-titulo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
 }
 
 .producto-form-recomendaciones {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
   list-style: none;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #3d4451;
 }
 
 .producto-form-recomendaciones li {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .producto-form-recomendaciones li::before {
@@ -89,15 +89,15 @@
 .producto-form-acciones {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .producto-form-acciones .panel-boton {
-  padding: 14px 18px;
-  font-size: 15px;
+  padding: 0.875rem 1.125rem;
+  font-size: 0.9375rem;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 68.75em) {
   .producto-form {
     grid-template-columns: 1fr;
   }
@@ -107,7 +107,7 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 43.75em) {
   .producto-form-basica,
   .producto-form-precio {
     grid-template-columns: 1fr;
