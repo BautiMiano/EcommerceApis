@@ -4,7 +4,7 @@ import BenefitList from "../BenefitList/BenefitList"
 import Button from "../Button/Button"
 import './RoleCard.css'
 
-const RoleCard = ({variante, icono, iconoAlt, varianteIcono, etiqueta, varianteEtiqueta, titulo, descripcion, beneficios, iconoBeneficio, textoBoton, iconoBoton, iconoBotonAlt, varianteBoton}) => {
+const RoleCard = ({variante, icono, iconoAlt, varianteIcono, etiqueta, varianteEtiqueta, titulo, descripcion, beneficios, iconoBeneficio, textoBoton, iconoBoton, iconoBotonAlt, varianteBoton, handleClick}) => {
     return(
         <article className={'role-card role-card-' + variante}>
             <IconCircle icono={icono} alt={iconoAlt} variante={varianteIcono} />
@@ -18,6 +18,7 @@ const RoleCard = ({variante, icono, iconoAlt, varianteIcono, etiqueta, varianteE
             icono={iconoBoton}
             iconoAlt={iconoBotonAlt}
             variante={varianteBoton}
+            handleClick={handleClick}
             />
         </article>
     )

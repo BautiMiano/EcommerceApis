@@ -33,7 +33,7 @@ const MisTickets = () => {
                     <h1>Mis tickets de soporte</h1>
                     <p>Consultá el estado de tus reclamos y las respuestas del equipo de UNIFORMA.</p>
                 </div>
-                <Link className="mis-tickets-nuevo" to="/tickets/nuevo">+ Nuevo ticket</Link>
+                <Link className="mis-tickets-nuevo" to="/vendedor/tickets/nuevo">+ Nuevo ticket</Link>
             </div>
 
             {tickets.length > 0 && (

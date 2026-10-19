@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.FavoritoResponse;
 import com.uade.EcommerceUniformes.marketplace.repository.FavoritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 
@@ -26,35 +27,38 @@ public class FavoritoServiceImpl implements FavoritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
-    @Override
-    public List<Favorito> getMisFavoritos() {
+    @Autowired
+    private ProductoService productoService;
 
+    @Override
+    public List<FavoritoResponse> getMisFavoritos() {
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
-        return favoritoRepository.findByUsuarioIdAndActivo(usuarioLogueado.getId(), true);
+        // 1. Consulta limpia por ID de usuario
+        List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuarioLogueado.getId());
+
+        return favoritos.stream().map(fav -> {
+            FavoritoResponse dto = new FavoritoResponse();
+            dto.setId(fav.getId());
+            dto.setProducto(productoService.toResponse(fav.getProducto()));
+            return dto;
+        }).toList();
     }
 
     @Override
     public Favorito agregarFavorito(Long productoId) {
-
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + productoId));
 
-        Optional<Favorito> favoritoExistente
-                = favoritoRepository.findByUsuarioIdAndProductoId(usuarioLogueado.getId(), producto.getId());
+        Optional<Favorito> favoritoExistente = favoritoRepository
+                .findByUsuarioIdAndProductoId(usuarioLogueado.getId(), producto.getId());
 
+        // 2. Si ya existe la tupla en la BD, directamente rechaza la petición
         if (favoritoExistente.isPresent()) {
-            Favorito favorito = favoritoExistente.get();
-
-            if (favorito.isActivo()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
-            }
-
-            favorito.setActivo(true);
-            return favoritoRepository.save(favorito);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
         }
 
         Favorito favorito = new Favorito();
@@ -66,19 +70,13 @@ public class FavoritoServiceImpl implements FavoritoService {
 
     @Override
     public void eliminarFavorito(Long productoId) {
-
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Favorito favorito = favoritoRepository.findByUsuarioIdAndProductoId(usuarioLogueado.getId(), productoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "El producto no se encuentra en tus favoritos"));
 
-        if (!favorito.isActivo()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en tus favoritos");
-        }
-
-        favorito.setActivo(false);
-
-        favoritoRepository.save(favorito);
+        // 3. Borrado físico directo de la entidad en la base de datos
+        favoritoRepository.delete(favorito);
     }
 }

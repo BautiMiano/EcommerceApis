@@ -1,0 +1,8 @@
+
+# Dependencias de Node y React
+/node_modules/
+/client/node_modules/
+
+# Archivos generados
+/client/dist/
+/target/

@@ -1,4 +1,4 @@
-import React from 'react';
+import { textoTalles } from '../../utils/talles.js';
 import './ProductCard.css';
 
 export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
@@ -6,8 +6,11 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
   const aviso = sinStock ? 'Sin stock' : product.stock <= 10 ? 'Últimas unidades' : null;
   const imagen = product.imagenes && product.imagenes[0];
 
+  // Clase dinamica para aplicar los estilos de deshabilitado
+  const cardClassName = `product-card-kinetic ${sinStock ? 'out-of-stock' : ''}`;
+
   return (
-    <article className="product-card-kinetic">
+    <article className={cardClassName}>
       <div className="product-image-box">
         {aviso && <span className="badge-certified">{aviso}</span>}
         {imagen ? (
@@ -24,7 +27,9 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
           <p className="product-desc">{product.descripcion}</p>
           <div className="product-chips">
             <span className="stock-info">Stock: {product.stock} u.</span>
-            {product.talle && <span className="stock-info">Talle {product.talle}</span>}
+            {product.talles?.length > 0 && (
+              <span className="stock-info">Talle {textoTalles(product.talles)}</span>
+            )}
           </div>
         </div>
 
@@ -33,7 +38,7 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
             ${Number(product.precio).toLocaleString('es-AR')} ARS
           </div>
           <button
-            onClick={() => onSelectProduct(product.id)}
+            onClick={() => !sinStock && onSelectProduct(product.id)}
             className="btn-buy-kinetic"
             disabled={sinStock}
           >

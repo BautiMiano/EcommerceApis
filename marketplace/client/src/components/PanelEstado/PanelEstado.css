@@ -1,0 +1,40 @@
+.panel-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 3rem 1.5rem;
+  border: 0.0625rem dashed var(--uf-borde);
+  border-radius: 0.75rem;
+  background-color: var(--uf-blanco);
+  text-align: center;
+}
+
+.panel-estado-icono {
+  font-size: 2.5rem;
+  color: var(--uf-texto-suave);
+}
+
+.panel-estado-cargando .panel-estado-icono {
+  animation: panel-estado-girar 1s linear infinite;
+}
+
+.panel-estado-error .panel-estado-icono {
+  color: var(--uf-rojo);
+}
+
+.panel-estado-titulo {
+  font-size: 1.625rem;
+}
+
+.panel-estado-texto {
+  max-width: 26.25rem;
+  color: var(--uf-texto-suave);
+  font-size: 0.875rem;
+}
+
+@keyframes panel-estado-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}

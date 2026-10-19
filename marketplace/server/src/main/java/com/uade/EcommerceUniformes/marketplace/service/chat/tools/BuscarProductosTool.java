@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoProducto;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoChatRepository;
 
@@ -42,7 +43,8 @@ public class BuscarProductosTool implements ChatTool {
                                 "categoria", Map.of("type", "string",
                                         "description", "Nombre de una categoría. Si no sabés cuáles existen, usá antes listarCategorias"),
                                 "talle", Map.of("type", "string",
-                                        "description", "Talle exacto. Ej: 12, M, L, 42"),
+                                        "enum", List.of("S", "M", "L", "XL", "XXL", "UNICO"),
+                                        "description", "Talle con stock disponible. UNICO es para productos sin talle"),
                                 "precioMaximo", Map.of("type", "number",
                                         "description", "Precio máximo en pesos"),
                                 "estado", Map.of("type", "string",
@@ -54,7 +56,7 @@ public class BuscarProductosTool implements ChatTool {
     public Object ejecutar(Map<String, Object> args, Usuario usuario) {
         String texto = leerTexto(args, "texto");
         String categoria = leerTexto(args, "categoria");
-        String talle = leerTexto(args, "talle");
+        Talle talle = leerTalle(leerTexto(args, "talle"));
         Double precioMaximo = args.get("precioMaximo") instanceof Number n ? n.doubleValue() : null;
         EstadoProducto estado = leerEstado(leerTexto(args, "estado"));
 
@@ -77,13 +79,24 @@ public class BuscarProductosTool implements ChatTool {
                 p.getId(),
                 p.getNombre(),
                 recortar(p.getDescripcion()),
-                p.getTalle(),
+                p.getTallesTexto(),
                 p.getCategoria() != null ? p.getCategoria().getNombre() : null,
                 p.getEstado() != null ? p.getEstado().name() : null,
                 p.getPrecio(),
                 precioFinal,
                 porcentaje,
-                p.getStock() - p.getStockReservado());
+                p.getStockDisponible());
+    }
+
+    private Talle leerTalle(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        try {
+            return Talle.valueOf(valor.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null; // si el modelo manda algo raro, se ignora el filtro
+        }
     }
 
     private String leerTexto(Map<String, Object> args, String clave) {

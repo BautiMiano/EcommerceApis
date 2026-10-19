@@ -3,7 +3,7 @@ import CampoFormulario from '../CampoFormulario/CampoFormulario'
 const CategoriaSelect = ({ categorias, value, onChange, error }) => {
   return (
     <CampoFormulario
-      label="Categoría *"
+      label={<>Categoría <span className="producto-form-requerido">*</span></>}
       name="categoryId"
       type="select"
       value={value}

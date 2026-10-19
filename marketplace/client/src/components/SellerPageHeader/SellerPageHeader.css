@@ -1,0 +1,58 @@
+.seller-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.seller-page-header-migas {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.625rem;
+  font-size: 0.9375rem;
+}
+
+.seller-page-header-migas a {
+  color: #262626;
+  text-decoration: none;
+}
+
+.seller-page-header-migas a::after {
+  content: '›';
+  margin-left: 0.625rem;
+  color: var(--uf-texto-suave);
+}
+
+.seller-page-header-migas a:hover {
+  text-decoration: underline;
+}
+
+.seller-page-header-titulo {
+  font-size: 4.25rem;
+  letter-spacing: 0.0312rem;
+}
+
+.seller-page-header-descripcion {
+  margin-top: 0.25rem;
+  color: var(--uf-texto-suave);
+  font-size: 1.125rem;
+}
+
+.seller-page-header-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+@media (max-width: 37.5em) {
+  .seller-page-header-titulo {
+    font-size: 2.75rem;
+  }
+
+  .seller-page-header-descripcion {
+    font-size: 0.9375rem;
+  }
+}

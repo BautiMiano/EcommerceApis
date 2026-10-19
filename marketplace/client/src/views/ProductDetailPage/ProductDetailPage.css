@@ -1,0 +1,297 @@
+.product-detail-main {
+  max-width: 100rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem;
+  align-items: start;
+}
+
+.product-gallery-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.main-image-box {
+  position: relative;
+  background-color: #f4f4f4;
+  border-radius: 0.5rem;
+  height: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image-box img {
+  max-height: 80%;
+  max-width: 80%;
+  object-fit: contain;
+}
+
+.badge-iram {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.cert-code {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.65rem;
+  color: #888888;
+}
+
+.thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.thumb-card {
+  background-color: #f4f4f4;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.25rem;
+  height: 5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #333333;
+}
+
+.thumb-card.active {
+  border-color: #000000;
+  background-color: #ffffff;
+}
+
+.stock-info-card {
+  border: 0.0625rem solid #e4e4e4;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.stock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #000000;
+  border-radius: 50%;
+}
+
+.b2b-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #5e5e60;
+}
+
+.product-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.product-sku {
+  font-size: 0.75rem;
+  color: #666666;
+  letter-spacing: 0.03em;
+}
+
+.product-title {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 2.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.price-box {
+  background-color: #f8f8f8;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.price-amount {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.price-currency {
+  font-size: 0.85rem;
+  color: #666666;
+  margin-left: 0.5rem;
+}
+
+.tax-info {
+  font-size: 0.7rem;
+  color: #666666;
+}
+
+.financing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-cheque {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.65rem;
+}
+
+.size-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.size-btn {
+  height: 2.75rem;
+  border: 0.0625rem solid #e4e4e4;
+  background-color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.size-btn.selected {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.quantity-container {
+  background-color: #f8f8f8;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  border: 0.0625rem solid #cccccc;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+}
+
+.quantity-controls button {
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.quantity-controls span {
+  padding: 0 0.75rem;
+  font-weight: 600;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-add-cart,
+.btn-add-favorite {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 3.125rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-add-cart {
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-add-favorite {
+  background-color: transparent;
+  border: 0.0625rem solid #000000;
+  color: #000000;
+}
+
+@media (max-width: 64rem) {
+  .product-detail-main {
+    grid-template-columns: 1fr;
+  }
+} 
+.product-detail-wrapper {
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding: 1.5rem 2rem 4rem;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #5e5e60;
+  letter-spacing: 0.04em;
+  margin-bottom: 2rem;
+}
+
+.detail-breadcrumb a {
+  color: #5e5e60;
+  text-decoration: none;
+}
+
+.detail-breadcrumb .material-symbols-outlined {
+  font-size: 0.875rem;
+}
+
+.loading-container,
+.error-container {
+  padding: 4rem;
+  text-align: center;
+  font-weight: 600;
+  color: #5e5e60;
+}

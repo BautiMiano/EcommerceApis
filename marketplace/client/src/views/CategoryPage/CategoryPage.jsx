@@ -9,6 +9,7 @@ const PAGE_SIZE = 6;
 
 export const CategoryPage = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const [sort, setSort] = useState('relevancia');
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
@@ -24,14 +25,15 @@ export const CategoryPage = () => {
 
   useEffect(() => {
     setSelectedCategory(idCategoria || '');
+    setPage(1);
   }, [idCategoria]);
 
-  // Paginación puramente visual sobre los productos provistos por la API
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
   const visible = showAll ? products : products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSelectCategory = (catId) => {
     setSelectedCategory(catId);
+    setPage(1);
     catId && navigate(`/categorias/${catId}`);
     !catId && navigate('/categorias');
   };
@@ -40,18 +42,40 @@ export const CategoryPage = () => {
     setSelectedCategory('');
     setSelectedSize('');
     setMaxPrice(null);
+    setPage(1);
+    setLoading(true); 
+
+    getCategoryProducts()
+      .then((data) => setProducts(data))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false)); 
+
     navigate('/categorias');
   };
 
-  // Carga reactiva de productos vía API
+  const handleNextPage = () => {
+    const haySiguiente = page < pageCount;
+    haySiguiente && setPage(page + 1);
+  };
+
+  const handlePrevPage = () => {
+    const hayAnterior = page > 1;
+    hayAnterior && setPage(page - 1);
+  };
+
   useEffect(() => {
+    setPage(1);
+    setLoading(true);
+
     query && searchProductsByName(query)
       .then((data) => setProducts(data))
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
 
     !query && getCategoryProducts(idCategoria)
       .then((data) => setProducts(data))
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, [query, idCategoria]);
 
   return (
@@ -76,7 +100,7 @@ export const CategoryPage = () => {
               </p>
             </div>
 
-            <dl className="hero-stats">
+            <dl className="catalog-hero-stats">
               <div><dt>Productos activos</dt><dd>{products.length}</dd></div>
             </dl>
           </div>
@@ -87,34 +111,77 @@ export const CategoryPage = () => {
         <SidebarFilters
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
-          onProductsFiltered={(data) => setProducts(data)}
+          onProductsFiltered={(data) => {
+            setProducts(data);
+            setPage(1);
+          }}
+          priceLimit={maxPrice}
           maxPrice={maxPrice}
           onFilterPrice={setMaxPrice}
-          onPriceResults={(data) => data && setProducts(data)}
+          onPriceResults={(data) => {
+            data && setProducts(data);
+            setPage(1);
+          }}
           selectedSize={selectedSize}
           onSelectSize={setSelectedSize}
           onReset={handleReset}
         />
 
-        {products.length === 0 ? (
-          <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
-            <h2>No se encontraron productos</h2>
-            <p>Intenta con otro término de búsqueda o limpia los filtros.</p>
-          </div>
-        ) : (
-          <ProductGridSection
-            products={visible}
-            total={products.length}
-            sort={sort}
-            onSort={setSort}
-            page={page}
-            pageCount={pageCount}
-            onPage={setPage}
-            showAll={showAll}
-            onShowAll={() => setShowAll(true)}
-            onSelectProduct={(id) => navigate(`/producto/${id}`)}
-          />
-        )}
+        <div className="catalog-content-area">
+          {/* 1. INDICADOR DE CARGA MIENTRAS ESPERA LA RESPUESTA DE LA API */}
+          {loading && (
+            <div className="loading-catalog-container" style={{ padding: '3rem', textAlign: 'center', width: '100%' }}>
+              <p style={{ fontWeight: '600', color: '#5e5e60' }}>Cargando catálogo...</p>
+            </div>
+          )}
+
+          {/* 2. MENSAJE SOLO CUANDO TERMINÓ DE CARGAR Y REALMENTE VIENE VACÍO */}
+          {!loading && products.length === 0 && (
+            <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
+              <h2>No se encontraron productos</h2>
+              <p>Intenta con otro término de búsqueda o limpia los filtros.</p>
+            </div>
+          )}
+
+          {/* 3. GRILLA DE PRODUCTOS CUANDO YA CARGÓ Y HAY ELEMENTOS */}
+          {!loading && products.length > 0 && (
+            <>
+              <ProductGridSection
+                products={visible}
+                total={products.length}
+                onSelectProduct={(id) => navigate(`/producto/${id}`)}
+              />
+
+              {pageCount > 1 && (
+                <div className="catalog-pagination-container">
+                  <button
+                    type="button"
+                    className="catalog-pagination-btn catalog-pagination-btn-outline"
+                    onClick={handlePrevPage}
+                    disabled={page === 1}
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                    Anterior
+                  </button>
+
+                  <span className="catalog-pagination-info">
+                    Página {page} de {pageCount}
+                  </span>
+
+                  <button
+                    type="button"
+                    className="catalog-pagination-btn catalog-pagination-btn-solid"
+                    onClick={handleNextPage}
+                    disabled={page === pageCount}
+                  >
+                    Siguiente
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </main>
     </div>
   );

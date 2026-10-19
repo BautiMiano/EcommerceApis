@@ -12,4 +12,7 @@ public class ItemCarritoResponse {
     private int cantidad;
     private double precioUnitario;
     private double subtotal;
+    private String talle;
+    private String categoria;
+    private String vendedor;
 }

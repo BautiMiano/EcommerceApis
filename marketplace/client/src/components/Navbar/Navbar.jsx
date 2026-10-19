@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getCategories } from '../../utils/api.js';
 import { Search } from '../Search/Search.jsx';
+import { obtenerSesion } from '../../utils/sesion.js';
 import './Navbar.css';
 
-export const Navbar = () => {
-  const [logueado, setLogueado] = useState(!!localStorage.getItem('token'));
+export const Navbar = ({ onLogout }) => {
   const [categories, setCategories] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+  // El vendedor usa su propio panel: este navbar es para visitantes y compradores
+  const { logueado } = obtenerSesion();
 
   useEffect(() => {
     getCategories()
       .then((data) => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
-
-  const cerrarSesion = () => {
-    localStorage.removeItem('token');
-    setLogueado(false);
-    navigate('/');
-  };
 
   const handleSelectCategory = (cat) => {
     setIsDropdownOpen(false);
@@ -39,7 +36,7 @@ export const Navbar = () => {
       <header className="navbar">
         <Link to="/" className="navbar-logo">
           <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
-          </Link>
+        </Link>
 
         <nav className="navbar-links" aria-label="Principal">
           <NavLink to="/" end>Home</NavLink>
@@ -73,21 +70,21 @@ export const Navbar = () => {
 
                 <div className="dropdown-divider"></div>
 
-                {categories.length === 0 ? (
+                {categories.length === 0 && (
                   <div className="dropdown-loading">Sin categorías disponibles</div>
-                ) : (
-                  categories.map((cat) => (
-                    <button
-                      key={`nav-cat-${cat.idCategoria}`}
-                      type="button"
-                      className="dropdown-item"
-                      onClick={() => handleSelectCategory(cat)}
-                    >
-                      <span className="material-symbols-outlined">category</span>
-                      {cat.nombreCategoria}
-                    </button>
-                  ))
                 )}
+
+                {categories.length > 0 && categories.map((cat) => (
+                  <button
+                    key={`nav-cat-${cat.idCategoria}`}
+                    type="button"
+                    className="dropdown-item"
+                    onClick={() => handleSelectCategory(cat)}
+                  >
+                    <span className="material-symbols-outlined">category</span>
+                    {cat.nombreCategoria}
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -99,11 +96,13 @@ export const Navbar = () => {
         <Search />
 
         <div className="navbar-actions">
-          {logueado ? (
-            <button className="btn-pill btn-pill-outline" onClick={cerrarSesion}>
+          {logueado && (
+            <button className="btn-pill btn-pill-outline" onClick={onLogout}>
               Cerrar sesión
             </button>
-          ) : (
+          )}
+
+          {!logueado && (
             <>
               <Link to="/login" className="btn-pill btn-pill-outline">Iniciar sesión</Link>
               <Link to="/registro" className="btn-pill btn-pill-solid">Registrarse</Link>

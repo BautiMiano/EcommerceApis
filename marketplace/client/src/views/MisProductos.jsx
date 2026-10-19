@@ -1,43 +1,40 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
+import PanelEstado from '../components/PanelEstado/PanelEstado'
+import StatCard from '../components/StatCard/StatCard'
 import ProductosFiltro from '../components/ProductosFiltro/ProductosFiltro'
-import ProductoVendedorCard from '../components/ProductoVendedorCard/ProductoVendedorCard'
-import ProductoEditor from '../components/ProductoEditor/ProductoEditor'
-import {
-  activarProducto,
-  actualizarProducto,
-  agregarStock,
-  desactivarProducto,
-  getCategories,
-  obtenerMisProductos,
-} from '../utils/api'
+import ProductoFila from '../components/ProductoFila/ProductoFila'
+import Paginacion from '../components/Paginacion/Paginacion'
+import AccionesRapidas from '../components/AccionesRapidas/AccionesRapidas'
+import { activarProducto, desactivarProducto, getCategories, obtenerMisProductos } from '../utils/api'
+import { estadoPublicacion } from '../utils/formato'
+import { nivelStock, rangoTalles, stockDisponibleTotal } from '../utils/talles'
+import { exportarCsv } from '../utils/exportarCsv'
 import './MisProductos.css'
 
-const formularioDesdeProducto = (producto) => ({
-  nombre: producto.nombre || '',
-  descripcion: producto.descripcion || '',
-  talle: producto.talle || '',
-  precio: producto.precio ?? '',
-  categoryId: producto.categoryId || '',
-})
+const POR_PAGINA = 10
 
 const MisProductos = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
-  const [busqueda, setBusqueda] = useState('')
-  const [filtroEstado, setFiltroEstado] = useState('TODOS')
+  // El dashboard puede abrir esta pantalla ya filtrada por stock (?stock=bajo)
+  const [filtros, setFiltros] = useState({
+    busqueda: '',
+    categoria: '',
+    estado: 'TODOS',
+    stock: searchParams.get('stock') || 'TODOS',
+  })
+  const [pagina, setPagina] = useState(1)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
   const [productoEnAccion, setProductoEnAccion] = useState(null)
-  const [cantidadesStock, setCantidadesStock] = useState({})
-  const [productoEditando, setProductoEditando] = useState(null)
-  const [formularioEdicion, setFormularioEdicion] = useState({})
 
   const cargarDatos = async () => {
-    setCargando(true)
     setError('')
-
     try {
       const [productosObtenidos, categoriasObtenidas] = await Promise.all([
         obtenerMisProductos(),
@@ -56,22 +53,36 @@ const MisProductos = () => {
     Promise.resolve().then(cargarDatos)
   }, [])
 
-  const productosFiltrados = productos.filter((producto) => {
-    const texto = `${producto.nombre} ${producto.descripcion || ''}`.toLowerCase()
-    const coincideBusqueda = texto.includes(busqueda.toLowerCase())
-    const coincideEstado = filtroEstado === 'TODOS'
-      || (filtroEstado === 'ACTIVOS' && producto.activo)
-      || (filtroEstado === 'INACTIVOS' && !producto.activo)
+  const handleFiltros = (nuevosFiltros) => {
+    setFiltros(nuevosFiltros)
+    setPagina(1)
+  }
 
-    return coincideBusqueda && coincideEstado
+  const productosFiltrados = productos.filter((producto) => {
+    const texto = `${producto.nombre} ${producto.descripcion || ''} ${producto.sku || ''}`.toLowerCase()
+    const nivel = nivelStock(producto.talles)
+
+    const coincideBusqueda = texto.includes(filtros.busqueda.trim().toLowerCase())
+    const coincideCategoria = !filtros.categoria || String(producto.categoryId) === filtros.categoria
+    const coincideEstado = filtros.estado === 'TODOS'
+      || (filtros.estado === 'ACTIVOS' && producto.activo)
+      || (filtros.estado === 'INACTIVOS' && !producto.activo)
+    // "Stock bajo" incluye a los agotados: los dos necesitan reposición
+    const coincideStock = filtros.stock === 'TODOS'
+      || (filtros.stock === 'agotado' && nivel === 'agotado')
+      || (filtros.stock === 'bajo' && nivel !== 'ok')
+
+    return coincideBusqueda && coincideCategoria && coincideEstado && coincideStock
   })
 
-  const ejecutarAccion = async (productoId, accion) => {
-    setProductoEnAccion(productoId)
+  const productosPagina = productosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+
+  const handleCambiarActivo = async (producto) => {
+    setProductoEnAccion(producto.id)
     try {
-      await accion()
+      await (producto.activo ? desactivarProducto(producto.id) : activarProducto(producto.id))
       await cargarDatos()
-      toast.success('Producto actualizado correctamente.')
+      toast.success(producto.activo ? 'Publicación desactivada.' : 'Publicación activada.')
     } catch (errorAccion) {
       toast.error(errorAccion.message)
     } finally {
@@ -79,122 +90,124 @@ const MisProductos = () => {
     }
   }
 
-  const handleCambiarActivo = (producto) => {
-    const accion = producto.activo
-      ? () => desactivarProducto(producto.id)
-      : () => activarProducto(producto.id)
-    ejecutarAccion(producto.id, accion)
+  const handleExportar = () => {
+    exportarCsv('mis-productos.csv', [
+      { titulo: 'Producto', valor: (p) => p.nombre },
+      { titulo: 'SKU', valor: (p) => p.sku },
+      { titulo: 'Marca', valor: (p) => p.marca },
+      { titulo: 'Categoría', valor: (p) => p.categoria },
+      { titulo: 'Talles', valor: (p) => rangoTalles(p.talles) },
+      { titulo: 'Precio', valor: (p) => p.precio },
+      { titulo: 'Stock disponible', valor: (p) => stockDisponibleTotal(p.talles) },
+      { titulo: 'Estado', valor: (p) => estadoPublicacion(p).texto },
+    ], productosFiltrados)
   }
 
-  const handleAgregarStock = (producto) => {
-    const cantidad = Number(cantidadesStock[producto.id])
-    if (!Number.isInteger(cantidad) || cantidad < 1) {
-      toast.error('Ingresá una cantidad entera mayor a cero.')
-      return
-    }
-
-    ejecutarAccion(producto.id, () => agregarStock(producto.id, cantidad))
-    setCantidadesStock((cantidadesAnteriores) => {
-      const cantidadesNuevas = { ...cantidadesAnteriores }
-      delete cantidadesNuevas[producto.id]
-      return cantidadesNuevas
-    })
-  }
-
-  const handleEditar = (producto) => {
-    setProductoEditando(producto)
-    setFormularioEdicion(formularioDesdeProducto(producto))
-  }
-
-  const handleGuardarEdicion = async (event) => {
-    event.preventDefault()
-    const precio = Number(formularioEdicion.precio)
-
-    if (Number.isNaN(precio) || precio < 0 || !formularioEdicion.categoryId) {
-      toast.error('Completá una categoría y un precio válido.')
-      return
-    }
-
-    await ejecutarAccion(productoEditando.id, () => actualizarProducto(
-      productoEditando.id,
-      {
-        ...formularioEdicion,
-        precio,
-        categoryId: Number(formularioEdicion.categoryId),
-      },
-    ))
-    setProductoEditando(null)
-  }
-
-  const categoriaPorId = (categoryId) =>
-    categorias.find((categoria) => categoria.idCategoria === categoryId)?.nombreCategoria
+  const activos = productos.filter((p) => p.activo)
 
   return (
-    <div className="mis-productos-page">
-      <main className="mis-productos-main">
-        <div className="mis-productos-heading">
-          <div>
-            <span className="page-title-tag">Panel del vendedor</span>
-            <h1>Mis productos publicados</h1>
-            <p>Administrá tus publicaciones, disponibilidad y stock.</p>
+    <div className="panel-pagina">
+      <SellerPageHeader titulo="MIS PRODUCTOS" descripcion="Gestioná, editá y controlá todas tus publicaciones.">
+        <button type="button" className="panel-boton panel-boton-secundario" onClick={handleExportar} disabled={productos.length === 0}>
+          <span className="material-symbols-outlined" aria-hidden="true">download</span>
+          Exportar listado
+        </button>
+        <Link className="panel-boton panel-boton-primario" to="/vendedor/productos/nuevo">
+          <span className="material-symbols-outlined" aria-hidden="true">add</span>
+          Agregar producto
+        </Link>
+      </SellerPageHeader>
+
+      {cargando && <PanelEstado tipo="cargando" titulo="Cargando tus productos..." />}
+
+      {!cargando && error && (
+        <PanelEstado tipo="error" titulo="No pudimos cargar tus productos" texto={error}>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarDatos}>Reintentar</button>
+        </PanelEstado>
+      )}
+
+      {!cargando && !error && (
+        <>
+          <div className="mis-productos-stats">
+            <StatCard icono="deployed_code" etiqueta="Total de productos" valor={productos.length} detalle="publicaciones" />
+            <StatCard icono="description" etiqueta="Productos activos" valor={activos.length} detalle="visibles en la tienda" />
+            <StatCard
+              icono="warning"
+              etiqueta="Stock bajo"
+              valor={activos.filter((p) => nivelStock(p.talles) !== 'ok').length}
+              detalle="para reponer"
+            />
+            <StatCard
+              icono="pause_circle"
+              etiqueta="Productos pausados"
+              valor={productos.length - activos.length}
+              detalle="no visibles"
+            />
           </div>
-          <Link className="mis-productos-crear" to="/crear-publicacion">Crear nueva publicación</Link>
-        </div>
 
-        <ProductosFiltro
-          busqueda={busqueda}
-          filtroEstado={filtroEstado}
-          onBusquedaChange={setBusqueda}
-          onFiltroChange={setFiltroEstado}
-        />
+          <section className="panel-tarjeta">
+            <ProductosFiltro filtros={filtros} categorias={categorias} onChange={handleFiltros} />
 
-        {cargando && <p className="mis-productos-mensaje">Cargando tus productos...</p>}
-        {!cargando && error && <p className="mis-productos-error" role="alert">{error}</p>}
-        {!cargando && !error && productos.length === 0 && (
-          <div className="mis-productos-vacio">
-            <h2>Todavía no tenés publicaciones</h2>
-            <p>Creá tu primera publicación para comenzar a vender.</p>
-            <Link to="/crear-publicacion">Crear publicación</Link>
-          </div>
-        )}
-        {!cargando && !error && productos.length > 0 && productosFiltrados.length === 0 && (
-          <p className="mis-productos-mensaje">No encontramos productos con esos filtros.</p>
-        )}
+            {productos.length === 0 && (
+              <PanelEstado tipo="vacio" titulo="Todavía no tenés publicaciones" texto="Creá tu primera publicación para empezar a vender.">
+                <Link className="panel-boton panel-boton-primario" to="/vendedor/productos/nuevo">Agregar producto</Link>
+              </PanelEstado>
+            )}
 
-        <div className="mis-productos-lista">
-          {productosFiltrados.map((producto) => (
-            <div key={producto.id}>
-              {productoEditando?.id === producto.id ? (
-                <ProductoEditor
-                  formulario={formularioEdicion}
-                  categorias={categorias}
-                  onChange={(event) => setFormularioEdicion({
-                    ...formularioEdicion,
-                    [event.target.name]: event.target.value,
-                  })}
-                  onSubmit={handleGuardarEdicion}
-                  onCancelar={() => setProductoEditando(null)}
-                  guardando={productoEnAccion === producto.id}
+            {productos.length > 0 && productosFiltrados.length === 0 && (
+              <PanelEstado tipo="vacio" titulo="Sin resultados" texto="No hay productos que coincidan con esos filtros." />
+            )}
+
+            {productosFiltrados.length > 0 && (
+              <>
+                <div className="panel-tabla-contenedor">
+                  <table className="panel-tabla">
+                    <thead>
+                      <tr>
+                        <th scope="col">Producto</th>
+                        <th scope="col">SKU</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Talles</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productosPagina.map((producto) => (
+                        <ProductoFila
+                          key={producto.id}
+                          producto={producto}
+                          ocupado={productoEnAccion === producto.id}
+                          onEditar={() => navigate(`/vendedor/productos/${producto.id}/editar`)}
+                          onCambiarActivo={() => handleCambiarActivo(producto)}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <Paginacion
+                  pagina={pagina}
+                  porPagina={POR_PAGINA}
+                  total={productosFiltrados.length}
+                  nombre="productos"
+                  onCambiar={setPagina}
                 />
-              ) : (
-                <ProductoVendedorCard
-                  producto={producto}
-                  categoria={categoriaPorId(producto.categoryId)}
-                  accionEnCurso={productoEnAccion === producto.id ? 'producto' : ''}
-                  cantidadStock={cantidadesStock[producto.id] || ''}
-                  onCantidadStockChange={(cantidad) => setCantidadesStock((cantidadesAnteriores) => ({
-                    ...cantidadesAnteriores,
-                    [producto.id]: cantidad,
-                  }))}
-                  onEditar={() => handleEditar(producto)}
-                  onCambiarActivo={() => handleCambiarActivo(producto)}
-                  onAgregarStock={() => handleAgregarStock(producto)}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </main>
+              </>
+            )}
+          </section>
+
+          <AccionesRapidas
+            descripcion="Herramientas para gestionar tus productos de forma más ágil."
+            acciones={[
+              { icono: 'add', titulo: 'Agregar producto', detalle: 'Publicá un nuevo producto en tu tienda.', ruta: '/vendedor/productos/nuevo' },
+              { icono: 'download', titulo: 'Exportar listado', detalle: 'Descargá tus productos en un archivo CSV.', onClick: handleExportar },
+              { icono: 'deployed_code', titulo: 'Ver pedidos', detalle: 'Revisá los pedidos de tus productos.', ruta: '/vendedor/pedidos' },
+            ]}
+          />
+        </>
+      )}
     </div>
   )
 }

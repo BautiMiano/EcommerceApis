@@ -1,14 +1,39 @@
-.grid-section-container { flex: 1; min-width: 0; width: 100%; font-family: 'Inter', sans-serif; }
+.grid-section-container { 
+  flex: 1; 
+  min-width: 0; 
+  width: 100%; 
+  font-family: 'Inter', sans-serif; 
+}
 
-.grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
-.product-count-text { font-size: 0.85rem; color: #5e5e60; }
-.product-count-text strong { color: #000; font-weight: 700; }
+.grid-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 1.25rem; 
+}
 
-.sort-control { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #5e5e60; }
+.product-count-text { 
+  font-size: 0.85rem; 
+  color: #5e5e60; 
+}
+
+.product-count-text strong { 
+  color: #000; 
+  font-weight: 700; 
+}
+
+.sort-control { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  font-size: 0.8rem; 
+  color: #5e5e60; 
+}
+
 .sort-control select {
   padding: 0.4rem 0.75rem;
-  border: 1px solid #e4e4e4;
-  border-radius: 999px;
+  border: 0.0625rem solid #e4e4e4;
+  border-radius: 62.4375rem;
   background: #fff;
   font: inherit;
   font-weight: 600;
@@ -16,9 +41,31 @@
   cursor: pointer;
 }
 
-.empty-catalog-msg { padding: 3rem; border: 1px solid #e4e4e4; border-radius: 16px; text-align: center; color: #5e5e60; }
+.empty-catalog-msg { 
+  padding: 3rem; 
+  border: 0.0625rem solid #e4e4e4; 
+  border-radius: 1rem; 
+  text-align: center; 
+  color: #5e5e60; 
+}
 
-.products-grid-layout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+/* GRILLA DE 3 COLUMNAS RÍGIDAS (Desktop) */
+.products-grid-layout { 
+  display: grid; 
+  grid-template-columns: repeat(3, minmax(0, 1fr)); 
+  gap: 1.5rem; 
+  width: 100%;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* OBLIGA A LA TARJETA A OCUPAR EL 100% DE ANCHO DE SU CELDA EN LA GRILLA */
+.products-grid-layout article,
+.products-grid-layout .product-card-kinetic {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
 
 .pagination {
   display: flex;
@@ -28,19 +75,32 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #ececec;
+  border-top: 0.0625rem solid #ececec;
 }
-.pagination-info { font-size: 0.8rem; color: #5e5e60; }
-.pagination-pages { display: flex; align-items: center; gap: 0.4rem; }
-.page-gap { padding: 0 0.25rem; color: #5e5e60; }
+
+.pagination-info { 
+  font-size: 0.8rem; 
+  color: #5e5e60; 
+}
+
+.pagination-pages { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.4rem; 
+}
+
+.page-gap { 
+  padding: 0 0.25rem; 
+  color: #5e5e60; 
+}
 
 .page-btn {
   display: grid;
   place-content: center;
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   padding: 0;
-  border: 1px solid #e4e4e4;
+  border: 0.0625rem solid #e4e4e4;
   border-radius: 50%;
   background: #fff;
   color: #000;
@@ -49,17 +109,63 @@
   font-weight: 600;
   cursor: pointer;
 }
-.page-btn .material-symbols-outlined { font-size: 20px; }
-.page-btn:hover:not(:disabled) { border-color: #000; }
-.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.page-btn.is-current { background: #000; border-color: #000; color: #fff; }
-.page-btn:focus-visible, .load-all-btn:focus-visible, .sort-control select:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
 
-.load-all-btn { padding: 0.6rem 1.2rem; border: 1.5px solid #000; border-radius: 999px; background: #fff; color: #000; font-family: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
-.load-all-btn:hover { background: #f1f1f1; }
+.page-btn .material-symbols-outlined { 
+  font-size: 1.25rem; 
+}
 
-@media (max-width: 1280px) { .products-grid-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) {
-  .products-grid-layout { grid-template-columns: minmax(0, 1fr); }
-  .pagination { justify-content: center; }
+.page-btn:hover:not(:disabled) { 
+  border-color: #000; 
+}
+
+.page-btn:disabled { 
+  opacity: 0.4; 
+  cursor: not-allowed; 
+}
+
+.page-btn.is-current { 
+  background: #000; 
+  border-color: #000; 
+  color: #fff; 
+}
+
+.page-btn:focus-visible, 
+.load-all-btn:focus-visible, 
+.sort-control select:focus-visible { 
+  outline: 0.125rem solid #000; 
+  outline-offset: 0.125rem; 
+}
+
+.load-all-btn { 
+  padding: 0.6rem 1.2rem; 
+  border: 0.09375rem solid #000; 
+  border-radius: 62.4375rem; 
+  background: #fff; 
+  color: #000; 
+  font-family: inherit; 
+  font-size: 0.8rem; 
+  font-weight: 700; 
+  cursor: pointer; 
+}
+
+.load-all-btn:hover { 
+  background: #f1f1f1; 
+}
+
+/* MEDIA QUERIES RESPONSIVAS EN REM */
+/* TABLET (1024px o menor): 2 columnas */
+@media (max-width: 64rem) { 
+  .products-grid-layout { 
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+  } 
+}
+
+/* MOBILE (640px o menor): 1 columna */
+@media (max-width: 40rem) {
+  .products-grid-layout { 
+    grid-template-columns: minmax(0, 1fr); 
+  }
+  .pagination { 
+    justify-content: center; 
+  }
 }

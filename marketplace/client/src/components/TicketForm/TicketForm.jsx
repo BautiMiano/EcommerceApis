@@ -37,7 +37,7 @@ const TicketForm = ({ formulario, onChange, onSubmit, enviando }) => {
                 <button type="submit" className="ticket-form-enviar" disabled={enviando}>
                     {enviando ? 'Enviando...' : 'Enviar ticket'}
                 </button>
-                <Link to="/mis-tickets" className="ticket-form-cancelar">Cancelar</Link>
+                <Link to="/vendedor/tickets" className="ticket-form-cancelar">Cancelar</Link>
             </div>
         </form>
     )

@@ -1,0 +1,18 @@
+.producto-fila-producto {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 15rem;
+}
+
+.producto-fila-nombre {
+  font-weight: 600;
+}
+
+.producto-fila-descripcion {
+  max-width: 13.75rem;
+  overflow: hidden;
+  color: var(--uf-texto-suave);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+}

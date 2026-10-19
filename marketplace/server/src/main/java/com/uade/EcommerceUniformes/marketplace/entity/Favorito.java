@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Builder;
 
 @Entity
 @Table(name = "favoritos")
@@ -26,8 +27,5 @@ public class Favorito {
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
-
-    @Column(nullable = false)
-    private boolean activo = true;
 
 }

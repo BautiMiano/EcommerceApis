@@ -1,0 +1,109 @@
+.pedidos-pestanas {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  border-bottom: 0.0625rem solid var(--uf-borde);
+}
+
+.pedidos-pestana {
+  padding: 0.625rem 0.875rem;
+  border: none;
+  border-bottom: 0.1875rem solid transparent;
+  border-radius: 0;
+  background: none;
+  color: #3d4451;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+}
+
+.pedidos-pestana-activa {
+  border-bottom-color: #1e3a8a;
+  color: var(--uf-negro);
+  font-weight: 700;
+}
+
+.pedidos-pestana:focus-visible {
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: -0.125rem;
+}
+
+.pedidos-barra {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pedidos-buscador {
+  flex: 1;
+  max-width: 30rem;
+}
+
+.pedidos-contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.pedidos-contenido-con-detalle {
+  grid-template-columns: minmax(0, 1fr) 25rem;
+}
+
+/* Con el detalle abierto no entra toda la tabla: las miniaturas se ven en el panel */
+.pedidos-contenido-con-detalle .pedidos-col-productos {
+  display: none;
+}
+
+.pedidos-lista {
+  padding: 0 0 1rem;
+  overflow: hidden;
+}
+
+.pedidos-lista .panel-tabla th {
+  border-radius: 0;
+}
+
+.pedidos-lista .panel-paginacion {
+  padding: 1rem 1rem 0;
+}
+
+.pedidos-fila-activa td {
+  background-color: #fafafa;
+}
+
+.pedidos-miniaturas {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pedidos-miniatura {
+  width: 2.875rem;
+  height: 2.875rem;
+}
+
+.pedidos-mas {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.875rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 68.75em) {
+  .pedidos-contenido-con-detalle {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 37.5em) {
+  .pedidos-barra {
+    flex-direction: column;
+  }
+
+  .pedidos-buscador {
+    max-width: none;
+  }
+}

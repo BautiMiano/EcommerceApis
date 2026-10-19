@@ -2,9 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from '../components/PageTitle';
 import LoginForm from '../components/LoginForm'; 
 import RegisterLink from '../components/RegisterLink';
+import { rutaInicioPorRol } from '../utils/sesion';
 
 const Login = () => {
   const navigate = useNavigate();
+
+  // Guarda el id del usuario para poder buscar su carrito, y lleva a cada rol a su inicio
+  const handleLoginExitoso = (data) => {
+    localStorage.setItem('usuarioId', data.usuarioId);
+    navigate(rutaInicioPorRol(String(data.role).toUpperCase()));
+  };
 
   return (
     <div className="register-page">       
@@ -15,9 +22,9 @@ const Login = () => {
           descripcion="Ingresá con tus credenciales para gestionar tus pedidos y acceder a la plataforma."
         />
   
-        <LoginForm onLoginExitoso={() => navigate('/home')} />
+        <LoginForm onLoginExitoso={handleLoginExitoso} />
         
-        <RegisterLink onClick={() => navigate('/register')} />
+        <RegisterLink onClick={() => navigate('/registro')} />
       </main>
       
     </div>

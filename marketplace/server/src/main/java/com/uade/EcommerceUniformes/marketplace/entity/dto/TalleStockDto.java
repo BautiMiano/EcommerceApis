@@ -1,0 +1,19 @@
+package com.uade.EcommerceUniformes.marketplace.entity.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.uade.EcommerceUniformes.marketplace.entity.Talle;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class TalleStockDto {
+
+    private Talle talle;
+    private Integer stock;
+    private Integer stockReservado;
+}

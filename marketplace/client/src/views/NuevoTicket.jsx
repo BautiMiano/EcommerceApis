@@ -29,7 +29,7 @@ const NuevoTicket = () => {
         try {
             await crearTicket({ asunto, mensaje })
             toast.success('Ticket enviado. Te vamos a responder a la brevedad.')
-            navigate('/mis-tickets')
+            navigate('/vendedor/tickets')
         } catch (err) {
             toast.error(err.message)
         } finally {
@@ -40,7 +40,7 @@ const NuevoTicket = () => {
     return (
         <main className="nuevo-ticket">
             <div className="nuevo-ticket-principal">
-                <Link to="/mis-tickets" className="nuevo-ticket-volver">← Volver a mis tickets</Link>
+                <Link to="/vendedor/tickets" className="nuevo-ticket-volver">← Volver a mis tickets</Link>
                 <div className="nuevo-ticket-encabezado">
                     <span className="nuevo-ticket-etiqueta">Panel del vendedor</span>
                     <h1>Nuevo ticket</h1>

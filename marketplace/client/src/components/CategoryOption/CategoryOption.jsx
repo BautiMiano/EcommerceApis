@@ -1,9 +1,9 @@
 import './CategoryOption.css'
 
-const CategoryOption = ({nombre, handleSelect}) => {
+const CategoryOption = ({id, nombre, handleSelect}) => {
     return(
         <li className="category-option">
-            <button onClick={()=>handleSelect(nombre)}>{nombre}</button>
+            <button onClick={()=>handleSelect(id, nombre)}>{nombre}</button>
         </li>
     )
 }

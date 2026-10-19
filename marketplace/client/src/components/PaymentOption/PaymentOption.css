@@ -1,0 +1,29 @@
+.payment-option {
+  display: flex;
+}
+
+.payment-option button {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.payment-option button:hover {
+  border-color: #d4d4d4;
+}
+
+.payment-option .payment-option-activa {
+  border-color: #000000;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.payment-option .payment-option-activa:hover {
+  border-color: #000000;
+}

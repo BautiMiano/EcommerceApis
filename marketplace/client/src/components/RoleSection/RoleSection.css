@@ -3,14 +3,11 @@
 }
 
 .role-section-titulo {
-  margin: 10px 0 0 0;
+  margin: 0;
   font-size: 3.5rem;
 }
 
 .role-section-tarjetas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
   margin: 40px 0 0 0;
 }
 
@@ -21,9 +18,5 @@
 
   .role-section-titulo {
     font-size: 2.5rem;
-  }
-
-  .role-section-tarjetas {
-    grid-template-columns: 1fr;
   }
 }

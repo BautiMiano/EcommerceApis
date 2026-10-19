@@ -3,10 +3,11 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.util.List;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.FavoritoResponse;
 
 public interface FavoritoService {
 
-    List<Favorito> getMisFavoritos();
+    public List<FavoritoResponse> getMisFavoritos();
 
     Favorito agregarFavorito(Long productoId);
 
