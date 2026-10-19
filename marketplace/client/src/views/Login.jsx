@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import PageTitle from '../components/PageTitle';
-import LoginForm from '../components/LoginForm'; 
-import RegisterLink from '../components/RegisterLink';
+import PageTitle from "../components/PageTitle/PageTitle";
+import LoginForm from "../components/LoginForm/LoginForm";
+import RegisterLink from "../components/RegisterLink/RegisterLink";
 import { rutaInicioPorRol } from '../utils/sesion';
 
 const Login = () => {

@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import FormField from './FormField'
-import PasswordStrength from './PasswordStrength'
-import TermsCheckbox from './TermsCheckbox'
-import TermsModal from './TermsModal'
-import Button from './Button'
-import { registrarUsuario } from '../utils/api'
+import FormField from "../FormField/FormField";
+import PasswordStrength from "../PasswordStrength/PasswordStrength";
+import Button from "../ButtonRL/Button";
+
+import { registrarUsuario } from "../../utils/api";
 
 const campos = [
   { name: 'nombre', label: 'Nombre *', type: 'text', placeholder: 'Ej: Marcelo' },
@@ -32,18 +31,15 @@ const RegisterForm = ({ onRegistroExitoso }) => {
     contrasena: '',
     confirmar: '',
   })
-  const [terminos, setTerminos] = useState(false)
-  const [modalAbierto, setModalAbierto] = useState(false)
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    })
   }
 
-  const handleTerminos = (e) => {
-    setTerminos(e.target.checked)
-  }
-
-  const registrar = async (rol) => {
+  const registrar = (rol) => {
     if (Object.values(form).some((valor) => valor.trim() === '')) {
       toast.error('Completá todos los campos.')
       return
@@ -56,39 +52,30 @@ const RegisterForm = ({ onRegistroExitoso }) => {
       toast.error('Las contraseñas no coinciden.')
       return
     }
-    if (!terminos) {
-      toast.error('Tenés que aceptar los Términos de Servicio.')
-      return
-    }
+    
+    const userData = {
+      nombreUsuario: form.nombreUsuario,
+      nombre: form.nombre,
+      apellido: form.apellido,
+      mail: form.mail,
+      contrasena: form.contrasena,
+      rol: rol,
+    };
 
-    try {
-      const data = await registrarUsuario({
-        nombreUsuario: form.nombreUsuario,
-        nombre: form.nombre,
-        apellido: form.apellido,
-        mail: form.mail,
-        contrasena: form.contrasena,
-        rol: rol,
+    //función importada de api.js
+    registrarUsuario(userData)
+      .then((data) => {
+        if (data.access_token) {
+          localStorage.setItem('token', data.access_token)
+          toast.success('¡Cuenta creada con éxito!')
+          onRegistroExitoso()
+        } else {
+          toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+        }
       })
-
-      if (data && data.access_token) {
-        localStorage.setItem('token', data.access_token)
-        localStorage.setItem('userRole', data.role)
-        localStorage.setItem('usuarioId', data.usuarioId)
-        toast.success('¡Cuenta creada con éxito!')
-        onRegistroExitoso()
-      } else {
-        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
-      }
-    } catch (error) {
-      console.error('Error al registrar', error)
-      // Si hay status, el backend respondió con error; si no, no hubo conexión.
-      if (error.status) {
-        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
-      } else {
+      .catch((error) => {
         toast.error('No se pudo conectar con el servidor.')
-      }
-    }
+      })
   }
 
   const handleSubmit = (e) => {
@@ -109,31 +96,23 @@ const RegisterForm = ({ onRegistroExitoso }) => {
             ayuda={campo.ayuda}
             full={campo.full}
             value={form[campo.name]}
-            onChange={handleChange}
+            onChange={handleChange} 
           >
             {campo.name === 'contrasena' && <PasswordStrength contrasena={form.contrasena} />}
           </FormField>
         ))}
-
-        <TermsCheckbox
-          checked={terminos}
-          onChange={handleTerminos}
-          onVerTerminos={() => setModalAbierto(true)}
-        />
 
         <div className="register-actions">
           <Button texto="Registrarse como comprador →" tipo="submit" variante="primary" />
           <Button
             texto="Solicitar aprobación como vendedor"
             variante="secondary"
+            type="button"
             onClick={() => registrar('VENDEDOR')}
           />
         </div>
       </form>
-
-      <TermsModal abierto={modalAbierto} onCerrar={() => setModalAbierto(false)} />
     </>
   )
 }
-
 export default RegisterForm
