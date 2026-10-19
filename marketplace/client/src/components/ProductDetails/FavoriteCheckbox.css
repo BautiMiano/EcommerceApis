@@ -1,0 +1,63 @@
+.favorite-checkbox-label {
+  display: inline-block;
+  cursor: pointer;
+  width: 100%;
+}
+
+.favorite-checkbox-input {
+  display: none;
+}
+
+.favorite-checkbox-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border-radius: 3.125rem;
+  border: 0.0625rem solid #000000;
+  color: #000000;
+  fill: none;
+  font-weight: 800;
+  font-size: 0.875rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.favorite-checkbox-box:active {
+  transform: scale(0.95);
+}
+
+.favorite-checkbox-text {
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.favorite-checkbox-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.5s ease;
+}
+
+/* Efectos al pasar el mouse (Hover) */
+.favorite-checkbox-box:hover .favorite-checkbox-text {
+  transform: translateX(0.5rem);
+}
+
+.favorite-checkbox-box:hover .favorite-checkbox-icon {
+  transform: scale(15) translateX(-2.5rem);
+}
+
+.favorite-checkbox-box:hover {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+/* Estado cuando está activado (Checked) */
+.favorite-checkbox-input:checked + .favorite-checkbox-box {
+  fill: #000000;
+  background-color: #f5f5f5;
+}

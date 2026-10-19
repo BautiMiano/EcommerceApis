@@ -1,7 +1,17 @@
-.category-page-wrapper { background: #fff; min-height: 100vh; font-family: 'Inter', sans-serif; }
+.category-page-wrapper { 
+  background: #fff; 
+  min-height: 100vh; 
+  font-family: 'Inter', sans-serif; 
+}
 
-.catalog-hero-banner { padding: 1.75rem 2rem 1rem; }
-.hero-content { max-width: 1600px; margin: 0 auto; }
+.catalog-hero-banner { 
+  padding: 1.75rem 2rem 1rem; 
+}
+
+.hero-content { 
+  max-width: 100rem; 
+  margin: 0 auto; 
+}
 
 .breadcrumb {
   display: flex;
@@ -13,23 +23,39 @@
   text-transform: uppercase;
   color: #5e5e60;
 }
-.breadcrumb a { color: #5e5e60; text-decoration: none; }
-.breadcrumb a:hover { color: #000; text-decoration: underline; }
-.breadcrumb .material-symbols-outlined { font-size: 16px; }
+
+.breadcrumb a { 
+  color: #5e5e60; 
+  text-decoration: none; 
+}
+
+.breadcrumb a:hover { 
+  color: #000; 
+  text-decoration: underline; 
+}
+
+.breadcrumb .material-symbols-outlined { 
+  font-size: 1rem; 
+}
 
 .hero-pill {
   display: inline-block;
   margin: 1.25rem 0 1rem;
   padding: 0.4rem 0.9rem;
-  border: 1px solid #000;
-  border-radius: 999px;
+  border: 0.0625rem solid #000;
+  border-radius: 62.4375rem;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+.hero-row { 
+  display: flex; 
+  align-items: flex-end; 
+  justify-content: space-between; 
+  gap: 2rem; 
+}
 
 .hero-title {
   font-family: 'Bebas Neue', Impact, sans-serif;
@@ -53,18 +79,48 @@
   display: flex;
   flex-shrink: 0;
   margin: 0;
-  border: 1px solid #e4e4e4;
-  border-radius: 16px;
+  border: 0.0625rem solid #e4e4e4;
+  border-radius: 1rem;
   overflow: hidden;
 }
+
+.hero-stats div { 
+  padding: 0.9rem 1.4rem; 
+  text-align: center; 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.hero-stats div + div { 
+  border-left: 0.0625rem solid #e4e4e4; 
+}
+
+.hero-stats dd { 
+  margin: 0; 
+  font-family: 'Bebas Neue', Impact, sans-serif; 
+  font-size: 1.8rem; 
+  line-height: 1; 
+}
+
+.hero-stats dt { 
+  margin: 0.25rem 0 0; 
+  font-size: 0.6rem; 
+  font-weight: 700; 
+  letter-spacing: 0.05em; 
+  text-transform: uppercase; 
+  color: #5e5e60; 
+  order: 2; 
+}
+
 .catalog-hero-stats div { padding: 0.9rem 1.4rem; text-align: center; }
 .catalog-hero-stats div + div { border-left: 1px solid #e4e4e4; }
 .catalog-hero-stats dd { margin: 0; font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; line-height: 1; }
 .catalog-hero-stats dt { margin: 0.25rem 0 0; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #5e5e60; order: 2; }
 .catalog-hero-stats div { display: flex; flex-direction: column; }
 
+
 .catalog-main-layout {
-  max-width: 1600px;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 1.5rem 2rem 4rem;
   display: flex;
@@ -72,12 +128,42 @@
   align-items: flex-start;
 }
 
-.status-screen { padding: 4rem; text-align: center; font-weight: 700; font-size: 1.2rem; }
-.status-screen.error-msg { color: #d32f2f; }
+/* ÁREA PRINCIPAL QUE CONTIENE LA GRILLA Y MANTIENE EL 100% DE ANCHO */
+.catalog-content-area {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 
-@media (max-width: 1024px) {
-  .catalog-hero-banner { padding: 1.25rem 1.25rem 0.5rem; }
-  .hero-row { flex-direction: column; align-items: flex-start; }
-  .catalog-main-layout { flex-direction: column; padding: 1.25rem 1.25rem 3rem; }
-  .sidebar-container { width: 100%; box-sizing: border-box; position: static; }
+.status-screen { 
+  padding: 4rem; 
+  text-align: center; 
+  font-weight: 700; 
+  font-size: 1.2rem; 
+}
+
+.status-screen.error-msg { 
+  color: #d32f2f; 
+}
+
+/* MEDIA QUERIES EN REM */
+@media (max-width: 64rem) {
+  .catalog-hero-banner { 
+    padding: 1.25rem 1.25rem 0.5rem; 
+  }
+  .hero-row { 
+    flex-direction: column; 
+    align-items: flex-start; 
+  }
+  .catalog-main-layout { 
+    flex-direction: column; 
+    padding: 1.25rem 1.25rem 3rem; 
+  }
+  .sidebar-container { 
+    width: 100%; 
+    box-sizing: border-box; 
+    position: static; 
+  }
 }

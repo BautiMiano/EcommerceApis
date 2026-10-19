@@ -60,20 +60,27 @@ export const SidebarFilters = ({
   }, [idCategoria]);
 
   // 4. Obtener productos por rango de precio desde la API
-  useEffect(() => {
-    maxPrice !== null && getProductosByPrice(0, maxPrice)
+  // 4. Obtener productos por rango de precio desde la API sin 'if' ni '?'
+useEffect(() => {
+  const tienePrecio = maxPrice !== null && maxPrice !== undefined;
+
+  // Caso 1: Si hay precio máximo seleccionado, consulta la API y filtra por la propiedad 'precio'
+  tienePrecio &&
+    getProductosByPrice(0, maxPrice)
       .then((data) => {
-        setPrecios(data);
-        onPriceResults && onPriceResults(data);
+        const filtrados = data.filter((prod) => Number(prod.precio) <= maxPrice);
+        setPrecios(filtrados);
+        onPriceResults && onPriceResults(filtrados);
       })
       .catch(() => {
         setPrecios([]);
         onPriceResults && onPriceResults([]);
       });
 
-    maxPrice === null && setPrecios([]);
-    maxPrice === null && onPriceResults && onPriceResults(null);
-  }, [maxPrice]);
+  // Caso 2: Si no hay precio (limpieza de filtro), resetea los estados
+  !tienePrecio && setPrecios([]);
+  !tienePrecio && onPriceResults && onPriceResults(null);
+}, [maxPrice]);
 
   // 5. Obtener productos filtrados por talle desde la API
   useEffect(() => {
@@ -87,6 +94,8 @@ export const SidebarFilters = ({
 
     selectedSize.trim() === '' && onProductsFiltered && onProductsFiltered([]);
   }, [selectedSize]);
+
+  
 
   return (
     <aside className="sidebar-container">
@@ -107,7 +116,7 @@ export const SidebarFilters = ({
       />
 
       <hr className="divider" />
-      <PriceFilter bounds={bounds} value={priceLimit} onChange={onFilterPrice} />
+      <PriceFilter bounds={bounds} value={priceLimit !== undefined ? priceLimit : maxPrice} onChange={onFilterPrice} />
 
       {sizes.length > 0 && (
         <>

@@ -1,0 +1,373 @@
+.product-detail-main {
+  max-width: 100rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem;
+  align-items: start;
+}
+
+/* GALERÍA DE IMÁGENES */
+.product-gallery-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.main-image-box {
+  position: relative;
+  background-color: #f4f4f4;
+  border-radius: 0.5rem;
+  height: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image-box img {
+  max-height: 80%;
+  max-width: 80%;
+  object-fit: contain;
+}
+
+.badge-iram {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.cert-code {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.65rem;
+  color: #888888;
+}
+
+.thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.thumb-card {
+  background-color: #f4f4f4;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.25rem;
+  height: 5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #333333;
+}
+
+.thumb-card.active {
+  border-color: #000000;
+  background-color: #ffffff;
+}
+
+.stock-info-card {
+  border: 0.0625rem solid #e4e4e4;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.stock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #000000;
+  border-radius: 50%;
+}
+
+.b2b-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #5e5e60;
+}
+
+/* SECCIÓN DERECHA */
+.product-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.product-sku {
+  font-size: 0.75rem;
+  color: #666666;
+  letter-spacing: 0.03em;
+}
+
+.product-title {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 2.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.price-box {
+  background-color: #f8f8f8;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.price-amount {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.price-currency {
+  font-size: 0.85rem;
+  color: #666666;
+  margin-left: 0.5rem;
+}
+
+.tax-info {
+  font-size: 0.7rem;
+  color: #666666;
+}
+
+.financing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-cheque {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.65rem;
+}
+
+.size-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.size-btn {
+  height: 2.75rem;
+  border: 0.0625rem solid #e4e4e4;
+  background-color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.size-btn.selected {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.quantity-container {
+  background-color: #f8f8f8;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  border: 0.0625rem solid #cccccc;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+}
+
+.quantity-controls button {
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.quantity-controls span {
+  padding: 0 0.75rem;
+  font-weight: 600;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+/* Overlay (Fondo oscuro difuminado) */
+.auth-react-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(0.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Ventana del Modal */
+.auth-react-modal {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  width: 90%;
+  max-width: 25rem;
+  position: relative;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.25);
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal-icon-container {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.auth-modal-icon-container .material-symbols-outlined {
+  font-size: 1.75rem;
+  color: #000000;
+}
+
+.auth-modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  color: #000000;
+}
+
+.auth-modal-text {
+  font-size: 0.875rem;
+  color: #666666;
+  margin: 0 0 1.75rem 0;
+  line-height: 1.4;
+}
+
+.auth-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.auth-modal-btn {
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 3.125rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.auth-modal-btn-primary {
+  background-color: #000000;
+  color: #ffffff;
+  border: 0.0625rem solid #000000;
+}
+
+.auth-modal-btn-primary:hover {
+  background-color: #262626;
+}
+
+.auth-modal-btn-secondary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 0.0625rem solid #000000;
+}
+
+.auth-modal-btn-secondary:hover {
+  background-color: #f5f5f5;
+}
+
+
+.btn-go-to-cart {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border-radius: 3.125rem;
+  border: 0.0625rem solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-go-to-cart:hover {
+  background-color: #f5f5f5;
+}
+
+@media (max-width: 64rem) {
+  .product-detail-main {
+    grid-template-columns: 1fr;
+  }
+}

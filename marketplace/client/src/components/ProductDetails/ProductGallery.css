@@ -1,0 +1,121 @@
+.product-gallery-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 540px;
+}
+
+.main-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.badges-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.badge-black {
+  background-color: #000;
+  color: #fff;
+}
+
+.badge-lime {
+  background-color: #ccff00;
+  color: #000;
+}
+
+.badge-outline {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+.zoom-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.main-product-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.production-code {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  color: #888;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Grilla de Miniaturas */
+.thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.thumbnail-card {
+  aspect-ratio: 1 / 1;
+  background-color: #f7f7f7;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.thumbnail-card img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.thumbnail-card:hover {
+  border-color: #888;
+}
+
+.thumbnail-card.selected {
+  border: 2px solid #222;
+  background-color: #ebebeb;
+}

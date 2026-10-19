@@ -118,6 +118,13 @@ export const eliminarFavorito = (productoId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo quitar el producto de favoritos.')
 
+  export const agregarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'POST',
+    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
+  }, 'No se pudo agregar el producto a favoritos.');
+
+
 // ---------- Carrito ----------
 
 export const obtenerCarritoDeUsuario = (usuarioId) =>
@@ -196,6 +203,12 @@ export const getCategoryProducts = (categoryId) => {
     .catch(() => [])
 }
 
+export const getProductoById = (productoId) =>{
+  return fetch(`${API_URL}/productos/${productoId}`)
+    .then((res) => res.json())
+    .catch(() => null);
+}
+
 // Obtener productos por rango de precio
 export const getProductosByPrice = (precioMin, precioMax) => {
   return fetch(`${API_URL}/productos/precio?precioMin=${precioMin}&precioMax=${precioMax}`)
@@ -216,3 +229,16 @@ export const getProductosByTalle = (talle) => {
     .then((res) => res.json())
     .catch(() => [])
 }
+
+
+
+// ---------- Detalle del producto ----------
+export const getCarritoByUsuarioId = (usuarioId) =>
+  solicitar(`/carritos/usuario/${usuarioId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener el carrito del usuario.');
+
+
+
+
+

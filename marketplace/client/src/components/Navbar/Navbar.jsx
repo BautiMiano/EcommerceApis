@@ -4,23 +4,28 @@ import { getCategories } from '../../utils/api.js';
 import { Search } from '../Search/Search.jsx';
 import './Navbar.css';
 
-export const Navbar = () => {
-  const [logueado, setLogueado] = useState(!!localStorage.getItem('token'));
+export const Navbar = ({ user, onLogout }) => {
   const [categories, setCategories] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+  const tokenGuardado = localStorage.getItem('token');
+  const logueado = Boolean(user) || Boolean(tokenGuardado); 
+
+  // Lectura del rol formateado en mayúsculas
+  const rawRole = String(
+    (user && user.role) || localStorage.getItem('userRole') || ''
+  ).toUpperCase();
+
+  // Verificación de permisos por rol
+  const esVendedor = logueado && rawRole.includes('VENDEDOR');
+  const esCompradorOVisitante = !esVendedor;
 
   useEffect(() => {
     getCategories()
       .then((data) => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
-
-  const cerrarSesion = () => {
-    localStorage.removeItem('token');
-    setLogueado(false);
-    navigate('/');
-  };
 
   const handleSelectCategory = (cat) => {
     setIsDropdownOpen(false);
@@ -39,44 +44,47 @@ export const Navbar = () => {
       <header className="navbar">
         <Link to="/" className="navbar-logo">
           <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
-          </Link>
+        </Link>
 
         <nav className="navbar-links" aria-label="Principal">
           <NavLink to="/" end>Home</NavLink>
 
-          <div
-            className="dropdown-container"
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <NavLink
-              to="/categorias"
-              className="dropdown-trigger"
-              onClick={() => setIsDropdownOpen(false)}
+          {/* Categorías solo visibles para Compradores o Visitantes */}
+          {esCompradorOVisitante && (
+            <div
+              className="dropdown-container"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
             >
-              Categorías
-              <span className={`material-symbols-outlined arrow-icon ${isDropdownOpen ? 'open' : ''}`}>
-                expand_more
-              </span>
-            </NavLink>
+              <NavLink
+                to="/categorias"
+                className="dropdown-trigger"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Categorías
+                <span className={`material-symbols-outlined arrow-icon ${isDropdownOpen ? 'open' : ''}`}>
+                  expand_more
+                </span>
+              </NavLink>
 
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                <button
-                  type="button"
-                  className="dropdown-item dropdown-item-bold"
-                  onClick={() => handleSelectCategory('all')}
-                >
-                  <span className="material-symbols-outlined">apps</span>
-                  Ver todo el catálogo
-                </button>
+              {isDropdownOpen && (
+                <div className="dropdown-menu">
+                  <button
+                    type="button"
+                    className="dropdown-item dropdown-item-bold"
+                    onClick={() => handleSelectCategory('all')}
+                  >
+                    <span className="material-symbols-outlined">apps</span>
+                    Ver todo el catálogo
+                  </button>
 
-                <div className="dropdown-divider"></div>
+                  <div className="dropdown-divider"></div>
 
-                {categories.length === 0 ? (
-                  <div className="dropdown-loading">Sin categorías disponibles</div>
-                ) : (
-                  categories.map((cat) => (
+                  {categories.length === 0 && (
+                    <div className="dropdown-loading">Sin categorías disponibles</div>
+                  )}
+
+                  {categories.length > 0 && categories.map((cat) => (
                     <button
                       key={`nav-cat-${cat.idCategoria}`}
                       type="button"
@@ -86,24 +94,37 @@ export const Navbar = () => {
                       <span className="material-symbols-outlined">category</span>
                       {cat.nombreCategoria}
                     </button>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-          <NavLink to="/favoritos">Favoritos</NavLink>
-          <NavLink to="/carrito">Carrito</NavLink>
+          {esCompradorOVisitante && (
+            <>
+              <NavLink to="/favoritos">Favoritos</NavLink>
+              <NavLink to="/carrito">Carrito</NavLink>
+            </>
+          )}
+
+          {esVendedor && (
+            <>
+              <NavLink to="/crear-publicacion">Crear Publicación</NavLink>
+              <NavLink to="/mis-productos">Mis Productos</NavLink>
+            </>
+          )}
         </nav>
 
         <Search />
 
         <div className="navbar-actions">
-          {logueado ? (
-            <button className="btn-pill btn-pill-outline" onClick={cerrarSesion}>
+          {logueado && (
+            <button className="btn-pill btn-pill-outline" onClick={onLogout}>
               Cerrar sesión
             </button>
-          ) : (
+          )}
+
+          {!logueado && (
             <>
               <Link to="/login" className="btn-pill btn-pill-outline">Iniciar sesión</Link>
               <Link to="/registro" className="btn-pill btn-pill-solid">Registrarse</Link>
