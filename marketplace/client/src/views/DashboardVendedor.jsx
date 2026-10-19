@@ -73,14 +73,15 @@ const DashboardVendedor = () => {
         titulo="DASHBOARD DEL VENDEDOR"
         descripcion="Gestioná tu tienda, seguí tus ventas y mantené tus productos al día."
       >
-        <label className="dashboard-periodo">
-          <span className="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <label className="panel-periodo">
+          <span className="material-symbols-outlined panel-periodo-calendario" aria-hidden="true">calendar_month</span>
           <span className="visually-hidden">Período</span>
           <select value={dias} onChange={(event) => setDias(Number(event.target.value))}>
             <option value={7}>Últimos 7 días</option>
             <option value={30}>Últimos 30 días</option>
             <option value={90}>Últimos 90 días</option>
           </select>
+          <span className="material-symbols-outlined panel-periodo-flecha" aria-hidden="true">expand_more</span>
         </label>
       </SellerPageHeader>
 
