@@ -11,7 +11,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
 @Repository
 public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
 
-    List<Favorito> findByUsuarioIdAndActivo(Long usuarioId, boolean activo);
+    List<Favorito> findByUsuarioId(Long usuarioId);
 
     Optional<Favorito> findByUsuarioIdAndProductoId(Long usuarioId, Long productoId);
 }

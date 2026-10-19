@@ -1,0 +1,28 @@
+.favorites-section {
+  padding: 140px 0 96px 0;
+}
+
+.favorites-section-titulo {
+  margin: 10px 0 0 0;
+  font-size: 3.5rem;
+}
+
+.favorites-section-vacio {
+  margin: 20px 0 0 0;
+  font-size: 15px;
+  color: #5b6472;
+}
+
+.favorites-section-tarjetas {
+  margin: 40px 0 0 0;
+}
+
+@media screen and (max-width: 768px) {
+  .favorites-section {
+    padding: 80px 0 64px 0;
+  }
+
+  .favorites-section-titulo {
+    font-size: 2.5rem;
+  }
+}

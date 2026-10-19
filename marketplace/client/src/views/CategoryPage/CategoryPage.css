@@ -75,7 +75,7 @@
   margin-top: 1.25rem;
 }
 
-.hero-stats {
+.catalog-hero-stats {
   display: flex;
   flex-shrink: 0;
   margin: 0;
@@ -111,6 +111,13 @@
   color: #5e5e60; 
   order: 2; 
 }
+
+.catalog-hero-stats div { padding: 0.9rem 1.4rem; text-align: center; }
+.catalog-hero-stats div + div { border-left: 1px solid #e4e4e4; }
+.catalog-hero-stats dd { margin: 0; font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; line-height: 1; }
+.catalog-hero-stats dt { margin: 0.25rem 0 0; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #5e5e60; order: 2; }
+.catalog-hero-stats div { display: flex; flex-direction: column; }
+
 
 .catalog-main-layout {
   max-width: 100rem;

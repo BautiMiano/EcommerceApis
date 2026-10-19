@@ -28,7 +28,4 @@ public class Favorito {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
-    @Column(nullable = false)
-    private boolean activo = true;
-
 }

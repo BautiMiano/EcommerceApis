@@ -1,0 +1,11 @@
+.seller-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+@media screen and (max-width: 768px) {
+  .seller-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

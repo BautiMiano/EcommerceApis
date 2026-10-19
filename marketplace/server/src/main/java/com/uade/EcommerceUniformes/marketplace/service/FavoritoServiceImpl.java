@@ -28,7 +28,6 @@ public class FavoritoServiceImpl implements FavoritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
-    // Método auxiliar para mapear Producto a ProductoRequest (o reutilizá el de ProductoServiceImpl)
     private ProductoRequest toProductoResponse(Producto producto) {
         ProductoRequest response = new ProductoRequest();
         response.setId(producto.getId());
@@ -48,7 +47,8 @@ public class FavoritoServiceImpl implements FavoritoService {
     public List<FavoritoResponse> getMisFavoritos() {
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
-        List<Favorito> favoritos = favoritoRepository.findByUsuarioIdAndActivo(usuarioLogueado.getId(), true);
+        // 1. Consulta limpia por ID de usuario
+        List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuarioLogueado.getId());
 
         return favoritos.stream().map(fav -> {
             FavoritoResponse dto = new FavoritoResponse();
@@ -66,18 +66,12 @@ public class FavoritoServiceImpl implements FavoritoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + productoId));
 
-        Optional<Favorito> favoritoExistente
-                = favoritoRepository.findByUsuarioIdAndProductoId(usuarioLogueado.getId(), producto.getId());
+        Optional<Favorito> favoritoExistente = favoritoRepository
+                .findByUsuarioIdAndProductoId(usuarioLogueado.getId(), producto.getId());
 
+        // 2. Si ya existe la tupla en la BD, directamente rechaza la petición
         if (favoritoExistente.isPresent()) {
-            Favorito favorito = favoritoExistente.get();
-
-            if (favorito.isActivo()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
-            }
-
-            favorito.setActivo(true);
-            return favoritoRepository.save(favorito);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto ya está en tus favoritos");
         }
 
         Favorito favorito = new Favorito();
@@ -95,12 +89,7 @@ public class FavoritoServiceImpl implements FavoritoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "El producto no se encuentra en tus favoritos"));
 
-        if (!favorito.isActivo()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no se encuentra en tus favoritos");
-        }
-
-        favorito.setActivo(false);
-
-        favoritoRepository.save(favorito);
+        // 3. Borrado físico directo de la entidad en la base de datos
+        favoritoRepository.delete(favorito);
     }
 }

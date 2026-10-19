@@ -1,9 +1,25 @@
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Badge from "../Badge/Badge"
 import CategorySelect from "../CategorySelect/CategorySelect"
 import Button from "../Button/Button"
 import './CategorySearch.css'
 
 const CategorySearch = () => {
+
+    const [idCategoria, setIdCategoria] = useState('')
+    const navigate = useNavigate()
+
+    const seleccionarCategoria = (id) => {setIdCategoria(id)}
+
+    const handleClick = () => {
+        if(idCategoria === ''){
+            alert('Seleccioná una categoría')
+            return
+        }
+        navigate(`/categorias/${idCategoria}`)
+    }
+
     return(
         <section className="category-search">
             <div className="contenedor">
@@ -14,12 +30,13 @@ const CategorySearch = () => {
                         Accedé directamente a la indumentaria homologada para tu sector productivo.
                     </p>
                     <form className="category-search-form" onSubmit={(e)=>{e.preventDefault()}}>
-                        <CategorySelect />
+                        <CategorySelect seleccionarCategoria={seleccionarCategoria} />
                         <Button
                         texto="Explorar Rubro"
                         icono="/icons/flecha-blanca.svg"
                         iconoAlt="Flecha"
                         variante="oscuro"
+                        handleClick={handleClick}
                         />
                     </form>
                 </div>

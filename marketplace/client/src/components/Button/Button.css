@@ -131,3 +131,19 @@
   font-size: 1.25rem;
   line-height: 1;
 }
+.boton-linea {
+  padding: 10px 18px;
+  border: 1px solid #e8e8e8;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 13px;
+}
+
+.boton-linea:hover {
+  background-color: #f5f5f5;
+}
+
+.boton-linea img {
+  width: 14px;
+  height: 14px;
+}

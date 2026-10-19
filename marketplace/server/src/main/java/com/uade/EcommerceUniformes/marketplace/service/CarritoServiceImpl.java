@@ -57,7 +57,10 @@ public class CarritoServiceImpl implements CarritoService {
                     item.getProducto().getNombre(),
                     item.getCantidad(),
                     item.getPrecioUnitario(),
-                    item.getPrecioUnitario() * item.getCantidad()
+                    item.getPrecioUnitario() * item.getCantidad(),
+                    item.getProducto().getTalle(),
+                    item.getProducto().getCategoria() != null ? item.getProducto().getCategoria().getNombre() : null,
+                    item.getProducto().getVendedor().getNombreUsuario()
             ))
                     .toList();
         }

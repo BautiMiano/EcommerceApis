@@ -1,0 +1,32 @@
+.cart-list {
+  padding: 32px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.cart-list-titulo {
+  font-size: 1.75rem;
+}
+
+.cart-list-resumen {
+  margin: 6px 0 20px 0;
+  color: #5b6472;
+  font-size: 13px;
+}
+
+.cart-list-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-list-pie {
+  padding: 24px 0 0 0;
+  border-top: 1px solid #ececec;
+}
+
+@media screen and (max-width: 768px) {
+  .cart-list {
+    padding: 24px;
+  }
+}

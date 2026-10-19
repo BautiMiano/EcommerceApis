@@ -105,6 +105,54 @@ export const agregarStock = (productoId, cantidad) =>
     body: JSON.stringify({ id: productoId, stock: cantidad }),
   }, 'No se pudo agregar stock.')
 
+// ---------- Favoritos ----------
+
+export const obtenerMisFavoritos = () =>
+  solicitar('/favoritos/mis-favoritos', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener tus favoritos.')
+
+export const eliminarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(),
+  }, 'No se pudo quitar el producto de favoritos.')
+
+  export const agregarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'POST',
+    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
+  }, 'No se pudo agregar el producto a favoritos.');
+
+
+// ---------- Carrito ----------
+
+export const obtenerCarritoDeUsuario = (usuarioId) =>
+  solicitar(`/carritos/usuario/${usuarioId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener tu carrito.')
+
+export const agregarProductoAlCarrito = (carritoId, productoId, cantidad) =>
+  solicitar(`/carritos/${carritoId}/agregar-productos`, {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+  }, 'No se pudo agregar el producto al carrito.')
+
+export const actualizarCantidadCarrito = (carritoId, productoId, cantidad) =>
+  solicitar(`/carritos/${carritoId}/actualizar-cantidad`, {
+    method: 'PUT',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId, cantidad: cantidad }),
+  }, 'No se pudo actualizar la cantidad.')
+
+export const eliminarProductoDelCarrito = (carritoId, productoId) =>
+  solicitar(`/carritos/${carritoId}/eliminar-producto-carrito`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ productoId: productoId }),
+  }, 'No se pudo eliminar el producto del carrito.')
+
 // ---------- Imágenes ----------
 
 export const subirImagen = (archivo, productoId) => {
@@ -190,30 +238,7 @@ export const getCarritoByUsuarioId = (usuarioId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo obtener el carrito del usuario.');
 
-// 2. Agregar un producto al carrito específico
-export const addProductoToCarrito = (carritoId, productoId, cantidad) =>
-  solicitar(`/carritos/${carritoId}/agregar-productos`, {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify({
-      productoId,
-      cantidad,
-    }),
-  }, 'No se pudo agregar el producto al carrito.');
 
-export const agregarFavorito = (productoId) =>
-  solicitar(`/favoritos/${productoId}`, {
-    method: 'POST',
-    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
-  }, 'No se pudo agregar el producto a favoritos.');
 
-export const quitarFavorito = (productoId) =>
-  solicitar(`/favoritos/${productoId}`, {
-    method: 'DELETE',
-    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
-  }, 'No se pudo eliminar el producto de favoritos.');
 
-  export const obtenerMisFavoritos = () =>
-  solicitar('/favoritos/mis-favoritos', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener los favoritos.');
+

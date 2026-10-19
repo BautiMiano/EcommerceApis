@@ -10,6 +10,8 @@ import { ProductDetailPage } from './views/ProductDetailPage/ProductDetailPage.j
 import Login from './views/Login.jsx';
 import CrearPublicacion from './views/CrearPublicacion.jsx';
 import MisProductos from './views/MisProductos.jsx';
+import MisFavoritos from './views/MisFavoritos.jsx';
+import MiCarrito from './views/MiCarrito.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 
@@ -49,6 +51,8 @@ function App() {
           <Route element={<ProtectedRoute rolProhibido="VENDEDOR" />}>
             <Route path="/categorias" element={<CategoryPage />} />
             <Route path="/categorias/:id" element={<CategoryPage />} />
+            <Route path="/favoritos" element={<MisFavoritos />} />
+            <Route path="/carrito" element={<MiCarrito />} />
           </Route>
 
           {/* RUTAS EXCLUSIVAS PARA VENDEDOR */}
@@ -61,7 +65,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-
       <Footer />
       <ToastContainer position="bottom-right" autoClose={3000} />
     </div>

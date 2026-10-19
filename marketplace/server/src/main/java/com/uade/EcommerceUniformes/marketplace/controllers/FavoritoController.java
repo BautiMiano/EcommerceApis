@@ -26,10 +26,10 @@ public class FavoritoController {
 
     // GET http://localhost:4002/favoritos/mis-favoritos
     // En FavoritoController.java
-@GetMapping("/mis-favoritos")
-public ResponseEntity<List<FavoritoResponse>> getMisFavoritos() {
-    return ResponseEntity.ok(favoritoService.getMisFavoritos());
-}
+    @GetMapping("/mis-favoritos")
+    public ResponseEntity<List<FavoritoResponse>> getMisFavoritos() {
+        return ResponseEntity.ok(favoritoService.getMisFavoritos());
+    }
 
     // POST http://localhost:4002/favoritos/5
     @PostMapping("/{productoId}")

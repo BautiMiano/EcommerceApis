@@ -8,11 +8,11 @@ import { ProductSizeSelector } from './ProductSizeSelector';
 import { ProductQuantitySelector } from './ProductQuantitySelector';
 import { FavoriteCheckbox } from './FavoriteCheckbox';
 import { CartButton } from './CartButton';
-import { 
-  getCarritoByUsuarioId, 
-  addProductoToCarrito, 
-  agregarFavorito, 
-  quitarFavorito,
+import {
+  obtenerCarritoDeUsuario,
+  agregarProductoAlCarrito,
+  agregarFavorito,
+  eliminarFavorito,
   obtenerMisFavoritos
 } from '../../utils/api.js';
 import './ProductDetailSection.css';
@@ -41,7 +41,10 @@ export const ProductDetailSection = ({ product }) => {
 
     verificarFavorito && obtenerMisFavoritos()
       .then((favoritos) => {
-        const existe = favoritos.some((fav) => fav.producto.id === product.id);
+        const existe = favoritos.some((fav) => {
+          const idFavProducto = fav.producto?.id || fav.productoId || fav.id;
+          return String(idFavProducto) === String(product.id);
+        });
         setIsFavorite(existe);
       })
       .catch(() => setIsFavorite(false));
@@ -55,8 +58,8 @@ export const ProductDetailSection = ({ product }) => {
 
     const puedeComprar = esComprador && Boolean(userIdGuardado) && userIdGuardado !== 'null';
 
-    puedeComprar && getCarritoByUsuarioId(userIdGuardado)
-      .then((carrito) => addProductoToCarrito(carrito.id, product.id, quantity))
+    puedeComprar && obtenerCarritoDeUsuario(userIdGuardado)
+      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, quantity))
       .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
       .catch((error) => toast.error(error.message));
   };
@@ -70,27 +73,27 @@ export const ProductDetailSection = ({ product }) => {
     const debeAgregar = esComprador && !isFavorite;
 
     // Si ya era favorito -> Lo quitamos
-    debeQuitar && quitarFavorito(product.id)
-    .then(() => {
-      setIsFavorite(false);
-      toast.info('Producto eliminado de tus favoritos');
-    })
-    .catch((error) => toast.error(error.message));
+    debeQuitar && eliminarFavorito(product.id)
+      .then(() => {
+        setIsFavorite(false);
+        toast.info('Producto eliminado de tus favoritos');
+      })
+      .catch((error) => toast.error(error.message));
 
-  debeAgregar && agregarFavorito(product.id)
-    .then(() => {
-      setIsFavorite(true);
-      toast.success('¡Producto guardado en tus favoritos!');
-    })
-    .catch((error) => {
-      // Si el servidor responde 400 indicando que ya existía, corregimos el estado local
-      const yaEsFavorito = error.status === 400 || (error.message && error.message.includes('ya está'));
-      
-      yaEsFavorito && setIsFavorite(true);
-      yaEsFavorito && toast.info('El producto ya estaba guardado en tus favoritos.');
-      
-      !yaEsFavorito && toast.error(error.message);
-    });
+    debeAgregar && agregarFavorito(product.id)
+      .then(() => {
+        setIsFavorite(true);
+        toast.success('¡Producto guardado en tus favoritos!');
+      })
+      .catch((error) => {
+        // Si el servidor responde 400 indicando que ya existía, corregimos el estado local
+        const yaEsFavorito = error.status === 400 || (error.message && error.message.includes('ya está'));
+
+        yaEsFavorito && setIsFavorite(true);
+        yaEsFavorito && toast.info('El producto ya estaba guardado en tus favoritos.');
+
+        !yaEsFavorito && toast.error(error.message);
+      });
   };
 
   const handleIncreaseQuantity = () => {
@@ -116,26 +119,26 @@ export const ProductDetailSection = ({ product }) => {
 
         <ProductPriceBox precio={product.precio} />
 
-        <ProductSizeSelector 
+        <ProductSizeSelector
           product={product}
-          selectedSize={selectedSize} 
-          onSelectSize={setSelectedSize} 
+          selectedSize={selectedSize}
+          onSelectSize={setSelectedSize}
         />
 
-        <ProductQuantitySelector 
-          quantity={quantity} 
-          onIncrease={handleIncreaseQuantity} 
-          onDecrease={handleDecreaseQuantity} 
+        <ProductQuantitySelector
+          quantity={quantity}
+          onIncrease={handleIncreaseQuantity}
+          onDecrease={handleDecreaseQuantity}
         />
 
         <div className="actions-container">
-          <CartButton 
+          <CartButton
             texto={`AGREGAR AL CARRITO ($${product.precio * quantity})`}
             onClick={handleAddToCart}
           />
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn-go-to-cart"
             onClick={() => navigate('/carrito')}
           >
@@ -143,9 +146,9 @@ export const ProductDetailSection = ({ product }) => {
             VER MI CARRITO
           </button>
 
-          <FavoriteCheckbox 
-            isFavorite={isFavorite} 
-            onToggle={handleToggleFavorite} 
+          <FavoriteCheckbox
+            isFavorite={isFavorite}
+            onToggle={handleToggleFavorite}
           />
         </div>
       </div>
