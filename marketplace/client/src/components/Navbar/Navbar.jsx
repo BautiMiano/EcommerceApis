@@ -12,14 +12,14 @@ export const Navbar = ({ user, onLogout }) => {
   const tokenGuardado = localStorage.getItem('token');
   const logueado = Boolean(user) || Boolean(tokenGuardado); 
 
-  // 2. Lectura limpia del rol formateado en mayúsculas
+  // Lectura del rol formateado en mayúsculas
   const rawRole = String(
     (user && user.role) || localStorage.getItem('userRole') || ''
   ).toUpperCase();
 
-  // 3. Verificación de permisos por rol
-  const esVendedor = logueado && (rawRole.includes('VENDEDOR'));
-  const esCompradorOVisitante = !esVendedor
+  // Verificación de permisos por rol
+  const esVendedor = logueado && rawRole.includes('VENDEDOR');
+  const esCompradorOVisitante = !esVendedor;
 
   useEffect(() => {
     getCategories()
@@ -33,7 +33,7 @@ export const Navbar = ({ user, onLogout }) => {
     cat !== 'all' && navigate(`/categorias/${cat.idCategoria}`);
   };
 
-return (
+  return (
     <>
       {!logueado && (
         <div className="topbar">
@@ -49,53 +49,56 @@ return (
         <nav className="navbar-links" aria-label="Principal">
           <NavLink to="/" end>Home</NavLink>
 
-          <div
-            className="dropdown-container"
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <NavLink
-              to="/categorias"
-              className="dropdown-trigger"
-              onClick={() => setIsDropdownOpen(false)}
+          {/* Categorías solo visibles para Compradores o Visitantes */}
+          {esCompradorOVisitante && (
+            <div
+              className="dropdown-container"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
             >
-              Categorías
-              <span className={`material-symbols-outlined arrow-icon ${isDropdownOpen ? 'open' : ''}`}>
-                expand_more
-              </span>
-            </NavLink>
+              <NavLink
+                to="/categorias"
+                className="dropdown-trigger"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Categorías
+                <span className={`material-symbols-outlined arrow-icon ${isDropdownOpen ? 'open' : ''}`}>
+                  expand_more
+                </span>
+              </NavLink>
 
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                <button
-                  type="button"
-                  className="dropdown-item dropdown-item-bold"
-                  onClick={() => handleSelectCategory('all')}
-                >
-                  <span className="material-symbols-outlined">apps</span>
-                  Ver todo el catálogo
-                </button>
-
-                <div className="dropdown-divider"></div>
-
-                {categories.length === 0 && (
-                  <div className="dropdown-loading">Sin categorías disponibles</div>
-                )}
-
-                {categories.length > 0 && categories.map((cat) => (
+              {isDropdownOpen && (
+                <div className="dropdown-menu">
                   <button
-                    key={`nav-cat-${cat.idCategoria}`}
                     type="button"
-                    className="dropdown-item"
-                    onClick={() => handleSelectCategory(cat)}
+                    className="dropdown-item dropdown-item-bold"
+                    onClick={() => handleSelectCategory('all')}
                   >
-                    <span className="material-symbols-outlined">category</span>
-                    {cat.nombreCategoria}
+                    <span className="material-symbols-outlined">apps</span>
+                    Ver todo el catálogo
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+
+                  <div className="dropdown-divider"></div>
+
+                  {categories.length === 0 && (
+                    <div className="dropdown-loading">Sin categorías disponibles</div>
+                  )}
+
+                  {categories.length > 0 && categories.map((cat) => (
+                    <button
+                      key={`nav-cat-${cat.idCategoria}`}
+                      type="button"
+                      className="dropdown-item"
+                      onClick={() => handleSelectCategory(cat)}
+                    >
+                      <span className="material-symbols-outlined">category</span>
+                      {cat.nombreCategoria}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {esCompradorOVisitante && (
             <>

@@ -6,10 +6,12 @@ import Navbar from './components/Navbar/Navbar';
 import Home from './views/CategoryPage/Home.jsx';
 import { CategoryPage } from './views/CategoryPage/CategoryPage';
 import Register from './views/Register.jsx';
+import { ProductDetailPage } from './views/ProductDetailPage/ProductDetailPage.jsx';
 import Login from './views/Login.jsx';
 import CrearPublicacion from './views/CrearPublicacion.jsx';
 import MisProductos from './views/MisProductos.jsx';
 import Footer from './components/Footer/Footer.jsx';
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,52 +19,52 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const role = localStorage.getItem('userRole');
+    const userRole = localStorage.getItem('userRole');
 
-    token && role && setUser({ role, token });
+    const estaAutenticado = Boolean(token);
+    estaAutenticado && setUser({ token, role: userRole });
   }, []);
-
-  const handleLoginSuccess = (data) => {
-    const authToken = data.access_token;
-    const userRole = data.role;
-
-    localStorage.setItem('token', authToken);
-    localStorage.setItem('userRole', userRole);
-    
-    setUser({ role: userRole, token: authToken });
-
-    const roleUpper = String(userRole).toUpperCase();
-    const esVendedor = roleUpper === 'VENDEDOR';
-    
-    esVendedor && navigate('/mis-productos');
-    !esVendedor && navigate('/');
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     localStorage.removeItem('userRole');
     setUser(null);
-    navigate('/');
+    navigate('/login');
   };
 
   return (
-    <>
+    <div className="app-container">
       <Navbar user={user} onLogout={handleLogout} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/registro" element={<Register />} />
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="/categorias" element={<CategoryPage />} />
-        <Route path="/categorias/:idCategoria" element={<CategoryPage />} />
-        <Route path="/producto/:id" element={<h2>Detalle del Producto</h2>} />
-        <Route path="/crear-publicacion" element={<CrearPublicacion />} />
-        <Route path="/mis-productos" element={<MisProductos />} />
-      </Routes>
+
+      <main className="main-content">
+        <Routes>
+          {/* RUTAS PÚBLICAS */}
+          <Route path="/" element={<Home />} />
+          <Route path="/producto/:id" element={<ProductDetailPage user={user} />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/registro" element={<Register />} />
+
+          {/* RUTAS ACCESIBLES PARA VISITANTES Y COMPRADORES (PROHIBIDO PARA VENDEDOR) */}
+          <Route element={<ProtectedRoute rolProhibido="VENDEDOR" />}>
+            <Route path="/categorias" element={<CategoryPage />} />
+            <Route path="/categorias/:id" element={<CategoryPage />} />
+          </Route>
+
+          {/* RUTAS EXCLUSIVAS PARA VENDEDOR */}
+          <Route element={<ProtectedRoute rolProhibido="COMPRADOR" />}>
+            <Route path="/crear-publicacion" element={<CrearPublicacion />} />
+            <Route path="/mis-productos" element={<MisProductos />} />
+          </Route>
+
+          {/* Redirección por defecto a Home si la ruta no existe */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
       <Footer />
-      <ToastContainer position="top-right" />
-    </>
+      <ToastContainer position="bottom-right" autoClose={3000} />
+    </div>
   );
 }
 

@@ -156,7 +156,7 @@ export const getCategoryProducts = (categoryId) => {
 }
 
 export const getProductoById = (productoId) =>{
-  return fetch(`${API_BASE_URL}/productos/${productoId}`)
+  return fetch(`${API_URL}/productos/${productoId}`)
     .then((res) => res.json())
     .catch(() => null);
 }
@@ -181,3 +181,39 @@ export const getProductosByTalle = (talle) => {
     .then((res) => res.json())
     .catch(() => [])
 }
+
+
+
+// ---------- Detalle del producto ----------
+export const getCarritoByUsuarioId = (usuarioId) =>
+  solicitar(`/carritos/usuario/${usuarioId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudo obtener el carrito del usuario.');
+
+// 2. Agregar un producto al carrito específico
+export const addProductoToCarrito = (carritoId, productoId, cantidad) =>
+  solicitar(`/carritos/${carritoId}/agregar-productos`, {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({
+      productoId,
+      cantidad,
+    }),
+  }, 'No se pudo agregar el producto al carrito.');
+
+export const agregarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'POST',
+    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
+  }, 'No se pudo agregar el producto a favoritos.');
+
+export const quitarFavorito = (productoId) =>
+  solicitar(`/favoritos/${productoId}`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(), // Sin 'true': envía únicamente Authorization Bearer
+  }, 'No se pudo eliminar el producto de favoritos.');
+
+  export const obtenerMisFavoritos = () =>
+  solicitar('/favoritos/mis-favoritos', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener los favoritos.');

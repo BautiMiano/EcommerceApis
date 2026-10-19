@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
 import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.FavoritoResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 import com.uade.EcommerceUniformes.marketplace.repository.FavoritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.ProductoRepository;
 
@@ -26,17 +28,38 @@ public class FavoritoServiceImpl implements FavoritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
-    @Override
-    public List<Favorito> getMisFavoritos() {
+    // Método auxiliar para mapear Producto a ProductoRequest (o reutilizá el de ProductoServiceImpl)
+    private ProductoRequest toProductoResponse(Producto producto) {
+        ProductoRequest response = new ProductoRequest();
+        response.setId(producto.getId());
+        response.setNombre(producto.getNombre());
+        response.setDescripcion(producto.getDescripcion());
+        response.setPrecio(producto.getPrecio());
+        response.setTalle(producto.getTalle());
+        response.setStock(producto.getStock());
+        response.setActivo(producto.isActivo());
+        if (producto.getCategoria() != null) {
+            response.setCategoryId(producto.getCategoria().getId());
+        }
+        return response;
+    }
 
+    @Override
+    public List<FavoritoResponse> getMisFavoritos() {
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
-        return favoritoRepository.findByUsuarioIdAndActivo(usuarioLogueado.getId(), true);
+        List<Favorito> favoritos = favoritoRepository.findByUsuarioIdAndActivo(usuarioLogueado.getId(), true);
+
+        return favoritos.stream().map(fav -> {
+            FavoritoResponse dto = new FavoritoResponse();
+            dto.setId(fav.getId());
+            dto.setProducto(toProductoResponse(fav.getProducto()));
+            return dto;
+        }).toList();
     }
 
     @Override
     public Favorito agregarFavorito(Long productoId) {
-
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Producto producto = productoRepository.findById(productoId)
@@ -66,7 +89,6 @@ public class FavoritoServiceImpl implements FavoritoService {
 
     @Override
     public void eliminarFavorito(Long productoId) {
-
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
         Favorito favorito = favoritoRepository.findByUsuarioIdAndProductoId(usuarioLogueado.getId(), productoId)

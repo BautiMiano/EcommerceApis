@@ -13,34 +13,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Favorito;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.FavoritoResponse;
 import com.uade.EcommerceUniformes.marketplace.service.FavoritoService;
 
 @RestController
 @RequestMapping("favoritos")
-@CrossOrigin ("http://localhost:5173")
-
+@CrossOrigin("http://localhost:5173")
 public class FavoritoController {
 
     @Autowired
     private FavoritoService favoritoService;
 
     // GET http://localhost:4002/favoritos/mis-favoritos
-    @GetMapping("/mis-favoritos")
-    public ResponseEntity<List<Favorito>> getMisFavoritos() {
-        return ResponseEntity.ok(favoritoService.getMisFavoritos());
-    }
+    // En FavoritoController.java
+@GetMapping("/mis-favoritos")
+public ResponseEntity<List<FavoritoResponse>> getMisFavoritos() {
+    return ResponseEntity.ok(favoritoService.getMisFavoritos());
+}
 
     // POST http://localhost:4002/favoritos/5
     @PostMapping("/{productoId}")
-    public ResponseEntity<Favorito> agregarFavorito(@PathVariable Long productoId) {
-        Favorito favorito = favoritoService.agregarFavorito(productoId);
-        return ResponseEntity.ok(favorito);
+    public ResponseEntity<Void> agregarFavorito(@PathVariable Long productoId) {
+        favoritoService.agregarFavorito(productoId);
+        return ResponseEntity.ok().build();
     }
 
     // DELETE http://localhost:4002/favoritos/5
     @DeleteMapping("/{productoId}")
-    public ResponseEntity<String> eliminarFavorito(@PathVariable Long productoId) {
+    public ResponseEntity<Void> eliminarFavorito(@PathVariable Long productoId) {
         favoritoService.eliminarFavorito(productoId);
-        return ResponseEntity.ok("Producto eliminado de favoritos con id: " + productoId);
+        return ResponseEntity.ok().build();
     }
 }
