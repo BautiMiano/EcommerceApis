@@ -1,17 +1,25 @@
+import { useNavigate } from "react-router-dom"
 import './CartItem.css'
 
-const CartItem = ({productoId, nombre, categoria, talle, etiquetaTalle, vendedor, precioUnitario, cantidad, subtotal, cambiarCantidad, eliminarProducto}) => {
+const CartItem = ({productoId, nombre, categoria, talle, etiquetaTalle, vendedor, imagen, precioUnitario, cantidad, subtotal, cambiarCantidad, eliminarProducto}) => {
+
+    const navigate = useNavigate()
+
+    const verProducto = () => {navigate(`/producto/${productoId}`)}
+
     return(
         <li className="cart-item">
             <div className="cart-item-imagen">
-                <img src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} />
+                {imagen
+                    ? <img className="cart-item-foto" src={imagen} alt={'Imagen de ' + nombre} />
+                    : <img src="/icons/remera-gris.svg" alt={'Imagen de ' + nombre} />}
             </div>
             <div className="cart-item-info">
                 <div className="cart-item-vendedor">
                     <img src="/icons/tienda-negra.svg" alt="Ícono de tienda" />
                     <p>{vendedor}</p>
                 </div>
-                <h3 className="cart-item-nombre">{nombre}</h3>
+                <h3 className="cart-item-nombre" onClick={verProducto}>{nombre}</h3>
                 <p className="cart-item-detalle">{categoria + ' · Talle ' + etiquetaTalle + ' · ' + precioUnitario + ' c/u'}</p>
             </div>
             <div className="cart-item-acciones">

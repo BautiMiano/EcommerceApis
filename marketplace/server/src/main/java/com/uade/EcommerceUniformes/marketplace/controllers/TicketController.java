@@ -1,7 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Ticket;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.RespuestaTicketRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.TicketResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.TicketRequest;
 import com.uade.EcommerceUniformes.marketplace.service.TicketService;
 
@@ -29,23 +29,30 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping
-    public ResponseEntity<Ticket> crearTicket(@RequestBody TicketRequest request) {
-        return ResponseEntity.ok(ticketService.crearTicket(request));
+    public ResponseEntity<TicketResponse> crearTicket(@RequestBody TicketRequest request) {
+        return ResponseEntity.ok(TicketResponse.desde(ticketService.crearTicket(request)));
     }
 
     @GetMapping("/mis-tickets")
-    public ResponseEntity<List<Ticket>> getMisTickets() {
-        return ResponseEntity.ok(ticketService.getMisTickets());
+    public ResponseEntity<List<TicketResponse>> getMisTickets() {
+        return ResponseEntity.ok(ticketService.getMisTickets().stream()
+                .map(TicketResponse::desde)
+                .toList());
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> getTickets() {
-        return ResponseEntity.ok(ticketService.getTickets());
+    public ResponseEntity<List<TicketResponse>> getTickets() {
+        return ResponseEntity.ok(ticketService.getTickets().stream()
+                .map(TicketResponse::desde)
+                .toList());
     }
 
     @GetMapping("/{ticketId}")
-    public ResponseEntity<Optional<Ticket>> getTicketById(@PathVariable Long ticketId) {
-        return ResponseEntity.ok(ticketService.getTicketById(ticketId));
+    public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long ticketId) {
+        return ticketService.getTicketById(ticketId)
+                .map(TicketResponse::desde)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{ticketId}/responder")

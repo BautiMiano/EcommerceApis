@@ -29,6 +29,7 @@ const FavoritesGrid = ({favoritos, quitarFavorito, moverAlCarrito}) => {
                     stockDisponible={value.stockDisponible}
                     descuento={value.descuento}
                     vendedor={value.vendedor}
+                    imagen={value.imagen}
                     quitarFavorito={quitarFavorito}
                     moverAlCarrito={moverAlCarrito}
                     />

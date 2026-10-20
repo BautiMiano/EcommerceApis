@@ -5,6 +5,7 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,19 +83,10 @@ public class ProductoServiceImpl implements ProductoService {
             List<Long> imagenIds = new ArrayList<>();
 
             for (Imagen img : producto.getImagenes()) {
-                if (!Boolean.TRUE.equals(img.getActivo()) || img.getImagen() == null) {
-                    continue;
-                }
-                try {
-                    byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
-                    String tipoContenido = img.getTipoContenido() == null
-                            ? "application/octet-stream"
-                            : img.getTipoContenido();
-                    imagenesBase64.add("data:" + tipoContenido + ";base64,"
-                            + Base64.getEncoder().encodeToString(bytes));
+                String dataUri = aDataUri(img);
+                if (dataUri != null) {
+                    imagenesBase64.add(dataUri);
                     imagenIds.add(img.getId());
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -103,6 +95,36 @@ public class ProductoServiceImpl implements ProductoService {
         }
 
         return response;
+    }
+
+    @Override
+    public String getImagenPrincipal(Producto producto) {
+        if (producto.getImagenes() == null) {
+            return null;
+        }
+        
+        return producto.getImagenes().stream()
+                .map(this::aDataUri)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
+    
+    private String aDataUri(Imagen img) {
+        if (!Boolean.TRUE.equals(img.getActivo()) || img.getImagen() == null) {
+            return null;
+        }
+        try {
+            byte[] bytes = img.getImagen().getBytes(1, (int) img.getImagen().length());
+            String tipoContenido = img.getTipoContenido() == null
+                    ? "application/octet-stream"
+                    : img.getTipoContenido();
+            return "data:" + tipoContenido + ";base64," + Base64.getEncoder().encodeToString(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

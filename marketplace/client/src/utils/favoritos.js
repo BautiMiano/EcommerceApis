@@ -1,4 +1,5 @@
 // Funciones que comparten la vista de favoritos y la sección de favoritos del home.
+import { toast } from 'react-toastify'
 import { obtenerCarritoDeUsuario, agregarProductoAlCarrito } from './api'
 import { textoTalles, talleUnicoDe } from './talles'
 
@@ -18,7 +19,8 @@ export const armarFavorito = (favorito) => {
     estado: producto.estado,
     stockDisponible: talles.reduce((total, t) => total + t.stock - t.stockReservado, 0),
     descuento: producto.descuentoPorcentaje || 0,
-    vendedor: producto.vendedor
+    vendedor: producto.vendedor,
+    imagen: producto.imagenes?.[0]
   }
 }
 
@@ -26,6 +28,6 @@ export const armarFavorito = (favorito) => {
 export const moverAlCarrito = (productoId, talle) => {
   obtenerCarritoDeUsuario(localStorage.getItem('usuarioId'))
     .then((carrito) => agregarProductoAlCarrito(carrito.id, productoId, talle, 1))
-    .then(() => alert('Producto agregado al carrito'))
-    .catch((error) => alert(error.message))
+    .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
+    .catch((error) => toast.error(error.message))
 }

@@ -15,4 +15,5 @@ public class ItemCarritoResponse {
     private String talle;
     private String categoria;
     private String vendedor;
+    private String imagen;
 }

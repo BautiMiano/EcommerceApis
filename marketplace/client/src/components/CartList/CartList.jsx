@@ -34,6 +34,7 @@ const CartList = ({items, unidades, cambiarCantidad, eliminarProducto}) => {
                         talle={value.talle}
                         etiquetaTalle={etiquetaTalle(value.talle)}
                         vendedor={value.vendedor}
+                        imagen={value.imagen}
                         precioUnitario={'$' + value.precioUnitario.toLocaleString('es-AR')}
                         cantidad={value.cantidad}
                         subtotal={'$' + value.subtotal.toLocaleString('es-AR')}

@@ -1,0 +1,26 @@
+.ticket-filtro {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ticket-filtro-boton {
+  padding: 10px 18px;
+  border: 1px solid #000000;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ticket-filtro-boton:hover {
+  background-color: #f5f5f5;
+}
+
+.ticket-filtro-activo,
+.ticket-filtro-activo:hover {
+  background-color: #000000;
+  color: #ffffff;
+  font-weight: 700;
+}

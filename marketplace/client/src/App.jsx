@@ -19,6 +19,11 @@ import PedidosRecibidos from './views/PedidosRecibidos.jsx';
 import MiPerfilVendedor from './views/MiPerfilVendedor.jsx';
 import MiPerfilComprador from './views/MiPerfilComprador.jsx';
 import { cerrarSesion } from './utils/sesion.js';
+import ChatFlotante from './components/ChatFlotante/ChatFlotante';
+import MisTickets from './views/MisTickets.jsx';
+import NuevoTicket from './views/NuevoTicket.jsx';
+import TicketsAdmin from './views/TicketsAdmin.jsx';
+import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
 
 function App() {
   const navigate = useNavigate();
@@ -40,7 +45,7 @@ function App() {
 
           {/* CATÁLOGO: VISITANTES Y COMPRADORES (EL VENDEDOR VUELVE A SU PANEL) */}
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} permitirVisitantes />}>
-            <Route path="/categorias" element={<CategoryPage />} />
+            <Route path="/categorias" element={<CategoryPage />}/>
             <Route path="/categorias/:idCategoria" element={<CategoryPage />} />
           </Route>
 
@@ -49,6 +54,12 @@ function App() {
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
             <Route path="/perfil" element={<MiPerfilComprador />} />
+          </Route>
+
+          {/* EXCLUSIVAS DEL ADMINISTRADOR */}
+          <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
+            <Route path="/admin/tickets" element={<TicketsAdmin />} />
+            <Route path="/admin/tickets/:id" element={<TicketDetalleAdmin />} />
           </Route>
         </Route>
 
@@ -62,16 +73,21 @@ function App() {
             <Route path="pedidos" element={<PedidosRecibidos />} />
             <Route path="pedidos/:id" element={<PedidosRecibidos />} />
             <Route path="perfil" element={<MiPerfilVendedor />} />
+            <Route path="tickets" element={<MisTickets />} />
+            <Route path="tickets/nuevo" element={<NuevoTicket />} />
           </Route>
         </Route>
 
-        {/* Rutas viejas del vendedor, para no romper enlaces */}
+        {/* Rutas viejas, para no romper enlaces */}
         <Route path="/mis-productos" element={<Navigate to="/vendedor/productos" replace />} />
         <Route path="/crear-publicacion" element={<Navigate to="/vendedor/productos/nuevo" replace />} />
+        <Route path="/mis-tickets" element={<Navigate to="/vendedor/tickets" replace />} />
+        <Route path="/tickets/nuevo" element={<Navigate to="/vendedor/tickets/nuevo" replace />} />
 
         {/* Redirección por defecto a Home si la ruta no existe */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ChatFlotante />
       <ToastContainer position="bottom-right" autoClose={3000} />
     </>
   );

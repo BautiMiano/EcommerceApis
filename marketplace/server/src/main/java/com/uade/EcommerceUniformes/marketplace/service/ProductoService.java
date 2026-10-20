@@ -38,6 +38,8 @@ public interface ProductoService {
     /** Arma la respuesta de un producto (con talles, stock total e imágenes) para reutilizarla en otros servicios. */
     ProductoRequest toResponse(Producto producto);
 
+    String getImagenPrincipal(Producto producto);
+
     List<ProductoRequest> getMisProductos();
 
     public List<ProductoRequest> getProductosByPrecio(Double precioMin, Double precioMax);

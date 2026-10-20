@@ -1,0 +1,32 @@
+.ticket-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ticket-resumen-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  border: 1px solid #e5e5e5;
+  background-color: #ffffff;
+}
+
+.ticket-resumen-destacada {
+  border-color: #000000;
+  background-color: #cfff46;
+}
+
+.ticket-resumen-numero {
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.ticket-resumen-texto {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
