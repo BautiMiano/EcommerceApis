@@ -1,4 +1,8 @@
 package com.uade.EcommerceUniformes.marketplace.entity.dto;
 
-public record ChatResponse(Long conversacionId, String respuesta) {
+import java.util.List;
+
+import com.uade.EcommerceUniformes.marketplace.service.chat.tools.ProductoResultado;
+
+public record ChatResponse(Long conversacionId, String respuesta, List<ProductoResultado> productos) {
 }

@@ -28,6 +28,7 @@ import com.uade.EcommerceUniformes.marketplace.service.llm.RespuestaLlm;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionDetalleResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionResumenResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.MensajeDto;
+import com.uade.EcommerceUniformes.marketplace.service.chat.tools.ProductoResultado;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,17 +72,18 @@ public class ChatServiceImpl implements ChatService {
         List<Map<String, Object>> contenidos = new ArrayList<>(cargarHistorial(conversacion));
         contenidos.add(Contenidos.texto(RolMensaje.USER, mensaje));
 
-        String respuesta = conversar(contenidos, usuario, rol);
+        List<ProductoResultado> productos = new ArrayList<>();
+        String respuesta = conversar(contenidos, usuario, rol, productos);
 
         guardarMensaje(conversacion, RolMensaje.USER, mensaje);
         guardarMensaje(conversacion, RolMensaje.MODEL, respuesta);
         conversacion.setActualizadaEn(LocalDateTime.now());
         conversacionRepository.save(conversacion);
 
-        return new ChatResponse(conversacion.getId(), respuesta);
+        return new ChatResponse(conversacion.getId(), respuesta, productos);
     }
 
-        @Override
+    @Override
     public List<ConversacionResumenResponse> listarConversaciones() {
         Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
         return conversacionRepository.findByUsuarioIdOrderByActualizadaEnDesc(usuario.getId())
@@ -122,7 +124,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /** El loop: llamar al modelo, ejecutar las herramientas que pida, repetir. */
-    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario, RolChat rol) {
+    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario, RolChat rol, List<ProductoResultado> productos) {
         String instrucciones = systemPromptProvider.para(rol);
         List<Map<String, Object>> declaraciones = herramientasPara(rol).stream()
                 .map(ChatTool::declaracion)
@@ -139,13 +141,27 @@ public class ChatServiceImpl implements ChatService {
 
             List<Object> resultados = new ArrayList<>();
             for (LlamadaHerramienta llamada : respuesta.llamadas()) {
-                resultados.add(ejecutar(llamada, usuario, rol));
+                Object resultado = ejecutar(llamada, usuario, rol);
+                resultados.add(resultado);
+                agregarProductos(resultado, productos);
             }
             contenidos.add(Contenidos.resultadosHerramientas(respuesta.llamadas(), resultados));
         }
 
         log.warn("Se alcanzó el máximo de {} pasos sin respuesta final", MAX_PASOS);
         return RESPUESTA_FALLBACK;
+    }
+
+    /** Si la herramienta devolvió productos del catálogo, los guarda para mostrarlos como tarjetas (sin repetir). */
+    private void agregarProductos(Object resultado, List<ProductoResultado> productos) {
+        if (resultado instanceof Map<?, ?> mapa && mapa.get("productos") instanceof List<?> lista) {
+            for (Object elemento : lista) {
+                if (elemento instanceof ProductoResultado producto
+                        && productos.stream().noneMatch(p -> p.id().equals(producto.id()))) {
+                    productos.add(producto);
+                }
+            }
+        }
     }
 
     /** Solo las herramientas habilitadas para este rol. */
