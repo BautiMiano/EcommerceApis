@@ -5,6 +5,7 @@ const OPCIONES_VENDEDOR = [
   { ruta: '/vendedor', texto: 'Dashboard', icono: 'home', exacta: true },
   { ruta: '/vendedor/productos', texto: 'Mis productos', icono: 'sell' },
   { ruta: '/vendedor/pedidos', texto: 'Pedidos recibidos', icono: 'deployed_code' },
+  { ruta: '/vendedor/tickets', texto: 'Tickets de soporte', icono: 'support_agent' },
   { ruta: '/vendedor/perfil', texto: 'Mi perfil', icono: 'person' },
 ]
 
