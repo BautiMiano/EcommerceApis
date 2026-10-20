@@ -8,10 +8,10 @@ import { ProductSizeSelector } from './ProductSizeSelector';
 import { ProductQuantitySelector } from './ProductQuantitySelector';
 import { FavoriteCheckbox } from './FavoriteCheckbox';
 import { CartButton } from './CartButton';
-import {
-  obtenerCarritoDeUsuario,
-  agregarProductoAlCarrito,
-  agregarFavorito,
+import { 
+  obtenerCarritoDeUsuario, 
+  agregarProductoAlCarrito, 
+  agregarFavorito, 
   eliminarFavorito,
   obtenerMisFavoritos
 } from '../../utils/api.js';
@@ -28,7 +28,6 @@ export const ProductDetailSection = ({ product }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Lectura de sesión y rol
   const tokenGuardado = localStorage.getItem('token');
   const userIdGuardado = localStorage.getItem('usuarioId');
   const estaAutenticado = Boolean(tokenGuardado);
@@ -37,7 +36,6 @@ export const ProductDetailSection = ({ product }) => {
   const esVendedor = estaAutenticado && rawRole.includes('VENDEDOR');
   const esComprador = estaAutenticado && !esVendedor;
 
-  // 1. Al cargar la pantalla, verificamos si este producto ya es favorito
   useEffect(() => {
     const verificarFavorito = esComprador && Boolean(product?.id);
 
@@ -52,12 +50,18 @@ export const ProductDetailSection = ({ product }) => {
       .catch(() => setIsFavorite(false));
   }, [product?.id, esComprador]);
 
-  // Manejo del Carrito
   const handleAddToCart = () => {
-    !estaAutenticado && setIsModalOpen(true);
+    if (!estaAutenticado) {
+      setIsModalOpen(true);
+      return;
+    }
 
-    esVendedor && toast.warn('Las cuentas con rol Vendedor no pueden realizar compras.');
+    if (esVendedor) {
+      toast.warn('Las cuentas con rol Vendedor no pueden realizar compras.');
+      return;
+    }
 
+<<<<<<< HEAD
     const faltaTalle = esComprador && !selectedSize;
     faltaTalle && toast.warn('Elegí un talle antes de agregar al carrito.');
 
@@ -65,19 +69,47 @@ export const ProductDetailSection = ({ product }) => {
 
     puedeComprar && obtenerCarritoDeUsuario(userIdGuardado)
       .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, selectedSize, quantity))
+=======
+    if (!userIdGuardado || userIdGuardado === 'null') {
+      toast.error('No se pudo identificar tu usuario. Por favor, volvé a iniciar sesión.');
+      return;
+    }
+
+    obtenerCarritoDeUsuario(userIdGuardado)
+      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, quantity))
+>>>>>>> b8a5059268befbe3941db0438a2eaf043c256771
       .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
       .catch((error) => toast.error(error.message));
   };
 
-  // 2. Alternar entre agregar y quitar con el mismo botón
-  const handleToggleFavorite = () => {
-    !estaAutenticado && setIsModalOpen(true);
+  const handleGoToCart = () => {
+    if (!estaAutenticado) {
+      setIsModalOpen(true);
+      return;
+    }
 
-    // Evaluación por cortocircuito según el estado actual
+    if (esVendedor) {
+      toast.warn('Las cuentas con rol Vendedor no tienen sección de carrito de compras.');
+      return;
+    }
+
+    navigate('/carrito');
+  };
+
+  const handleToggleFavorite = () => {
+    if (!estaAutenticado) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    if (esVendedor) {
+      toast.warn('Las cuentas con rol Vendedor no pueden guardar favoritos.');
+      return;
+    }
+
     const debeQuitar = esComprador && isFavorite;
     const debeAgregar = esComprador && !isFavorite;
 
-    // Si ya era favorito -> Lo quitamos
     debeQuitar && eliminarFavorito(product.id)
       .then(() => {
         setIsFavorite(false);
@@ -91,7 +123,6 @@ export const ProductDetailSection = ({ product }) => {
         toast.success('¡Producto guardado en tus favoritos!');
       })
       .catch((error) => {
-        // Si el servidor responde 400 indicando que ya existía, corregimos el estado local
         const yaEsFavorito = error.status === 400 || (error.message && error.message.includes('ya está'));
 
         yaEsFavorito && setIsFavorite(true);
@@ -148,14 +179,14 @@ export const ProductDetailSection = ({ product }) => {
 
         <div className="actions-container">
           <CartButton
-            texto={`AGREGAR AL CARRITO ($${product.precio * quantity})`}
+            texto={`AGREGAR AL CARRITO ($${(product?.precio || 0) * quantity})`}
             onClick={handleAddToCart}
           />
 
           <button
             type="button"
             className="btn-go-to-cart"
-            onClick={() => navigate('/carrito')}
+            onClick={handleGoToCart}
           >
             <span className="material-symbols-outlined">shopping_cart_checkout</span>
             VER MI CARRITO
@@ -185,7 +216,7 @@ export const ProductDetailSection = ({ product }) => {
 
         <h3 className="auth-modal-title">Iniciar sesión requerido</h3>
         <p className="auth-modal-text">
-          Para agregar productos al carrito o guardarlos en favoritos necesitás iniciar sesión en tu cuenta.
+          Para agregar productos al carrito, ver tu carrito o guardar favoritos necesitás iniciar sesión en tu cuenta.
         </p>
 
         <div className="auth-modal-actions">

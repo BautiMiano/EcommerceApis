@@ -39,6 +39,18 @@ const TiendaLayout = ({ onLogout }) => (
 function App() {
   const navigate = useNavigate();
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+
+    const estaAutenticado = Boolean(token);
+    estaAutenticado && setUser({ token, role: userRole, userId });
+  }, []);
+
+>>>>>>> b8a5059268befbe3941db0438a2eaf043c256771
   const handleLogout = () => {
     cerrarSesion();
     navigate('/login');
