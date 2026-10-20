@@ -74,6 +74,7 @@ public class SecurityConfig {
 
                         // Productos (mis-productos ANTES del permitAll de GET /productos/**)
                         .requestMatchers(HttpMethod.GET, "/productos/mis-productos").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/productos/todos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/productos/talle/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/productos/talles/**").permitAll()

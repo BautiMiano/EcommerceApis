@@ -18,7 +18,10 @@ const Register = () => {
           titulo="Creá tu cuenta en Uniforma"
           descripcion="Accedé a la plataforma líder de uniformes técnicos, calzado y ropa de trabajo con estándar industrial."
         />
-        <RegisterForm onRegistroExitoso={() => navigate(rutaInicioPorRol(obtenerSesion().rol))} />
+        <RegisterForm
+          onRegistroExitoso={() => navigate(rutaInicioPorRol(obtenerSesion().rol))}
+          onSolicitudEnviada={() => navigate('/login')}
+        />
         <LoginLink onClick={() => navigate('/login')} />
       </main>
     </div>

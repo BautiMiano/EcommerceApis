@@ -10,6 +10,8 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.ProductoRequest;
 public interface ProductoService {
     List<ProductoRequest> getProductos();
 
+    List<ProductoRequest> getTodosLosProductos();
+
     ProductoRequest getProductoById(Long productoId);
 
     List<ProductoRequest> getProductosByCategoria(Long categoryId);
