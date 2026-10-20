@@ -56,6 +56,31 @@ export const registrarUsuario = (datos) =>
 export const getCategories = () =>
   solicitar('/categories', {}, 'No se pudieron obtener las categorías.')
 
+// Activas e inactivas. Solo para el admin.
+export const obtenerTodasLasCategorias = () =>
+  solicitar('/categories/todas', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener las categorías.')
+
+export const crearCategoria = (nombre) =>
+  solicitar('/categories', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ nombre: nombre }),
+  }, 'No se pudo crear la categoría.')
+
+export const activarCategoria = (categoriaId) =>
+  solicitar(`/categories/activar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar la categoría.')
+
+export const desactivarCategoria = (categoriaId) =>
+  solicitar(`/categories/desactivar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar la categoría.')
+
 // ---------- Productos ----------
 
 export const crearProducto = (producto) =>

@@ -1,0 +1,36 @@
+.admin-categorias-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-categorias-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-categorias-form .panel-campo {
+  flex: 1;
+  max-width: 24rem;
+}
+
+.admin-categorias-nombre {
+  font-weight: 600;
+}
+
+@media (max-width: 56.25em) {
+  .admin-categorias-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-categorias-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-categorias-form .panel-campo {
+    max-width: none;
+  }
+}

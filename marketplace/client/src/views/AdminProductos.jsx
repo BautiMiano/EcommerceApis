@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
@@ -118,6 +118,10 @@ const AdminProductos = () => {
   return (
     <div className="panel-pagina admin-productos">
       <SellerPageHeader titulo="PRODUCTOS" descripcion="Gestioná las publicaciones de todos los vendedores.">
+        <Link className="panel-boton panel-boton-secundario" to="/admin/categorias">
+          <span className="material-symbols-outlined" aria-hidden="true">category</span>
+          Categorías
+        </Link>
         <button type="button" className="panel-boton panel-boton-secundario" onClick={handleExportar} disabled={productos.length === 0}>
           <span className="material-symbols-outlined" aria-hidden="true">download</span>
           Exportar listado

@@ -50,6 +50,8 @@ public class SecurityConfig {
                         // Categorias (Soporta /categories y /categorias)
                         .requestMatchers(HttpMethod.POST, "/categories/**", "/categorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        // Listado con las inactivas (ANTES del permitAll de GET /categories/**)
+                        .requestMatchers(HttpMethod.GET, "/categories/todas").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/categories/**", "/categorias/**").permitAll()
 
                         // Ordenes

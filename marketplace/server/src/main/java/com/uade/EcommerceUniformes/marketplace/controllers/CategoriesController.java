@@ -34,6 +34,12 @@ public class CategoriesController {
         return categoryService.getCategories();
     }
 
+    // Activas e inactivas, para el panel del admin
+    @GetMapping("/todas")
+    public List<CategoryDto> getTodasLasCategorias() {
+        return categoryService.getTodasLasCategorias();
+    }
+
     @GetMapping("/{categoryId}")
     public CategoryDto getCategorById(@PathVariable Long categoryId){
         return categoryService.getCategorById(categoryId);

@@ -26,6 +26,7 @@ import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
 import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
+import AdminCategorias from './views/AdminCategorias.jsx';
 
 function App() {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ function App() {
             <Route element={<AdminPanel />}>
               <Route path="/admin/productos" element={<AdminProductos />} />
               <Route path="/admin/productos/:id/editar" element={<EditarProducto />} />
+              <Route path="/admin/categorias" element={<AdminCategorias />} />
             </Route>
           </Route>
         </Route>
