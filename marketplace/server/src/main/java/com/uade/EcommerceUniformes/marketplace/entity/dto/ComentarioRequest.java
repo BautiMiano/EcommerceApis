@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ComentarioRequest {
+    private Long id;
     private Long usuarioId;
     private String comentarioProducto;
     private int calificacion;

@@ -356,9 +356,9 @@ export const crearResenaProducto = (productoId, resenaData) =>
     method: 'POST',
     headers: obtenerHeaders(true),
     body: JSON.stringify({
-  productoId: productoId,
-  comentarioProducto: resenaData.comentario,
-  calificacion: resenaData.calificacion,
+      productoId: productoId,
+      comentarioProducto: resenaData.comentario,
+      calificacion: resenaData.calificacion,
     }),
   }, 'No se pudo publicar el comentario.');
 

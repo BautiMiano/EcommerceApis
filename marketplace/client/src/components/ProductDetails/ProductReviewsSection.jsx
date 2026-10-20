@@ -16,6 +16,7 @@ export const ProductReviewsSection = ({ productoId }) => {
       .catch(() => setResenas([]));
   }, [productoId]);
 
+
   const handleCreateReview = (reviewData) => {
     crearResenaProducto(productoId, reviewData)
       .then((nuevoComentario) => {

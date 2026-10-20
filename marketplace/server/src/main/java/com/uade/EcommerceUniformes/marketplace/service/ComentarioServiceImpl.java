@@ -18,6 +18,7 @@ import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioLogueadoService;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioResponse;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -46,6 +47,12 @@ public class ComentarioServiceImpl implements ComentarioService {
         return comentarioRepository.findAll();
     }
 
+    public ComentarioResponse aResponse(Comentario c) {
+        Usuario u = c.getUsuario();
+        String nombre = u.getApellido() == null ? u.getNombre() : u.getNombre() + " " + u.getApellido();
+        return new ComentarioResponse(c.getId(), c.getComentarioProducto(), c.getCalificacion(), nombre);
+    }
+
     @Override
     public Optional<Comentario> getComentariosById(Long comentarioId) {
         if (!comentarioRepository.existsById(comentarioId)) {
@@ -56,49 +63,73 @@ public class ComentarioServiceImpl implements ComentarioService {
     }
 
     @Override
-    public List<Comentario> getComentariosByProductoId(Long productoId) {
-
-        if (!productoRepository.existsById(productoId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId);
-        }
-        return comentarioRepository.findByProductoId(productoId);
+public List<ComentarioResponse> getComentariosByProductoId(Long productoId) {
+    if (!productoRepository.existsById(productoId)) {
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Producto no encontrado con id: " + productoId
+        );
     }
 
-    public Comentario createComentario(ComentarioRequest request) {
+    return comentarioRepository.findByProductoId(productoId)
+            .stream()
+            .map(this::aResponse)
+            .toList();
+}
 
-        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+    @Override
+public ComentarioResponse createComentario(ComentarioRequest request) {
 
+    Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
+    Producto producto = productoRepository.findById(request.getProductoId())
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Producto no encontrado con id: " + request.getProductoId()
+            ));
 
-        Producto producto = productoRepository.findById(request.getProductoId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Producto no encontrado con id: " + request.getProductoId()));
+    boolean compro = itemDeOrdenDeCompraRepository
+            .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
+                    usuarioLogueado.getId(),
+                    producto.getId(),
+                    EstadoOrden.ENVIADA
+            );
 
-
-            boolean compro = itemDeOrdenDeCompraRepository
-                    .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
-                            usuarioLogueado.getId(), producto.getId(), EstadoOrden.CONFIRMADA);
-
-        if (!compro) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo podés comentar productos que compraste");
-        }
-
-        boolean yaComento = comentarioRepository
-                .existsByUsuario_IdAndProducto_Id(usuarioLogueado.getId(), producto.getId());
-
-        if (yaComento) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya dejaste un comentario en este producto");
-        }
-
-        Comentario comentario = new Comentario();
-        comentario.setUsuario(usuarioLogueado);
-        comentario.setComentarioProducto(request.getComentarioProducto());
-        comentario.setCalificacion(request.getCalificacion());
-        comentario.setProducto(producto);
-
-        return comentarioRepository.save(comentario);
+    if (request.getComentarioProducto() == null
+            || request.getComentarioProducto().isBlank()) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "El comentario no puede estar vacío"
+        );
     }
 
-    
+    if (!compro) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Solo podés comentar productos que compraste"
+        );
+    }
+
+    boolean yaComento = comentarioRepository
+            .existsByUsuario_IdAndProducto_Id(
+                    usuarioLogueado.getId(),
+                    producto.getId()
+            );
+
+    if (yaComento) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Ya dejaste un comentario en este producto"
+        );
+    }
+
+    Comentario comentario = new Comentario();
+    comentario.setUsuario(usuarioLogueado);
+    comentario.setComentarioProducto(request.getComentarioProducto());
+    comentario.setCalificacion(request.getCalificacion());
+    comentario.setProducto(producto);
+
+    return aResponse(comentarioRepository.save(comentario));
+}
 
 }
