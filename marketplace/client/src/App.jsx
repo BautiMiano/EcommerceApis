@@ -1,7 +1,7 @@
-import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
-import Navbar from './components/Navbar/Navbar';
+import TiendaLayout from './components/TiendaLayout/TiendaLayout.jsx';
 import Home from './views/CategoryPage/Home.jsx';
 import { CategoryPage } from './views/CategoryPage/CategoryPage';
 import Register from './views/Register.jsx';
@@ -9,7 +9,6 @@ import { ProductDetailPage } from './views/ProductDetailPage/ProductDetailPage.j
 import Login from './views/Login.jsx';
 import MisFavoritos from './views/MisFavoritos.jsx';
 import MiCarrito from './views/MiCarrito.jsx';
-import Footer from './components/Footer/Footer.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 import SellerLayout from './components/SellerLayout/SellerLayout.jsx';
 import DashboardVendedor from './views/DashboardVendedor.jsx';
@@ -17,7 +16,8 @@ import MisProductos from './views/MisProductos.jsx';
 import CrearPublicacion from './views/CrearPublicacion.jsx';
 import EditarProducto from './views/EditarProducto.jsx';
 import PedidosRecibidos from './views/PedidosRecibidos.jsx';
-import MiPerfil from './views/MiPerfil.jsx';
+import MiPerfilVendedor from './views/MiPerfilVendedor.jsx';
+import MiPerfilComprador from './views/MiPerfilComprador.jsx';
 import { cerrarSesion } from './utils/sesion.js';
 import ChatFlotante from './components/ChatFlotante/ChatFlotante';
 import MisTickets from './views/MisTickets.jsx';
@@ -26,17 +26,6 @@ import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
 import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
-
-// Tienda pública y del comprador: navbar arriba y footer abajo
-const TiendaLayout = ({ onLogout }) => (
-  <div className="app-container">
-    <Navbar onLogout={onLogout} />
-    <main className="main-content">
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
 
 function App() {
   const navigate = useNavigate();
@@ -66,6 +55,7 @@ function App() {
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} />}>
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
+            <Route path="/perfil" element={<MiPerfilComprador />} />
           </Route>
 
           {/* EXCLUSIVAS DEL ADMINISTRADOR */}
@@ -88,9 +78,9 @@ function App() {
             <Route path="productos" element={<MisProductos />} />
             <Route path="productos/nuevo" element={<CrearPublicacion />} />
             <Route path="productos/:id/editar" element={<EditarProducto />} />
-            <Route path="pedidos" element={<PedidosRecibidos />}/>
-            <Route path="pedidos/:id" element={<PedidosRecibidos/>} />
-            <Route path="perfil" element={<MiPerfil />} />
+            <Route path="pedidos" element={<PedidosRecibidos />} />
+            <Route path="pedidos/:id" element={<PedidosRecibidos />} />
+            <Route path="perfil" element={<MiPerfilVendedor />} />
             <Route path="tickets" element={<MisTickets />} />
             <Route path="tickets/nuevo" element={<NuevoTicket />} />
           </Route>

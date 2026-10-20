@@ -14,5 +14,6 @@ public class PerfilResponse {
     private String nombre;
     private String apellido;
     private String mail;
+    private String telefono;
     private Rol rol;
 }
