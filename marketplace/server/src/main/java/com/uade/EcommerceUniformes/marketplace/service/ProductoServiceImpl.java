@@ -130,11 +130,22 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<ProductoRequest> getProductos() {
 
-        List<Producto> productos = productoRepository.findAll();
+        List<Producto> productos = productoRepository.findAll()
+                .stream()
+                .filter(Producto::isActivo)
+                .toList();
 
         if (productos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay productos disponibles");
         }
+
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<ProductoRequest> getTodosLosProductos() {
+
+        List<Producto> productos = productoRepository.findAll();
 
         return productos.stream().map(this::toResponse).toList();
     }
@@ -158,7 +169,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         List<Producto> productos = productoRepository.findByCategoriaId(categoriaId);
 
-        return productos.stream().map(this::toResponse).toList();
+        return productos.stream().filter(Producto::isActivo).map(this::toResponse).toList();
     }
 
     public List<ProductoRequest> getMisProductos() {
@@ -513,7 +524,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         List<Producto> productos = productoRepository.findByPrecioBetween(precioMin, precioMax);
 
-        return productos.stream().map(this::toResponse).toList();
+        return productos.stream().filter(Producto::isActivo).map(this::toResponse).toList();
     }
 
     @Override
@@ -523,7 +534,7 @@ public class ProductoServiceImpl implements ProductoService {
         }
 
         List<Producto> productos = productoRepository.findByNombreContainingIgnoreCase(q);
-        return productos.stream().map(this::toResponse).toList();
+        return productos.stream().filter(Producto::isActivo).map(this::toResponse).toList();
     }
 
     @Override
@@ -541,7 +552,7 @@ public class ProductoServiceImpl implements ProductoService {
         }
 
         List<Producto> productos = productoRepository.findDistinctByTalles_Talle(talleBuscado);
-        return productos.stream().map(this::toResponse).toList();
+        return productos.stream().filter(Producto::isActivo).map(this::toResponse).toList();
     }
 
     @Override

@@ -1,0 +1,20 @@
+.admin-vendedores-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-vendedores-filtro {
+  max-width: 16rem;
+  margin-bottom: 1rem;
+}
+
+.admin-vendedores-usuario {
+  font-weight: 600;
+}
+
+@media (max-width: 56.25em) {
+  .admin-vendedores-stats {
+    grid-template-columns: 1fr;
+  }
+}

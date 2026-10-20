@@ -54,7 +54,18 @@ public class AuthenticationService {
                 null
             );
 
+        if (request.getRol() == Rol.VENDEDOR) {
+            usuario.setActivo(false);
+        }
+
         usuarioRepository.save(usuario);
+
+        if (request.getRol() == Rol.VENDEDOR) {
+            return AuthenticationResponse.builder()
+                    .usuarioId(usuario.getId())
+                    .role(usuario.getRolUsuario().name())
+                    .build();
+        }
 
         if (request.getRol() == Rol.COMPRADOR) {
 
@@ -75,6 +86,16 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
+        Usuario vendedorPendiente = usuarioRepository.findByMail(request.getMail())
+                .filter(u -> u.getRolUsuario() == Rol.VENDEDOR && !u.isActivo())
+                .filter(u -> passwordEncoder.matches(request.getContrasena(), u.getContrasena()))
+                .orElse(null);
+
+        if (vendedorPendiente != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Tu cuenta de vendedor todavía no está habilitada. Un administrador tiene que aprobarla.");
+        }
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

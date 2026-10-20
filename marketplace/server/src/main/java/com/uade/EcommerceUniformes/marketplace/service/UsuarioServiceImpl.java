@@ -130,6 +130,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(usuario -> {
                     UsuarioDto response = new UsuarioDto();
                     response.setNombreUsuarioDto(usuario.getNombreUsuario());
+                    response.setNombreDto(usuario.getNombre());
                     response.setApellidoDto(usuario.getApellido());
                     response.setIdDto(usuario.getId());
                     response.setMailDto(usuario.getMail());
