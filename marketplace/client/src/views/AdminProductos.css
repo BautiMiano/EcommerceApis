@@ -1,0 +1,51 @@
+/* El admin no tiene sidebar: la pantalla puede ser más ancha que la del vendedor */
+.admin-panel .admin-productos {
+  max-width: 90rem;
+}
+
+/* La tabla suma la columna Vendedor: se ajusta para que entre sin desplazarse al costado */
+.admin-productos .panel-tabla th,
+.admin-productos .panel-tabla td {
+  padding: 0.75rem 0.5rem;
+}
+
+/* Los textos largos (nombre, vendedor, categoría) pasan a dos líneas en vez de ensanchar la tabla */
+.admin-productos .panel-tabla td {
+  white-space: normal;
+}
+
+.admin-productos .producto-fila-producto {
+  min-width: 12rem;
+}
+
+.admin-productos .producto-fila-descripcion {
+  max-width: 11rem;
+  white-space: nowrap;
+}
+
+.admin-productos .panel-badge {
+  white-space: nowrap;
+}
+
+/* Editar y Desactivar, uno debajo del otro */
+.admin-productos .producto-acciones {
+  flex-direction: column;
+}
+
+.admin-productos-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 71.875em) {
+  .admin-productos-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 35em) {
+  .admin-productos-stats {
+    grid-template-columns: 1fr;
+  }
+}

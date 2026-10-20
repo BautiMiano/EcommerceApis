@@ -112,12 +112,13 @@ export const armarProductoRequest = (formulario) => ({
 
 // Descuento y estado de publicación se guardan con sus propios endpoints, después del producto.
 // "anterior" es el producto antes de guardar (al publicar: sin descuento y activo).
-export const guardarDescuentoYEstado = async (productoId, formulario, anterior) => {
+export const guardarDescuentoYEstado = async (productoId, formulario, anterior, esAdmin = false) => {
   const descuentoNuevo = Number(formulario.descuento) || null
   const descuentoAnterior = anterior.descuentoPorcentaje || null
 
   // Un descuento que puso un admin no lo puede tocar el vendedor
-  if (!anterior.descuentoAplicadoPorAdmin && descuentoNuevo !== descuentoAnterior) {
+  const puedeCambiarDescuento = esAdmin || !anterior.descuentoAplicadoPorAdmin
+  if (puedeCambiarDescuento && descuentoNuevo !== descuentoAnterior) {
     if (descuentoAnterior) {
       await quitarDescuento(productoId)
     }

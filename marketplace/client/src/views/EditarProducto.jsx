@@ -9,8 +9,10 @@ import ProductoPreview from '../components/ProductoPreview/ProductoPreview'
 import useProductoFormulario from '../hooks/useProductoFormulario'
 import { actualizarProducto, desactivarImagen, getCategories, getProductoById, subirImagen } from '../utils/api'
 import { armarProductoRequest, formularioDesdeProducto, guardarDescuentoYEstado } from '../utils/productoFormulario'
+import { obtenerSesion } from '../utils/sesion'
 
 // Editar producto: mismo formulario que Publicar, precargado. Actualiza el producto existente (PUT).
+// La usan el vendedor (sus productos) y el admin (productos de cualquier vendedor).
 const EditarProducto = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -23,12 +25,15 @@ const EditarProducto = () => {
   const [errorCarga, setErrorCarga] = useState('')
   const [guardando, setGuardando] = useState(false)
 
+  const esAdmin = obtenerSesion().rol === 'ADMIN'
+  const rutaListado = esAdmin ? '/admin/productos' : '/vendedor/productos'
+
   useEffect(() => {
     Promise.all([getProductoById(id), getCategories()])
       .then(([productoObtenido, categoriasObtenidas]) => {
-        // El backend también rechaza el PUT si no es el dueño: esto evita mostrar un formulario ajeno
+        // El backend también rechaza el PUT si no es el dueño (o admin): esto evita mostrar un formulario ajeno
         const esPropio = String(productoObtenido.vendedorId) === localStorage.getItem('usuarioId')
-        if (!esPropio) {
+        if (!esPropio && !esAdmin) {
           setErrorCarga('Este producto pertenece a otro vendedor.')
           return
         }
@@ -40,7 +45,7 @@ const EditarProducto = () => {
         setErrorCarga(error.status === 404 ? 'El producto no existe.' : error.message)
       })
       .finally(() => setCargando(false))
-  }, [id, setFormulario])
+  }, [id, setFormulario, esAdmin])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -61,7 +66,7 @@ const EditarProducto = () => {
     }
 
     try {
-      await guardarDescuentoYEstado(producto.id, form.formulario, producto)
+      await guardarDescuentoYEstado(producto.id, form.formulario, producto, esAdmin)
       await Promise.all([
         ...imagenesQuitadas.map((imagenId) => desactivarImagen(imagenId)),
         ...form.archivos.map((archivo) => subirImagen(archivo, producto.id)),
@@ -70,7 +75,7 @@ const EditarProducto = () => {
     } catch (error) {
       toast.warning(`Los datos se guardaron, pero hubo un problema: ${error.message}`)
     }
-    navigate('/vendedor/productos')
+    navigate(rutaListado)
   }
 
   if (cargando) {
@@ -80,7 +85,9 @@ const EditarProducto = () => {
   if (errorCarga) {
     return (
       <PanelEstado tipo="error" titulo="No se puede editar este producto" texto={errorCarga}>
-        <Link className="panel-boton panel-boton-secundario" to="/vendedor/productos">Volver a Mis productos</Link>
+        <Link className="panel-boton panel-boton-secundario" to={rutaListado}>
+          {esAdmin ? 'Volver a Productos' : 'Volver a Mis productos'}
+        </Link>
       </PanelEstado>
     )
   }
@@ -96,7 +103,7 @@ const EditarProducto = () => {
       <SellerPageHeader
         titulo="EDITAR PRODUCTO"
         descripcion="Actualizá la información de tu publicación."
-        migas={[{ texto: 'Mis productos', ruta: '/vendedor/productos' }, { texto: 'Editar producto' }]}
+        migas={[{ texto: esAdmin ? 'Productos' : 'Mis productos', ruta: rutaListado }, { texto: 'Editar producto' }]}
       />
 
       <ProductoForm
@@ -105,11 +112,11 @@ const EditarProducto = () => {
         cargandoCategorias={false}
         errores={form.errores}
         reservados={reservados}
-        descuentoBloqueado={Boolean(producto.descuentoAplicadoPorAdmin)}
+        descuentoBloqueado={!esAdmin && Boolean(producto.descuentoAplicadoPorAdmin)}
         onChange={form.handleChange}
         onCambios={form.handleCambios}
         onSubmit={handleSubmit}
-        onCancelar={() => navigate('/vendedor/productos')}
+        onCancelar={() => navigate(rutaListado)}
         guardando={guardando}
         textoGuardar="Guardar cambios"
         imagenes={(

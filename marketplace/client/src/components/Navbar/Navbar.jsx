@@ -10,8 +10,9 @@ export const Navbar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // El vendedor usa su propio panel: este navbar es para visitantes y compradores
-  const { logueado } = obtenerSesion();
+  // El vendedor usa su propio panel: este navbar es para visitantes, compradores y el admin
+  const { logueado, rol } = obtenerSesion();
+  const esAdmin = rol === 'ADMIN';
 
   useEffect(() => {
     getCategories()
@@ -89,8 +90,19 @@ export const Navbar = ({ onLogout }) => {
             )}
           </div>
 
-          <NavLink to="/favoritos">Favoritos</NavLink>
-          <NavLink to="/carrito">Carrito</NavLink>
+          {!esAdmin && (
+            <>
+              <NavLink to="/favoritos">Favoritos</NavLink>
+              <NavLink to="/carrito">Carrito</NavLink>
+            </>
+          )}
+
+          {esAdmin && (
+            <>
+              <NavLink to="/admin/productos">Productos</NavLink>
+              <NavLink to="/admin/tickets">Tickets</NavLink>
+            </>
+          )}
         </nav>
 
         <Search />
