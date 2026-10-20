@@ -1,18 +1,12 @@
-import { textoTalles } from '../../utils/talles.js';
+import StockStatus from '../StockStatus/StockStatus';
 import './ProductCard.css';
 
 export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
-  const sinStock = product.stock <= 0;
-  const aviso = sinStock ? 'Sin stock' : product.stock <= 10 ? 'Últimas unidades' : null;
   const imagen = product.imagenes && product.imagenes[0];
 
-  // Clase dinamica para aplicar los estilos de deshabilitado
-  const cardClassName = `product-card-kinetic ${sinStock ? 'out-of-stock' : ''}`;
-
   return (
-    <article className={cardClassName}>
+    <article className={`product-card-kinetic ${product.nivelStock}`}>
       <div className="product-image-box">
-        {aviso && <span className="badge-certified">{aviso}</span>}
         {imagen ? (
           <img src={imagen} alt={product.nombre} />
         ) : (
@@ -26,10 +20,8 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
           <h3 className="product-title">{product.nombre}</h3>
           <p className="product-desc">{product.descripcion}</p>
           <div className="product-chips">
-            <span className="stock-info">Stock: {product.stock} u.</span>
-            {product.talles?.length > 0 && (
-              <span className="stock-info">Talle {textoTalles(product.talles)}</span>
-            )}
+            <StockStatus nivelStock={product.nivelStock} mensajeStock={product.mensajeStock} />
+            <span className="stock-info">Talle {product.tallesTexto}</span>
           </div>
         </div>
 
@@ -37,13 +29,9 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
           <div className="product-price-tag">
             ${Number(product.precio).toLocaleString('es-AR')} ARS
           </div>
-          <button
-            onClick={() => !sinStock && onSelectProduct(product.id)}
-            className="btn-buy-kinetic"
-            disabled={sinStock}
-          >
+          <button onClick={() => onSelectProduct(product.id)} className="btn-buy-kinetic">
             <span className="material-symbols-outlined">shopping_bag</span>
-            {sinStock ? 'Sin stock' : 'Ver detalle'}
+            Ver detalle
           </button>
         </div>
       </div>

@@ -87,11 +87,9 @@ public class ProductoController {
         return this.productoService.getMisProductos();
     }
 
-    @GetMapping("/precio")
-    public ResponseEntity<List<ProductoRequest>> getProductosByPrecio(
-            @RequestParam(defaultValue = "0") Double precioMin,
-            @RequestParam Double precioMax) {
-        return ResponseEntity.ok(productoService.getProductosByPrecio(precioMin, precioMax));
+    @GetMapping("/precio/{max}")
+    public ResponseEntity<List<ProductoRequest>> getProductosByPrecioMax(@PathVariable Double max) {
+        return ResponseEntity.ok(productoService.getProductosByPrecio(0.0, max));
     }
 
     @GetMapping("/buscar")
@@ -103,11 +101,10 @@ public class ProductoController {
     public ResponseEntity<List<String>> getTallesDisponibles() {
         return ResponseEntity.ok(productoService.getTallesDisponibles());
     }
-    
+
     // Endpoint para buscar por talle individual
     @GetMapping("/talle/{talle}")
     public ResponseEntity<List<ProductoRequest>> getProductosByTalle(@PathVariable String talle) {
         return ResponseEntity.ok(productoService.getProductosByTalle(talle));
     }
 }
-

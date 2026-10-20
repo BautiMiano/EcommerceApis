@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ProductGallery } from './ProductGallery';
 import { ProductPriceBox } from './ProductPriceBox';
@@ -22,7 +22,7 @@ Modal.setAppElement('#root');
 
 export const ProductDetailSection = ({ product }) => {
   // Si el producto ofrece un solo talle con stock, ya queda elegido
-  const [selectedSize, setSelectedSize] = useState(talleUnicoDe(product?.talles) || '');
+  const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -135,7 +135,7 @@ export const ProductDetailSection = ({ product }) => {
         <ProductPriceBox precio={product.precio} />
 
         <ProductSizeSelector
-          product={product}
+          talles={product.talles}
           selectedSize={selectedSize}
           onSelectSize={handleSelectSize}
         />

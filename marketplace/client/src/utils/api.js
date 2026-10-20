@@ -343,3 +343,23 @@ export const enviarMensajeChat = (conversacionId, mensaje) =>
     headers: obtenerHeaders(true),
     body: JSON.stringify({ conversacionId, mensaje }),
   }, 'No se pudo enviar el mensaje.')
+
+  // ---------- Reseñas ----------
+
+// ---------- Comentarios / Reseñas ----------
+
+export const obtenerComentariosPorProducto = (productoId) =>
+  solicitar(`/comentarios/producto/${productoId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron recuperar las reseñas del producto.');
+
+export const crearResenaProducto = (productoId, resenaData) =>
+  solicitar('/comentarios', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({
+      productoId: productoId,
+      contenido: resenaData.comentario,
+      calificacion: resenaData.calificacion,
+    }),
+  }, 'No se pudo publicar el comentario.');

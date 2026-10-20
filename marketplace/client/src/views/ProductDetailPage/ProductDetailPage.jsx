@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getProductoById } from '../../utils/api.js';
 import { ProductDetailSection } from '../../components/ProductDetails/ProductDetailSection.jsx';
+import { ProductReviewsSection } from '../../components/ProductDetails/ProductReviewsSection.jsx';
 import './ProductDetailPage.css';
 
 export const ProductDetailPage = () => {
@@ -41,7 +42,13 @@ export const ProductDetailPage = () => {
       )}
 
       {!loading && product && (
-        <ProductDetailSection product={product} />
+        <>
+          <ProductDetailSection product={product} />
+          <ProductReviewsSection 
+            productoId={product.id} 
+            reviewsIniciales={product.resenas || []} 
+          />
+        </>
       )}
     </div>
   );

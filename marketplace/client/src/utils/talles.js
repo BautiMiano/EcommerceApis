@@ -6,7 +6,6 @@ export const etiquetaTalle = (talle) => (talle === TALLE_UNICO ? 'Único' : tall
 
 export const stockDisponibleDe = (talle) => talle.stock - (talle.stockReservado || 0)
 
-// Ej: "S, M, L" o "Único"
 export const textoTalles = (talles = []) => talles.map((t) => etiquetaTalle(t.talle)).join(', ')
 
 // Versión corta para tablas: "Talle único", "M" o "S a XXL" (los talles vienen ordenados del backend)

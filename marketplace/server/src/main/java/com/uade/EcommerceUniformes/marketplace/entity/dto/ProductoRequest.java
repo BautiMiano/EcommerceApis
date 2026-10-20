@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 import lombok.Data;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductoRequest {
@@ -55,7 +56,8 @@ public class ProductoRequest {
     @JsonProperty("descuentoId")
     private Long descuentoId;
 
-    // Solo en las respuestas: datos para mostrar sin pedir la categoría, el vendedor o el descuento aparte
+    // Solo en las respuestas: datos para mostrar sin pedir la categoría, el
+    // vendedor o el descuento aparte
     @JsonProperty("categoria")
     private String categoria;
 
@@ -72,7 +74,37 @@ public class ProductoRequest {
     @JsonProperty("imagenes")
     private List<String> imagenes;
 
-    // Ids de las imágenes activas, en el mismo orden que "imagenes" (para poder desactivarlas)
+    // Ids de las imágenes activas, en el mismo orden que "imagenes" (para poder
+    // desactivarlas)
     @JsonProperty("imagenIds")
     private List<Long> imagenIds;
+
+    @JsonProperty("estadoStock")
+    private String estadoStock;
+
+    @JsonProperty("tallesTexto")
+    private String tallesTexto;
+
+    // Solo en las respuestas: stock total menos reservado
+    @JsonProperty("stockDisponible")
+    private Integer stockDisponible;
+
+    // Solo en las respuestas: "agotado", "pocas" o "disponible"
+    @JsonProperty("nivelStock")
+    private String nivelStock;
+
+    // Solo en las respuestas: texto listo para mostrar
+    @JsonProperty("mensajeStock")
+    private String mensajeStock;
+
+    @JsonProperty("estadoPublicacion")
+    private String estadoPublicacion;
+
+    @JsonProperty("tonoPublicacion")
+    private String tonoPublicacion;
+
+    // Solo si el producto tiene un único talle
+    @JsonProperty("talleUnico")
+    private Talle talleUnico;
+
 }
