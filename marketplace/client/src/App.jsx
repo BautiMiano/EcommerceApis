@@ -24,9 +24,11 @@ import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
+import AdminLayout from './components/AdminLayout/AdminLayout.jsx';
 import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
 import AdminCategorias from './views/AdminCategorias.jsx';
+
 
 function App() {
   const navigate = useNavigate();
@@ -70,6 +72,15 @@ function App() {
               <Route path="/admin/productos/:id/editar" element={<EditarProducto />} />
               <Route path="/admin/categorias" element={<AdminCategorias />} />
             </Route>
+          </Route>
+        </Route>
+
+              {/* PANEL DEL ADMIN: layout propio, sin navbar ni footer de la tienda */}
+        <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
+          <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
+            <Route index element={<Navigate to="tickets" replace />} />
+            <Route path="tickets" element={<TicketsAdmin />} />
+            <Route path="tickets/:id" element={<TicketDetalleAdmin />} />
           </Route>
         </Route>
 

@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import PageTitle from '../components/PageTitle';
-import LoginForm from '../components/LoginForm'; 
-import RegisterLink from '../components/RegisterLink';
+import PageTitle from "../components/PageTitle/PageTitle";
+import LoginForm from "../components/LoginForm/LoginForm";
+import RegisterLink from "../components/RegisterLink/RegisterLink";
 import { rutaInicioPorRol } from '../utils/sesion';
 
 const Login = () => {
   const navigate = useNavigate();
 
-  // Guarda el id del usuario para poder buscar su carrito, y lleva a cada rol a su inicio
+  // LoginForm ya guardó el token y el rol. Acá se guarda el id del usuario (lo usan el carrito
+  // y "Mover al carrito") y se lleva a cada rol a su inicio
   const handleLoginExitoso = (data) => {
     localStorage.setItem('usuarioId', data.usuarioId);
     navigate(rutaInicioPorRol(String(data.role).toUpperCase()));
