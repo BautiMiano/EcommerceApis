@@ -6,6 +6,11 @@
   margin-bottom: 1rem;
 }
 
+
+.productos-filtro-con-vendedor {
+  grid-template-columns: repeat(4, 1fr) 1.5fr;
+}
+
 @media (max-width: 56.25em) {
   .productos-filtro {
     grid-template-columns: 1fr 1fr;

@@ -1,0 +1,21 @@
+
+.admin-panel {
+  --uf-negro: #000000;
+  --uf-blanco: #ffffff;
+  --uf-fondo: #f5f5f5;
+  --uf-borde: #e5e5e5;
+  --uf-texto-suave: #5b6472;
+  --uf-naranja: #e0702c;
+  --uf-naranja-suave: #fdf0e8;
+  --uf-rojo: #d32f2f;
+  --uf-verde: #2e7d32;
+
+  padding: 2rem 1.75rem 3rem;
+  background-color: var(--uf-blanco);
+}
+
+@media (max-width: 35em) {
+  .admin-panel {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+}

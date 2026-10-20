@@ -1,10 +1,25 @@
 import './ProductosFiltro.css'
 
-const ProductosFiltro = ({ filtros, categorias, onChange }) => {
+
+const ProductosFiltro = ({ filtros, categorias, vendedores, onChange }) => {
   const handleChange = (event) => onChange({ ...filtros, [event.target.name]: event.target.value })
 
   return (
-    <div className="productos-filtro">
+    <div className={vendedores ? 'productos-filtro productos-filtro-con-vendedor' : 'productos-filtro'}>
+      {vendedores && (
+        <label className="panel-campo">
+          Vendedor
+          <select name="vendedor" value={filtros.vendedor} onChange={handleChange}>
+            <option value="">Todos</option>
+            {vendedores.map((vendedor) => (
+              <option key={vendedor.id} value={vendedor.id}>
+                {vendedor.nombre}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
       <label className="panel-campo">
         Estado
         <select name="estado" value={filtros.estado} onChange={handleChange}>

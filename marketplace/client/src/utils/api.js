@@ -79,6 +79,19 @@ export const obtenerMisProductos = async () => {
   }
 }
 
+
+export const obtenerTodosLosProductos = async () => {
+  try {
+    return await solicitar('/productos', {}, 'No se pudieron obtener los productos.')
+  } catch (error) {
+
+    if (error.status === 404) {
+      return []
+    }
+    throw error
+  }
+}
+
 export const actualizarProducto = (productoId, producto) =>
   solicitar(`/productos/${productoId}`, {
     method: 'PUT',
