@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ProductGallery } from './ProductGallery';
 import { ProductPriceBox } from './ProductPriceBox';
@@ -8,21 +8,23 @@ import { ProductSizeSelector } from './ProductSizeSelector';
 import { ProductQuantitySelector } from './ProductQuantitySelector';
 import { FavoriteCheckbox } from './FavoriteCheckbox';
 import { CartButton } from './CartButton';
-import { 
-  obtenerCarritoDeUsuario, 
-  agregarProductoAlCarrito, 
-  agregarFavorito, 
+import {
+  obtenerCarritoDeUsuario,
+  agregarProductoAlCarrito,
+  agregarFavorito,
   eliminarFavorito,
   obtenerMisFavoritos
 } from '../../utils/api.js';
-import { stockDisponibleDe, talleUnicoDe } from '../../utils/talles.js';
 import './ProductDetailSection.css';
 
 Modal.setAppElement('#root');
 
 export const ProductDetailSection = ({ product }) => {
   // Si el producto ofrece un solo talle con stock, ya queda elegido
-  const [selectedSize, setSelectedSize] = useState(null)
+  const [selectedSize, setSelectedSize] = useState(() => {
+    const conStock = (product.talles || []).filter((t) => t.stockDisponible > 0);
+    return conStock.length === 1 ? conStock[0].talle : null;
+  });
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,23 +63,18 @@ export const ProductDetailSection = ({ product }) => {
       return;
     }
 
-<<<<<<< HEAD
-    const faltaTalle = esComprador && !selectedSize;
-    faltaTalle && toast.warn('Elegí un talle antes de agregar al carrito.');
+    if (!selectedSize) {
+      toast.warn('Elegí un talle antes de agregar al carrito.');
+      return;
+    }
 
-    const puedeComprar = esComprador && !faltaTalle && Boolean(userIdGuardado) && userIdGuardado !== 'null';
-
-    puedeComprar && obtenerCarritoDeUsuario(userIdGuardado)
-      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, selectedSize, quantity))
-=======
     if (!userIdGuardado || userIdGuardado === 'null') {
       toast.error('No se pudo identificar tu usuario. Por favor, volvé a iniciar sesión.');
       return;
     }
 
     obtenerCarritoDeUsuario(userIdGuardado)
-      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, quantity))
->>>>>>> b8a5059268befbe3941db0438a2eaf043c256771
+      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, selectedSize, quantity))
       .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
       .catch((error) => toast.error(error.message));
   };
@@ -133,8 +130,9 @@ export const ProductDetailSection = ({ product }) => {
   };
 
   // La cantidad no puede superar el stock disponible del talle elegido
+  // (stockDisponible viene calculado desde el backend)
   const talleElegido = (product.talles || []).find((t) => t.talle === selectedSize);
-  const stockDelTalle = talleElegido ? stockDisponibleDe(talleElegido) : 0;
+  const stockDelTalle = talleElegido ? talleElegido.stockDisponible : 0;
 
   const handleSelectSize = (talle) => {
     setSelectedSize(talle);

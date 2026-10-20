@@ -3,6 +3,7 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ItemCarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.MetodoDePagoDto;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
@@ -59,16 +61,16 @@ public class CarritoServiceImpl implements CarritoService {
             itemsResponse = carrito.getItems()
                     .stream()
                     .map(item -> new ItemCarritoResponse(
-                    item.getProducto().getId(),
-                    item.getProducto().getNombre(),
-                    item.getCantidad(),
-                    item.getPrecioUnitario(),
-                    item.getPrecioUnitario() * item.getCantidad(),
-                    item.getTalle() != null ? item.getTalle().name() : null,
-                    item.getProducto().getCategoria() != null ? item.getProducto().getCategoria().getNombre() : null,
-                    item.getProducto().getVendedor().getNombreUsuario(),
-                    productoService.getImagenPrincipal(item.getProducto())
-            ))
+                            item.getProducto().getId(),
+                            item.getProducto().getNombre(),
+                            item.getCantidad(),
+                            item.getPrecioUnitario(),
+                            item.getPrecioUnitario() * item.getCantidad(),
+                            item.getTalle() != null ? item.getTalle().name() : null,
+                            item.getProducto().getCategoria() != null ? item.getProducto().getCategoria().getNombre()
+                                    : null,
+                            item.getProducto().getVendedor().getNombreUsuario(),
+                            productoService.getImagenPrincipal(item.getProducto())))
                     .toList();
         }
 
@@ -81,8 +83,7 @@ public class CarritoServiceImpl implements CarritoService {
                 carrito.getEstado().name(),
                 carrito.getUsuario().getId(),
                 itemsResponse,
-                total
-        );
+                total);
     }
 
     private boolean esAdmin(Usuario usuario) {
@@ -95,7 +96,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         Carrito carrito = carritoRepository.findById(carritoId)
                 .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
+                        HttpStatus.NOT_FOUND, "Carrito no encontrado con id: " + carritoId));
 
         if (!esAdmin(logueado) && !carrito.getUsuario().getId().equals(logueado.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ese carrito no te pertenece");
@@ -125,7 +126,7 @@ public class CarritoServiceImpl implements CarritoService {
     private void exigirStockDisponible(Producto producto, Talle talle, int cantidadTotal) {
         StockTalle stockTalle = producto.buscarTalle(talle)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "El producto " + producto.getNombre() + " no tiene el talle " + talle));
+                        "El producto " + producto.getNombre() + " no tiene el talle " + talle));
         if (cantidadTotal > stockTalle.getStockDisponible()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "No hay stock suficiente para el producto: " + producto.getNombre() + " en talle " + talle);
@@ -197,7 +198,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         Producto producto = productoService.getProductoEntityById(request.getProductoId())
                 .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + request.getProductoId()));
+                        HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + request.getProductoId()));
 
         if (!producto.isActivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto no esta disponible");
@@ -240,7 +241,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         ItemCarrito item = buscarItem(carrito, request.getProductoId(), request.getTalle())
                 .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
+                        HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
         exigirStockDisponible(item.getProducto(), item.getTalle(), request.getCantidad());
         item.setCantidad(request.getCantidad());
@@ -258,7 +259,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         ItemCarrito item = buscarItem(carrito, request.getProductoId(), request.getTalle())
                 .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
+                        HttpStatus.NOT_FOUND, "El producto no se encuentra en el carrito"));
 
         carrito.getItems().remove(item);
         return convertirACarritoResponse(carritoRepository.save(carrito));
@@ -310,7 +311,8 @@ public class CarritoServiceImpl implements CarritoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicar el metodo de pago");
         }
 
-        // Una orden por vendedor: así cada vendedor maneja el estado de su pedido sin afectar a los demás
+        // Una orden por vendedor: así cada vendedor maneja el estado de su pedido sin
+        // afectar a los demás
         Map<Long, List<ItemCarrito>> itemsPorVendedor = carrito.getItems().stream()
                 .collect(Collectors.groupingBy(
                         item -> item.getProducto().getVendedor().getId(), LinkedHashMap::new, Collectors.toList()));
@@ -327,7 +329,8 @@ public class CarritoServiceImpl implements CarritoService {
         return convertirACarritoResponse(carritoRepository.save(carrito));
     }
 
-    // Crea la orden confirmada con los ítems de un mismo vendedor y descuenta su stock
+    // Crea la orden confirmada con los ítems de un mismo vendedor y descuenta su
+    // stock
     private void crearOrden(Usuario comprador, List<ItemCarrito> items, MetodoDePago metodoDePago) {
         OrdenDeCompra orden = new OrdenDeCompra();
         orden.setUsuario(comprador);
@@ -370,10 +373,18 @@ public class CarritoServiceImpl implements CarritoService {
             for (ItemCarrito item : carrito.getItems()) {
                 productoService.liberarStock(item.getProducto().getId(), item.getTalle(), item.getCantidad());
             }
-            // Vuelve a ARMADO con los mismos productos para que el comprador pueda reintentar el pago
+            // Vuelve a ARMADO con los mismos productos para que el comprador pueda
+            // reintentar el pago
             carrito.setEstado(EstadoCarrito.ARMADO);
             carrito.setFechaInicioPago(null);
             carritoRepository.save(carrito);
         }
+    }
+
+    @Override
+    public List<MetodoDePagoDto> getMetodosDePago() {
+        return Arrays.stream(MetodoDePago.values())
+                .map(metodo -> new MetodoDePagoDto(metodo.name(), metodo.getNombre()))
+                .toList();
     }
 }

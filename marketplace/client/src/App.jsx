@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
@@ -24,11 +25,12 @@ import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
+import { PaymentSection } from './views/PaymentSection/PaymentSection.jsx';
 
 // Tienda pública y del comprador: navbar arriba y footer abajo
-const TiendaLayout = ({ onLogout }) => (
+const TiendaLayout = ({ user, onLogout }) => (
   <div className="app-container">
-    <Navbar onLogout={onLogout} />
+    <Navbar user={user} onLogout={onLogout} />
     <main className="main-content">
       <Outlet />
     </main>
@@ -38,32 +40,32 @@ const TiendaLayout = ({ onLogout }) => (
 
 function App() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
-    const userId = localStorage.getItem('userId');
+    const usuarioId = localStorage.getItem('usuarioId');
 
-    const estaAutenticado = Boolean(token);
-    estaAutenticado && setUser({ token, role: userRole, userId });
+    token && setUser({ token, role: userRole, usuarioId });
   }, []);
 
->>>>>>> b8a5059268befbe3941db0438a2eaf043c256771
   const handleLogout = () => {
     cerrarSesion();
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('userId');
+    setUser(null);
     navigate('/login');
   };
 
   return (
     <>
       <Routes>
-        <Route element={<TiendaLayout onLogout={handleLogout} />}>
+        <Route element={<TiendaLayout user={user} onLogout={handleLogout} />}>
           {/* RUTAS PÚBLICAS */}
           <Route path="/" element={<Home />} />
           <Route path="/producto/:id" element={<ProductDetailPage />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/registro" element={<Register />} />
 
           {/* CATÁLOGO: VISITANTES Y COMPRADORES (EL VENDEDOR VUELVE A SU PANEL) */}
@@ -76,6 +78,7 @@ function App() {
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} />}>
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
+            <Route path="/checkout" element={<PaymentSection />} />
           </Route>
 
           {/* EXCLUSIVAS DEL ADMINISTRADOR */}

@@ -43,8 +43,8 @@ export const ProductDetailPage = () => {
 
       {!loading && product && (
         <>
-          <ProductDetailSection product={product} />
-          <ProductReviewsSection 
+            <ProductDetailSection key={product.id} product={product} />         
+            <ProductReviewsSection 
             productoId={product.id} 
             reviewsIniciales={product.resenas || []} 
           />

@@ -1,6 +1,7 @@
 package com.uade.EcommerceUniformes.marketplace.controllers;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.MetodoDePagoDto;
 
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.MetodoDePago;
@@ -82,4 +84,9 @@ public class CarritoController {
         CarritoResponse carritoActualizado = carritoService.confirmarPago(carritoId, request);
         return ResponseEntity.ok(carritoActualizado);
     }
+
+@GetMapping("/metodos-de-pago")
+public List<MetodoDePagoDto> getMetodosDePago() {
+    return carritoService.getMetodosDePago();
+}
 }

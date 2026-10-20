@@ -68,14 +68,16 @@ public class ComentarioServiceImpl implements ComentarioService {
 
         Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
 
+
+
         Producto producto = productoRepository.findById(request.getProductoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + request.getProductoId()));
 
 
-        boolean compro = itemDeOrdenDeCompraRepository
-                .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
-                        usuarioLogueado.getId(), producto.getId(), EstadoOrden.CONFIRMADA);
+            boolean compro = itemDeOrdenDeCompraRepository
+                    .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
+                            usuarioLogueado.getId(), producto.getId(), EstadoOrden.CONFIRMADA);
 
         if (!compro) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo podés comentar productos que compraste");

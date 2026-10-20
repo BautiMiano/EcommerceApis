@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import CartList from "../CartList/CartList"
 import CartSummary from "../CartSummary/CartSummary"
-import { obtenerCarritoDeUsuario, actualizarCantidadCarrito, eliminarProductoDelCarrito } from "../../utils/api"
+import { obtenerCarritoDeUsuario, actualizarCantidadCarrito, eliminarProductoDelCarrito, iniciarPagoCarrito } from "../../utils/api"
 import './CartSection.css'
 
 const CartSection = () => {
@@ -9,6 +11,8 @@ const CartSection = () => {
     const [carritoId, setCarritoId] = useState(null)
     const [items, setItems] = useState([])
     const [total, setTotal] = useState(0)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         obtenerCarritoDeUsuario(localStorage.getItem('usuarioId'))
@@ -41,6 +45,12 @@ const CartSection = () => {
             .catch((error) => alert(error.message))
     }
 
+    const handleIniciarPago = () => {
+        iniciarPagoCarrito(carritoId)
+            .then(() => navigate('/checkout'))
+            .catch((error) => toast.error(error.message))
+    }
+
     let unidades = 0
     items.forEach((value) => {unidades = unidades + value.cantidad})
 
@@ -53,7 +63,7 @@ const CartSection = () => {
                 cambiarCantidad={cambiarCantidad}
                 eliminarProducto={eliminarProducto}
                 />
-                <CartSummary total={total} unidades={unidades} />
+                <CartSummary total={total} unidades={unidades} onIniciarPago={handleIniciarPago} />
             </div>
         </section>
     )
