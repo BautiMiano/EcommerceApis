@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ChatRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ChatResponse;
@@ -44,5 +45,12 @@ public class ChatController {
     @GetMapping("/conversaciones/{id}")
     public ResponseEntity<ConversacionDetalleResponse> verConversacion(@PathVariable Long id) {
         return ResponseEntity.ok(chatService.verConversacion(id));
+    }
+
+    /** Borrar una de mis charlas, con todos sus mensajes. */
+    @DeleteMapping("/conversaciones/{id}")
+    public ResponseEntity<Void> eliminarConversacion(@PathVariable Long id) {
+        chatService.eliminarConversacion(id);
+        return ResponseEntity.noContent().build();
     }
 }

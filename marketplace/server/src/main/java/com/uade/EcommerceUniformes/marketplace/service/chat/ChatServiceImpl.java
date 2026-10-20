@@ -29,6 +29,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionDetalleRes
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionResumenResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.MensajeDto;
 import com.uade.EcommerceUniformes.marketplace.service.chat.tools.ProductoResultado;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,6 +112,21 @@ public class ChatServiceImpl implements ChatService {
                 .toList();
 
         return new ConversacionDetalleResponse(conversacion.getId(), tituloDe(conversacion), mensajes);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarConversacion(Long conversacionId) {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+        // Solo la encuentra si es del usuario logueado; si no, 404
+        Conversacion conversacion = conversacionRepository
+                .findByIdAndUsuarioId(conversacionId, usuario.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Conversación no encontrada"));
+
+        // Primero los mensajes: dependen de la conversación
+        mensajeChatRepository.deleteByConversacionId(conversacion.getId());
+        conversacionRepository.delete(conversacion);
     }
 
     /** Las charlas viejas no tienen título: se muestran como "Conversación #id". */

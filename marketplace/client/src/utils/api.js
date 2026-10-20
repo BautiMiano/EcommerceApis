@@ -409,3 +409,9 @@ export const enviarMensajeChat = (conversacionId, mensaje) =>
     headers: obtenerHeaders(true),
     body: JSON.stringify({ conversacionId, mensaje }),
   }, 'No se pudo enviar el mensaje.')
+
+  export const eliminarConversacion = (conversacionId) =>
+  solicitar(`/chat/conversaciones/${conversacionId}`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(),
+  }, 'No se pudo borrar la conversación.')

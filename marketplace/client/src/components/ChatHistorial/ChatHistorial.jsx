@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import ConversacionItem from '../ConversacionItem/ConversacionItem'
-import { obtenerConversaciones } from '../../utils/api'
+import { obtenerConversaciones, eliminarConversacion } from '../../utils/api'
 import './ChatHistorial.css'
 
 const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
@@ -17,6 +17,15 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
             })
             .finally(() => setCargando(false))
     }, [])
+
+        // Borra en el backend y, si salió bien, la saca de la lista sin volver a pedirla
+    const eliminar = (id) =>
+        eliminarConversacion(id)
+            .then(() => setConversaciones(prev => prev.filter(conv => conv.id !== id)))
+            .catch(err => {
+                console.error(err)
+                setError('No se pudo borrar la conversación')
+            })
 
     return (
         <section className="chat-historial">
@@ -39,6 +48,7 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
                                 key={conv.id}
                                 conversacion={conv}
                                 onSeleccionar={onSeleccionarConversacion}
+                                onEliminar={eliminar}
                             />
                         ))}
                     </ul>

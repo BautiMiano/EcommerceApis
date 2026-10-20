@@ -26,3 +26,55 @@
   font-size: 13px;
   color: #4a4a4a;
 }
+.conversacion-item-fila {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.conversacion-item-borrar {
+  flex-shrink: 0;
+  width: 44px;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background-color: #ffffff;
+  color: #4a4a4a;
+  cursor: pointer;
+}
+
+.conversacion-item-borrar:hover,
+.conversacion-item-borrar:focus-visible {
+  border-color: #000000;
+  color: #000000;
+}
+
+.conversacion-item-confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid #000000;
+  border-radius: 16px;
+  background-color: #ffffff;
+  font-size: 14px;
+}
+
+.conversacion-item-confirmar-botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.conversacion-item-confirmar-botones button {
+  padding: 6px 14px;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  background-color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.conversacion-item-confirmar-botones .conversacion-item-si {
+  background-color: #000000;
+  color: #ffffff;
+}

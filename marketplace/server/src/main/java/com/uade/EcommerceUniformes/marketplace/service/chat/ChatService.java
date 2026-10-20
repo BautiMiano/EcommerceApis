@@ -14,4 +14,5 @@ public interface ChatService {
     List<ConversacionResumenResponse> listarConversaciones();
 
     ConversacionDetalleResponse verConversacion(Long conversacionId);
+    void eliminarConversacion(Long conversacionId);
 }
