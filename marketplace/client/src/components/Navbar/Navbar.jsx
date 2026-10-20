@@ -104,6 +104,7 @@ export const Navbar = ({ perfil, onLogout }) => {
 
           {esAdmin && (
             <>
+              <NavLink to="/admin/usuarios">Usuarios</NavLink>
               <NavLink to="/admin/productos">Productos</NavLink>
               <NavLink to="/admin/vendedores">Vendedores</NavLink>
               <NavLink to="/admin/tickets">Tickets</NavLink>

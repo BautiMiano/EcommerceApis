@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import AdminSidebar from '../AdminSidebar/AdminSidebar'
-import { obtenerMiPerfil } from '../../utils/api'
-import { inicialesDe } from '../../utils/formato'
+import SellerSidebar from '../SellerSidebar/SellerSidebar'
+import SellerHeader from '../SellerHeader/SellerHeader'
 import '../SellerLayout/SellerLayout.css'
-import '../SellerHeader/SellerHeader.css'
 
-// Estructura de las pantallas del admin: menú a la izquierda, encabezado arriba y la pantalla en el Outlet
+const OPCIONES_ADMIN = [
+  { ruta: '/admin', texto: 'Usuarios', icono: 'group', exacta: true },
+]
+
 const AdminLayout = ({ onLogout }) => {
-  const [perfil, setPerfil] = useState(null)
   const [menuAbierto, setMenuAbierto] = useState(false)
-
-  useEffect(() => {
-    obtenerMiPerfil()
-      .then((perfilObtenido) => setPerfil(perfilObtenido))
-      .catch(() => setPerfil(null))
-  }, [])
 
   return (
     <div className={`seller-layout ${menuAbierto ? 'seller-layout-menu-abierto' : ''}`}>
-      <AdminSidebar onLogout={onLogout} onCerrarMenu={() => setMenuAbierto(false)} />
+      <SellerSidebar
+        opciones={OPCIONES_ADMIN}
+        rutaInicio="/admin"
+        etiqueta="Menú del administrador"
+        onLogout={onLogout}
+        onCerrarMenu={() => setMenuAbierto(false)}
+      />
 
       {menuAbierto && (
         <button
@@ -31,28 +31,7 @@ const AdminLayout = ({ onLogout }) => {
       )}
 
       <div className="seller-layout-principal">
-        <header className="seller-header">
-          <button
-            type="button"
-            className="seller-header-menu"
-            aria-label="Abrir menú"
-            aria-expanded={menuAbierto}
-            onClick={() => setMenuAbierto(true)}
-          >
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-
-          {perfil && (
-            <div className="seller-header-usuario">
-              <span className="seller-header-avatar" aria-hidden="true">{inicialesDe(perfil)}</span>
-              <div className="seller-header-datos">
-                <strong>{`${perfil.nombre} ${perfil.apellido || ''}`.trim()}</strong>
-                <span>Administrador</span>
-              </div>
-            </div>
-          )}
-        </header>
-
+        <SellerHeader menuAbierto={menuAbierto} onAbrirMenu={() => setMenuAbierto(true)} onLogout={onLogout} />
         <main className="seller-layout-contenido">
           <Outlet />
         </main>

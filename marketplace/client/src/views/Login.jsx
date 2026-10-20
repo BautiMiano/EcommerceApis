@@ -22,12 +22,12 @@ const handleLoginExitoso = (data) => {
           titulo="Iniciá sesión en Uniforma"
           descripcion="Ingresá con tus credenciales para gestionar tus pedidos y acceder a la plataforma."
         />
-  
+
         <LoginForm onLoginExitoso={handleLoginExitoso} />
-        
+
         <RegisterLink onClick={() => navigate('/registro')} />
       </main>
-      
+
     </div>
   );
 }
