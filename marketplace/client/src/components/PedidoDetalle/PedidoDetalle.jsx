@@ -89,6 +89,12 @@ const PedidoDetalle = ({ ordenId, imagenes, onCerrar, onActualizado }) => {
           <span className="material-symbols-outlined" aria-hidden="true">mail</span>
           <a href={`mailto:${venta.compradorMail}`}>{venta.compradorMail}</a>
         </p>
+        {venta.compradorTelefono && (
+          <p className="pedido-detalle-dato">
+            <span className="material-symbols-outlined" aria-hidden="true">call</span>
+            <a href={`tel:${venta.compradorTelefono}`}>{venta.compradorTelefono}</a>
+          </p>
+        )}
       </section>
 
       <section className="pedido-detalle-seccion">

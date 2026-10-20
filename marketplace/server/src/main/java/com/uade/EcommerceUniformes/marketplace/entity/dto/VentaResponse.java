@@ -21,6 +21,8 @@ public class VentaResponse {
     private EstadoOrden estado;
     private String comprador;
     private String compradorMail;
+    // Null si el comprador no cargó su teléfono
+    private String compradorTelefono;
     private int cantidadProductos;
     private double total;
     private List<ItemVentaResponse> items;

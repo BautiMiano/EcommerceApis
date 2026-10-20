@@ -25,7 +25,7 @@ export const TarjetaDatosPersonales = ({ cuenta, subtitulo }) => {
           <CampoFormulario label={obligatorio('Nombre')} name="nombre" value={cuenta.datos.nombre} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.nombre} />
           <CampoFormulario label={obligatorio('Apellido')} name="apellido" value={cuenta.datos.apellido} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.apellido} />
           <CampoFormulario label={obligatorio('Email')} name="mail" type="email" value={cuenta.datos.mail} disabled />
-          <CampoFormulario label={obligatorio('Teléfono')} name="telefono" type="tel" value={cuenta.datos.telefono} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.telefono} />
+          <CampoFormulario label="Teléfono" name="telefono" type="tel" value={cuenta.datos.telefono} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.telefono} />
           <div className="perfil-cuenta-ancho">
             <CampoFormulario label={obligatorio('Nombre de usuario')} name="nombreUsuario" value={cuenta.datos.nombreUsuario} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.nombreUsuario} />
           </div>

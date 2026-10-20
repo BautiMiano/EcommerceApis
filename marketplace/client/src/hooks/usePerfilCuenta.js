@@ -9,7 +9,7 @@ const FORMATO_MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const FORMATO_TELEFONO = /^[0-9 +()-]{6,20}$/
 
 // Datos de la cuenta y cambio de contraseña, compartidos por el perfil del vendedor y el del comprador.
-// Todos los datos son obligatorios, igual para los dos perfiles.
+// Todos los datos son obligatorios menos el teléfono, igual para los dos perfiles.
 const usePerfilCuenta = (perfil, recargarPerfil) => {
   const [datos, setDatos] = useState({
     nombre: perfil.nombre,
@@ -42,7 +42,8 @@ const usePerfilCuenta = (perfil, recargarPerfil) => {
     if (!datos.apellido.trim()) {
       errores.apellido = 'Ingresá tu apellido.'
     }
-    if (!FORMATO_TELEFONO.test(datos.telefono.trim())) {
+    // El teléfono es opcional: solo se valida si lo completó
+    if (datos.telefono.trim() && !FORMATO_TELEFONO.test(datos.telefono.trim())) {
       errores.telefono = 'Ingresá un teléfono válido (solo números, espacios, + y -).'
     }
     if (!datos.nombreUsuario.trim()) {
