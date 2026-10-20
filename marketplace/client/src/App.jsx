@@ -28,6 +28,7 @@ import AdminLayout from './components/AdminLayout/AdminLayout.jsx';
 import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
 import AdminCategorias from './views/AdminCategorias.jsx';
+import AdminVendedores from './views/AdminVendedores.jsx';
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
               <Route path="/admin/productos" element={<AdminProductos />} />
               <Route path="/admin/productos/:id/editar" element={<EditarProducto />} />
               <Route path="/admin/categorias" element={<AdminCategorias />} />
+              <Route path="/admin/vendedores" element={<AdminVendedores />} />
             </Route>
           </Route>
         </Route>

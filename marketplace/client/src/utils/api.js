@@ -214,6 +214,25 @@ export const cambiarMiContrasena = (contrasenaActual, contrasenaNueva) =>
     body: JSON.stringify({ contrasenaActual, contrasenaNueva }),
   }, 'No se pudo cambiar la contraseña.')
 
+// ---------- Usuarios (admin) ----------
+
+export const obtenerUsuarios = () =>
+  solicitar('/usuarios', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener los usuarios.')
+
+export const activarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/activar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo aprobar al usuario.')
+
+export const desactivarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/desactivar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar al usuario.')
+
 // ---------- Favoritos ----------
 
 export const obtenerMisFavoritos = () =>
@@ -287,6 +306,10 @@ export const loginUser = async (credenciales) => {
     },
     body: JSON.stringify(credenciales),
   })
+
+  if (response.status === 403) {
+    throw new Error(await response.text())
+  }
 
   if (!response.ok) {
     throw new Error('Correo o contraseña incorrectos')

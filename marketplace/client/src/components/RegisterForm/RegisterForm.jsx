@@ -22,7 +22,7 @@ const campos = [
   { name: 'confirmar', label: 'Confirmar contraseña *', type: 'password', placeholder: 'Repetir contraseña' },
 ]
 
-const RegisterForm = ({ onRegistroExitoso }) => {
+const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
@@ -65,6 +65,11 @@ const RegisterForm = ({ onRegistroExitoso }) => {
     //función importada de api.js
     registrarUsuario(userData)
       .then((data) => {
+        if (data.role === 'VENDEDOR') {
+          toast.success('¡Solicitud enviada! Vas a poder ingresar cuando un administrador apruebe tu cuenta.')
+          onSolicitudEnviada()
+          return
+        }
         if (data.access_token) {
           localStorage.setItem('token', data.access_token)
           localStorage.setItem('userRole', data.role)
