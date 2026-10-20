@@ -52,6 +52,29 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese mail ya está registrado");
         }
 
+        if (request.getNombreUsuario() != null) {
+            String nombreUsuarioNuevo = request.getNombreUsuario().trim();
+            if (nombreUsuarioNuevo.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de usuario no puede estar vacío");
+            }
+            boolean nombreUsuarioEnUso = usuarioRepository.findByNombreUsuario(nombreUsuarioNuevo)
+                    .filter(otro -> !otro.getId().equals(usuario.getId()))
+                    .isPresent();
+            if (nombreUsuarioEnUso) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese nombre de usuario ya está en uso");
+            }
+            usuario.setNombreUsuario(nombreUsuarioNuevo);
+        }
+
+        if (request.getTelefono() != null) {
+            String telefonoNuevo = request.getTelefono().trim();
+            if (!telefonoNuevo.matches("^[0-9 +()-]{6,20}$")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "El teléfono solo puede tener números, espacios, +, - y paréntesis (de 6 a 20 caracteres)");
+            }
+            usuario.setTelefono(telefonoNuevo);
+        }
+
         usuario.setNombre(request.getNombre().trim());
         usuario.setApellido(request.getApellido() == null ? null : request.getApellido().trim());
         usuario.setMail(mailNuevo);
@@ -88,6 +111,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.getNombre(),
                 usuario.getApellido(),
                 usuario.getMail(),
+                usuario.getTelefono(),
                 usuario.getRolUsuario());
     }
 
