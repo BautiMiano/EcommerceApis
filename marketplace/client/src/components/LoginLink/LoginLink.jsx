@@ -1,4 +1,4 @@
-
+import './LoginLink.css';
 const LoginLink = ({ onClick }) => {
   return (
     <p className="login-link">

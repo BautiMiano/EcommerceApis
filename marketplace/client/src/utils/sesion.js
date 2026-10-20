@@ -14,6 +14,6 @@ export const cerrarSesion = () => {
 // A dónde va cada rol cuando entra o cuando intenta abrir una ruta que no le corresponde
 export const rutaInicioPorRol = (rol) => {
   if (rol === 'VENDEDOR') return '/vendedor'
-  if (rol === 'ADMIN') return '/admin/tickets'
+  if (rol === 'ADMIN') return '/admin'
   return '/'
 }
