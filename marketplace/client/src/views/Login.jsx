@@ -2,20 +2,20 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from "../components/PageTitle/PageTitle";
 import LoginForm from "../components/LoginForm/LoginForm";
 import RegisterLink from "../components/RegisterLink/RegisterLink";
-import { rutaInicioPorRol } from '../utils/sesion';
+//import { rutaInicioPorRol } from '../utils/sesion';
 
 const Login = () => {
   const navigate = useNavigate();
 
-  // LoginForm ya guardó el token y el rol. Acá se guarda el id del usuario (lo usan el carrito
-  // y "Mover al carrito") y se lleva a cada rol a su inicio
-  const handleLoginExitoso = (data) => {
-    localStorage.setItem('usuarioId', data.usuarioId);
-    navigate(rutaInicioPorRol(String(data.role).toUpperCase()));
-  };
+const handleLoginExitoso = (data) => {
+    data.access_token && localStorage.setItem('token', data.access_token);
+    data.role && localStorage.setItem('userRole', data.role);
+    data.usuarioId && localStorage.setItem('usuarioId', data.usuarioId);
 
+    navigate('/');
+  };
   return (
-    <div className="register-page">       
+    <div className="register-page">
       <main className="register-main">
         <PageTitle
           etiqueta="ACCESO DE USUARIO"
