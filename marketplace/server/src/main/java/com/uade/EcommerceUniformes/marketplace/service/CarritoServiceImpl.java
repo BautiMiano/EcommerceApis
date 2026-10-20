@@ -51,6 +51,12 @@ public class CarritoServiceImpl implements CarritoService {
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
 
+    @Autowired
+    private PdfService pdfService;
+
+    @Autowired
+    private EmailService emailService;
+
     // ---------- helpers ----------
 
     private CarritoResponse convertirACarritoResponse(Carrito carrito) {
@@ -331,34 +337,69 @@ public class CarritoServiceImpl implements CarritoService {
 
     // Crea la orden confirmada con los ítems de un mismo vendedor y descuenta su
     // stock
-    private void crearOrden(Usuario comprador, List<ItemCarrito> items, MetodoDePago metodoDePago) {
-        OrdenDeCompra orden = new OrdenDeCompra();
-        orden.setUsuario(comprador);
-        orden.setFechaCompra(new Date(System.currentTimeMillis()));
-        orden.setEstado(EstadoOrden.CONFIRMADA);
-        orden.setMetodoDePago(metodoDePago);
-        orden.setItems(new ArrayList<>());
+    
+private void crearOrden(
+        Usuario comprador,
+        List<ItemCarrito> items,
+        MetodoDePago metodoDePago) {
 
-        double total = 0;
+    OrdenDeCompra orden = new OrdenDeCompra();
+    orden.setUsuario(comprador);
+    orden.setFechaCompra(new Date(System.currentTimeMillis()));
+    orden.setEstado(EstadoOrden.CONFIRMADA);
+    orden.setMetodoDePago(metodoDePago);
+    orden.setItems(new ArrayList<>());
 
-        for (ItemCarrito itemCarrito : items) {
-            productoService.descontarStockDefinitivo(
-                    itemCarrito.getProducto().getId(), itemCarrito.getTalle(), itemCarrito.getCantidad());
+    double total = 0;
 
-            ItemDeOrdenDeCompra itemOrden = new ItemDeOrdenDeCompra();
-            itemOrden.setOrden(orden);
-            itemOrden.setProducto(itemCarrito.getProducto());
-            itemOrden.setTalle(itemCarrito.getTalle());
-            itemOrden.setCantidad(itemCarrito.getCantidad());
-            itemOrden.setPrecioUnitario(itemCarrito.getPrecioUnitario());
-            orden.getItems().add(itemOrden);
+    for (ItemCarrito itemCarrito : items) {
 
-            total += itemCarrito.getPrecioUnitario() * itemCarrito.getCantidad();
-        }
+        productoService.descontarStockDefinitivo(
+                itemCarrito.getProducto().getId(),
+                itemCarrito.getTalle(),
+                itemCarrito.getCantidad()
+        );
 
-        orden.setTotal(total);
-        ordenDeCompraRepository.save(orden);
+        ItemDeOrdenDeCompra itemOrden = new ItemDeOrdenDeCompra();
+        itemOrden.setOrden(orden);
+        itemOrden.setProducto(itemCarrito.getProducto());
+        itemOrden.setTalle(itemCarrito.getTalle());
+        itemOrden.setCantidad(itemCarrito.getCantidad());
+        itemOrden.setPrecioUnitario(itemCarrito.getPrecioUnitario());
+
+        orden.getItems().add(itemOrden);
+
+        total += itemCarrito.getPrecioUnitario()
+                * itemCarrito.getCantidad();
     }
+
+    orden.setTotal(total);
+
+    // Guardar la orden.
+    OrdenDeCompra ordenGuardada = ordenDeCompraRepository.save(orden);
+
+    // Generar el PDF y enviarlo por correo.
+    try {
+        byte[] pdf = pdfService.generarOrdenPdf(ordenGuardada);
+
+        emailService.enviarOrdenCompra(
+                comprador.getMail(),
+                ordenGuardada.getId(),
+                pdf
+        );
+
+    } catch (Exception e) {
+        System.err.println(
+                "No se pudo generar o enviar el PDF de la orden "
+                + ordenGuardada.getId()
+                + ": "
+                + e.getMessage()
+        );
+    }
+}
+
+
+    
 
     @Override
     @Scheduled(fixedRate = 60000) // corre cada 1 minuto

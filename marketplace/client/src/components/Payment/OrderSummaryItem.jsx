@@ -3,8 +3,7 @@ import React from 'react';
 export const OrderSummaryItem = ({ nombre, cantidad, talle, subtotal, imagen }) => {
   return (
     <div className="summary-item-row">
-      <div className="item-thumbnail-placeholder">
-        {imagen && <img src={imagen} alt="" />}
+      <div >
         {!imagen && <span className="material-symbols-outlined">apparel</span>}
       </div>
       <div className="item-info-col">

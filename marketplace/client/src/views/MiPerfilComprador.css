@@ -1,0 +1,33 @@
+/* Fondo gris muy claro de toda la página, como en el mockup */
+.mi-perfil-comprador {
+  background-color: #f8f9fa;
+}
+
+.mi-perfil-comprador-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 77.5rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3.5rem;
+}
+
+.mi-perfil-comprador-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+}
+
+/* Tablet y celular: una tarjeta debajo de la otra */
+@media (max-width: 62.5em) {
+  .mi-perfil-comprador-grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 37.5em) {
+  .mi-perfil-comprador-contenido {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+}

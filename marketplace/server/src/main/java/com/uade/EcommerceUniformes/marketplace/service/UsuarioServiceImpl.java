@@ -52,6 +52,30 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese mail ya está registrado");
         }
 
+        if (request.getNombreUsuario() != null) {
+            String nombreUsuarioNuevo = request.getNombreUsuario().trim();
+            if (nombreUsuarioNuevo.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de usuario no puede estar vacío");
+            }
+            boolean nombreUsuarioEnUso = usuarioRepository.findByNombreUsuario(nombreUsuarioNuevo)
+                    .filter(otro -> !otro.getId().equals(usuario.getId()))
+                    .isPresent();
+            if (nombreUsuarioEnUso) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese nombre de usuario ya está en uso");
+            }
+            usuario.setNombreUsuario(nombreUsuarioNuevo);
+        }
+
+        // El teléfono es opcional: vacío lo borra, y si viene con datos tiene que tener un formato válido
+        if (request.getTelefono() != null) {
+            String telefonoNuevo = request.getTelefono().trim();
+            if (!telefonoNuevo.isEmpty() && !telefonoNuevo.matches("^[0-9 +()-]{6,20}$")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "El teléfono solo puede tener números, espacios, +, - y paréntesis (de 6 a 20 caracteres)");
+            }
+            usuario.setTelefono(telefonoNuevo.isEmpty() ? null : telefonoNuevo);
+        }
+
         usuario.setNombre(request.getNombre().trim());
         usuario.setApellido(request.getApellido() == null ? null : request.getApellido().trim());
         usuario.setMail(mailNuevo);
@@ -88,6 +112,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.getNombre(),
                 usuario.getApellido(),
                 usuario.getMail(),
+                usuario.getTelefono(),
                 usuario.getRolUsuario());
     }
 
@@ -106,6 +131,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(usuario -> {
                     UsuarioDto response = new UsuarioDto();
                     response.setNombreUsuarioDto(usuario.getNombreUsuario());
+                    response.setNombreDto(usuario.getNombre());
+                    response.setApellidoDto(usuario.getApellido());
+                    response.setIdDto(usuario.getId());
                     response.setMailDto(usuario.getMail());
                     response.setRolUsuarioDto(usuario.getRolUsuario());
                     response.setActivoDto(usuario.isActivo());
@@ -126,6 +154,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioDto response = new UsuarioDto();
 
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
+        response.setApellidoDto(usuario.getApellido());
+        response.setIdDto(usuario.getId());
         response.setMailDto(usuario.getMail());
         response.setRolUsuarioDto(usuario.getRolUsuario());
         response.setActivoDto(usuario.isActivo());
@@ -182,6 +212,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioDto response = new UsuarioDto();
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
         response.setMailDto(usuario.getMail());
+        response.setApellidoDto(usuario.getApellido());
+        response.setIdDto(usuario.getId());
         response.setRolUsuarioDto(usuario.getRolUsuario());
 
         return response;

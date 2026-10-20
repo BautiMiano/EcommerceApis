@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
 import { obtenerSesion, rutaInicioPorRol } from '../../utils/sesion.js';
 
 // Deja pasar solo a los roles indicados. Los visitantes pasan únicamente si permitirVisitantes es true;
@@ -6,14 +6,16 @@ import { obtenerSesion, rutaInicioPorRol } from '../../utils/sesion.js';
 // Es solo para la navegación: los permisos reales los valida el backend.
 export const ProtectedRoute = ({ rolesPermitidos, permitirVisitantes = false }) => {
   const { logueado, rol } = obtenerSesion();
+  // Reenvía el contexto del layout de arriba (por ejemplo, el perfil que carga TiendaLayout)
+  const contexto = useOutletContext();
 
   if (!logueado) {
-    return permitirVisitantes ? <Outlet /> : <Navigate to="/login" replace />;
+    return permitirVisitantes ? <Outlet context={contexto} /> : <Navigate to="/login" replace />;
   }
 
   if (!rolesPermitidos.includes(rol)) {
     return <Navigate to={rutaInicioPorRol(rol)} replace />;
   }
 
-  return <Outlet />;
+  return <Outlet context={contexto} />;
 };

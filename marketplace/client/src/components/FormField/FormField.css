@@ -1,0 +1,34 @@
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.form-field input {
+  padding: 14px 12px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.form-field input:focus {
+  outline: 2px solid #111;
+  border-color: #111;
+}
+
+.form-field-help {
+  font-size: 11px;
+  color: #555;
+}

@@ -192,6 +192,7 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
                 orden.getEstado(),
                 nombreComprador,
                 comprador.getMail(),
+                comprador.getTelefono(),
                 cantidadProductos,
                 total,
                 itemsVenta,

@@ -1,5 +1,6 @@
-/* ---------- Identidad del panel del vendedor ---------- */
-.seller-layout {
+/* ---------- Identidad de UNIFORMA ----------
+   En :root para que las piezas panel-* también se puedan usar en la tienda (por ejemplo, el perfil del comprador) */
+:root {
   --uf-negro: #000000;
   --uf-blanco: #ffffff;
   --uf-fondo: #f5f5f5;
@@ -10,7 +11,10 @@
   --uf-rojo: #d32f2f;
   --uf-verde: #2e7d32;
   --uf-sidebar: 14.5rem;
+}
 
+/* ---------- Panel del vendedor ---------- */
+.seller-layout {
   display: grid;
   grid-template-columns: var(--uf-sidebar) 1fr;
   min-height: 100vh;

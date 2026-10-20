@@ -56,6 +56,32 @@ export const registrarUsuario = (datos) =>
 export const getCategories = () =>
   solicitar('/categories', {}, 'No se pudieron obtener las categorías.')
 
+// Activas e inactivas. Solo para el admin.
+export const obtenerTodasLasCategorias = () =>
+  solicitar('/categories/todas', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener las categorías.')
+
+export const crearCategoria = (nombre) =>
+  solicitar('/categories', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ nombre: nombre }),
+  }, 'No se pudo crear la categoría.')
+
+export const activarCategoria = (categoriaId) =>
+  solicitar(`/categories/activar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar la categoría.')
+
+export const desactivarCategoria = (categoriaId) =>
+  solicitar(`/categories/desactivar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar la categoría.')
+
+
 // ---------- Productos ----------
 
 export const crearProducto = (producto) =>
@@ -79,6 +105,20 @@ export const obtenerMisProductos = async () => {
   }
 }
 
+
+export const obtenerTodosLosProductos = async () => {
+  try {
+    return await solicitar('/productos/todos', {
+      headers: obtenerHeaders(),
+    }, 'No se pudieron obtener los productos.')
+  } catch (error) {
+
+    if (error.status === 404) {
+      return []
+    }
+    throw error
+  }
+}
 export const actualizarProducto = (productoId, producto) =>
   solicitar(`/productos/${productoId}`, {
     method: 'PUT',
@@ -152,6 +192,27 @@ export const quitarDescuento = (productoId) =>
     body: JSON.stringify(productoId),
   }, 'No se pudo quitar el descuento.')
 
+
+    // ---------- Usuarios (rol ADMIN) ----------
+
+export const obtenerUsuarios = () =>
+  solicitar('/usuarios', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener los usuarios.')
+
+export const activarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/activar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar el usuario.')
+
+export const desactivarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/desactivar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar el usuario.')
+
+
 // ---------- Perfil ----------
 
 export const obtenerMiPerfil = () =>
@@ -173,6 +234,8 @@ export const cambiarMiContrasena = (contrasenaActual, contrasenaNueva) =>
     headers: obtenerHeaders(true),
     body: JSON.stringify({ contrasenaActual, contrasenaNueva }),
   }, 'No se pudo cambiar la contraseña.')
+
+
 
 // ---------- Favoritos ----------
 
@@ -247,6 +310,10 @@ export const loginUser = async (credenciales) => {
     },
     body: JSON.stringify(credenciales),
   })
+
+  if (response.status === 403) {
+    throw new Error(await response.text())
+  }
 
   if (!response.ok) {
     throw new Error('Correo o contraseña incorrectos')
