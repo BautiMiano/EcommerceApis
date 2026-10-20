@@ -52,6 +52,10 @@ public class Usuario implements UserDetails {
     @Column
     private String apellido;
 
+    // Opcional: lo carga cada usuario desde su perfil
+    @Column
+    private String telefono;
+
     @Column(nullable = false)
     private String mail;
 

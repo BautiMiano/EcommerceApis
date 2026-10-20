@@ -3,15 +3,20 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getCategories } from '../../utils/api.js';
 import { Search } from '../Search/Search.jsx';
 import { obtenerSesion } from '../../utils/sesion.js';
+import UsuarioMenu from '../UsuarioMenu/UsuarioMenu.jsx';
 import './Navbar.css';
 
-export const Navbar = ({ onLogout }) => {
+export const Navbar = ({ perfil, onLogout }) => {
   const [categories, setCategories] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   // El vendedor usa su propio panel: este navbar es para visitantes y compradores
-  const { logueado } = obtenerSesion();
+  const { logueado, rol } = obtenerSesion();
+  // Si un vendedor entra a la tienda (por ejemplo, al detalle de un producto), su perfil está en el panel
+  // El administrador no tiene pantalla de perfil: su menú queda solo con Cerrar sesión
+  const rutasPerfil = { COMPRADOR: '/perfil', VENDEDOR: '/vendedor/perfil' };
+  const rutaPerfil = rutasPerfil[rol];
 
   useEffect(() => {
     getCategories()
@@ -96,7 +101,13 @@ export const Navbar = ({ onLogout }) => {
         <Search />
 
         <div className="navbar-actions">
-          {logueado && (
+          {/* Con sesión: nombre y menú, como en el panel del vendedor */}
+          {logueado && perfil && (
+            <UsuarioMenu perfil={perfil} rutaPerfil={rutaPerfil} textoEnlace="Mi perfil" onLogout={onLogout} />
+          )}
+
+          {/* Mientras carga el perfil (o si falló), igual se puede cerrar sesión */}
+          {logueado && !perfil && (
             <button className="btn-pill btn-pill-outline" onClick={onLogout}>
               Cerrar sesión
             </button>
