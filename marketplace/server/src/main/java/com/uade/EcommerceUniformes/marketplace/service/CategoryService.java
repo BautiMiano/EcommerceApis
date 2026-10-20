@@ -17,4 +17,6 @@ public interface CategoryService {
 
     public void activarCategory(Long id);
 
+    public List<CategoryDto> getTodasLasCategorias();
+
 }

@@ -105,6 +105,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarios.stream()
                 .map(usuario -> {
                     UsuarioDto response = new UsuarioDto();
+                    response.setIdDto(usuario.getId());
+                    response.setNombreDto(usuario.getNombre());
+                    response.setApellidoDto(usuario.getApellido());
                     response.setNombreUsuarioDto(usuario.getNombreUsuario());
                     response.setMailDto(usuario.getMail());
                     response.setRolUsuarioDto(usuario.getRolUsuario());
@@ -124,7 +127,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         ));
 
         UsuarioDto response = new UsuarioDto();
-
+        response.setIdDto(usuario.getId());
+        response.setNombreDto(usuario.getNombre());
+        response.setApellidoDto(usuario.getApellido());
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
         response.setMailDto(usuario.getMail());
         response.setRolUsuarioDto(usuario.getRolUsuario());
@@ -180,6 +185,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
 
         UsuarioDto response = new UsuarioDto();
+        response.setIdDto(usuario.getId());
+        response.setNombreDto(usuario.getNombre());
+        response.setApellidoDto(usuario.getApellido());
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
         response.setMailDto(usuario.getMail());
         response.setRolUsuarioDto(usuario.getRolUsuario());
@@ -187,3 +195,4 @@ public class UsuarioServiceImpl implements UsuarioService {
         return response;
     }
 }
+

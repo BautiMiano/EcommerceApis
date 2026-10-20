@@ -17,6 +17,7 @@ import com.uade.EcommerceUniformes.marketplace.entity.dto.CambioEstadoRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.VentaResponse;
 import com.uade.EcommerceUniformes.marketplace.service.OrdenDeCompraService;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenAdminResponse;
 import org.springframework.security.core.Authentication;
 
 
@@ -31,8 +32,10 @@ public class OrdenDeCompraController {
     private OrdenDeCompraService ordenDeCompraSerivice;
 
     @GetMapping
-    public List<OrdenDeCompra> getOrdenesDeCompra() {
-        return ordenDeCompraSerivice.getOrdenesDeCompra();
+    public List<OrdenAdminResponse> getOrdenesDeCompra() {
+        return ordenDeCompraSerivice.getOrdenesDeCompra().stream()
+                .map(OrdenAdminResponse::desde)
+                .toList();
     }
 
     @GetMapping("/{ordenId}")

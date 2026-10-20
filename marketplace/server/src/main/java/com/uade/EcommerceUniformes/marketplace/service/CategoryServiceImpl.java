@@ -147,4 +147,19 @@ public class CategoryServiceImpl implements CategoryService {
 
         productoRepository.saveAll(productos);
     }
+
+        // Para el admin: todas, también las desactivadas
+    @Override
+    public List<CategoryDto> getTodasLasCategorias() {
+
+        return categoryRepository.findAll().stream()
+                .map(category -> {
+                    CategoryDto response = new CategoryDto();
+                    response.setCategoryId(category.getId());
+                    response.setCategoryName(category.getNombre());
+                    response.setActivo(category.getActivo());
+                    return response;
+                })
+                .toList();
+    }
 }
