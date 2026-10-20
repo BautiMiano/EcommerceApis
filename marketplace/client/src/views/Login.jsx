@@ -21,7 +21,7 @@ const handleLoginExitoso = (data) => {
     navigate('/');
   };
   return (
-    <div className="register-page">       
+    <div className="register-page">
       <main className="register-main">
         <PageTitle
           etiqueta="ACCESO DE USUARIO"
