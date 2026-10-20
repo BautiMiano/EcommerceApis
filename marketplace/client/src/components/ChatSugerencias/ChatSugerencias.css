@@ -1,0 +1,32 @@
+.chat-sugerencias {
+    margin-top: 0.75rem;
+}
+
+.chat-sugerencias-titulo {
+    margin-bottom: 0.5rem;
+    color: #6b6b6b;
+    font-size: 0.8125rem;
+}
+
+.chat-sugerencias-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.chat-sugerencias-boton {
+    padding: 0.5rem 0.875rem;
+    border: 1px solid #111111;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #111111;
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.chat-sugerencias-boton:hover,
+.chat-sugerencias-boton:focus-visible {
+    background-color: #cfff46;
+}

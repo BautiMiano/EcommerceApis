@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import ChatMensaje from '../ChatMensaje/ChatMensaje'
 import ChatEntrada from '../ChatEntrada/ChatEntrada'
 import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
+import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
+import { obtenerSesion } from '../../utils/sesion'
+import { saludoPorRol, sugerenciasPorRol } from '../../utils/chat'
 import './ChatConversacion.css'
 
 const ChatConversacion = ({ conversacionId, onVolver }) => {
@@ -10,7 +13,8 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
     const [error, setError] = useState(null)
     const [enviando, setEnviando] = useState(false)
     const [idActual, setIdActual] = useState(conversacionId)         // NUEVO
-    const finRef = useRef(null)                               // NUEVO
+    const finRef = useRef(null)
+    const { rol } = obtenerSesion()                               // NUEVO
 
     useEffect(() => {
         if (conversacionId === null) {
@@ -61,10 +65,10 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
             {error && <p className="chat-conversacion-estado">{error}</p>}
 
             {!cargando && mensajes.length === 0 && (
-                <ChatMensaje
-                    autor="ASISTENTE"
-                    texto="¡Hola! Soy Uni. Puedo ayudarte a buscar uniformes, ver tus pedidos o revisar tu carrito. ¿Qué necesitás?"
-                />
+                <>
+                    <ChatMensaje autor="ASISTENTE" texto={saludoPorRol(rol)} />
+                    <ChatSugerencias sugerencias={sugerenciasPorRol(rol)} onElegir={enviar} />
+                </>
             )}
             
             {mensajes.map((m, i) => (
