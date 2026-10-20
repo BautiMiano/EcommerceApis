@@ -66,13 +66,14 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setNombreUsuario(nombreUsuarioNuevo);
         }
 
+        // El teléfono es opcional: vacío lo borra, y si viene con datos tiene que tener un formato válido
         if (request.getTelefono() != null) {
             String telefonoNuevo = request.getTelefono().trim();
-            if (!telefonoNuevo.matches("^[0-9 +()-]{6,20}$")) {
+            if (!telefonoNuevo.isEmpty() && !telefonoNuevo.matches("^[0-9 +()-]{6,20}$")) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "El teléfono solo puede tener números, espacios, +, - y paréntesis (de 6 a 20 caracteres)");
             }
-            usuario.setTelefono(telefonoNuevo);
+            usuario.setTelefono(telefonoNuevo.isEmpty() ? null : telefonoNuevo);
         }
 
         usuario.setNombre(request.getNombre().trim());
