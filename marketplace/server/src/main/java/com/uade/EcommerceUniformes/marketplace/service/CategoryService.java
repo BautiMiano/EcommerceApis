@@ -9,6 +9,8 @@ public interface CategoryService {
 
     public List<CategoryDto> getCategories();
 
+    public List<CategoryDto> getTodasLasCategorias();
+
     public CategoryDto getCategorById(Long categoryId);
 
     public CategoryDto createCategory( String nombre);

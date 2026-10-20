@@ -1,0 +1,18 @@
+.usuario-fila-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 12rem;
+}
+
+.usuario-fila-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}

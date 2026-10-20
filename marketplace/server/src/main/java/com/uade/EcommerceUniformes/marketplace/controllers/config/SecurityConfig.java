@@ -50,6 +50,8 @@ public class SecurityConfig {
                         // Categorias (Soporta /categories y /categorias)
                         .requestMatchers(HttpMethod.POST, "/categories/**", "/categorias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/categories/**", "/categorias/**").hasRole("ADMIN")
+                        // Listado con las inactivas (ANTES del permitAll de GET /categories/**)
+                        .requestMatchers(HttpMethod.GET, "/categories/todas").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/categories/**", "/categorias/**").permitAll()
 
                         // Ordenes
@@ -72,6 +74,7 @@ public class SecurityConfig {
 
                         // Productos (mis-productos ANTES del permitAll de GET /productos/**)
                         .requestMatchers(HttpMethod.GET, "/productos/mis-productos").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/productos/todos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/productos/talle/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/productos/talles/**").permitAll()

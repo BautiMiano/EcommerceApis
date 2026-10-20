@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsuarioDto {
+    @JsonProperty("id")
+    private Long idDto;
 
     @JsonProperty("nombreUsuario")
     private String nombreUsuarioDto;

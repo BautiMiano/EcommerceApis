@@ -41,6 +41,23 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
+    // Igual que getCategories pero incluye las desactivadas: la usa el admin para poder reactivarlas
+    @Override
+    public List<CategoryDto> getTodasLasCategorias() {
+
+        List<Category> categories = categoryRepository.findAll();
+
+        return categories.stream()
+                .map(category -> {
+                    CategoryDto response = new CategoryDto();
+                    response.setCategoryId(category.getId());
+                    response.setCategoryName(category.getNombre());
+                    response.setActivo(category.getActivo());
+                    return response;
+                })
+                .toList();
+    }
+
     @Override
     public CategoryDto getCategorById(Long categoryId) {
 

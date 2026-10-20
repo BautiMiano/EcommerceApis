@@ -1,4 +1,4 @@
-
+import './PageTitle.css';
 const PageTitle = ({ etiqueta, titulo, descripcion }) => {
   return (
     <div className="page-title">

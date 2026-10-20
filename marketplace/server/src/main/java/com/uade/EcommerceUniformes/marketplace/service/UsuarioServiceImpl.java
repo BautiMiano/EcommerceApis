@@ -131,6 +131,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(usuario -> {
                     UsuarioDto response = new UsuarioDto();
                     response.setNombreUsuarioDto(usuario.getNombreUsuario());
+                    response.setNombreDto(usuario.getNombre());
+                    response.setApellidoDto(usuario.getApellido());
+                    response.setIdDto(usuario.getId());
                     response.setMailDto(usuario.getMail());
                     response.setRolUsuarioDto(usuario.getRolUsuario());
                     response.setActivoDto(usuario.isActivo());
@@ -151,6 +154,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioDto response = new UsuarioDto();
 
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
+        response.setApellidoDto(usuario.getApellido());
+        response.setIdDto(usuario.getId());
         response.setMailDto(usuario.getMail());
         response.setRolUsuarioDto(usuario.getRolUsuario());
         response.setActivoDto(usuario.isActivo());
@@ -207,6 +212,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioDto response = new UsuarioDto();
         response.setNombreUsuarioDto(usuario.getNombreUsuario());
         response.setMailDto(usuario.getMail());
+        response.setApellidoDto(usuario.getApellido());
+        response.setIdDto(usuario.getId());
         response.setRolUsuarioDto(usuario.getRolUsuario());
 
         return response;

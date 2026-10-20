@@ -11,8 +11,9 @@ export const Navbar = ({ perfil, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // El vendedor usa su propio panel: este navbar es para visitantes y compradores
+  // El vendedor usa su propio panel: este navbar es para visitantes, compradores y el admin
   const { logueado, rol } = obtenerSesion();
+  const esAdmin = rol === 'ADMIN';
   // Si un vendedor entra a la tienda (por ejemplo, al detalle de un producto), su perfil está en el panel
   // El administrador no tiene pantalla de perfil: su menú queda solo con Cerrar sesión
   const rutasPerfil = { COMPRADOR: '/perfil', VENDEDOR: '/vendedor/perfil' };
@@ -94,8 +95,21 @@ export const Navbar = ({ perfil, onLogout }) => {
             )}
           </div>
 
-          <NavLink to="/favoritos">Favoritos</NavLink>
-          <NavLink to="/carrito">Carrito</NavLink>
+          {!esAdmin && (
+            <>
+              <NavLink to="/favoritos">Favoritos</NavLink>
+              <NavLink to="/carrito">Carrito</NavLink>
+            </>
+          )}
+
+          {esAdmin && (
+            <>
+              <NavLink to="/admin/usuarios">Usuarios</NavLink>
+              <NavLink to="/admin/productos">Productos</NavLink>
+              <NavLink to="/admin/vendedores">Vendedores</NavLink>
+              <NavLink to="/admin/tickets">Tickets</NavLink>
+            </>
+          )}
         </nav>
 
         <Search />
