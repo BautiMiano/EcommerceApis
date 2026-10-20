@@ -35,6 +35,11 @@ public class ProductoController {
         return this.productoService.getProductos();
     }
 
+    @GetMapping("/todos")
+    public List<ProductoRequest> getTodosLosProductos() {
+        return this.productoService.getTodosLosProductos();
+    }
+
     @GetMapping("/{productoId}")
     public ProductoRequest getProductoById(@PathVariable Long productoId) {
         return this.productoService.getProductoById(productoId);
