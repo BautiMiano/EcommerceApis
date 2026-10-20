@@ -10,7 +10,7 @@ const Login = () => {
 const handleLoginExitoso = (data) => {
     data.access_token && localStorage.setItem('token', data.access_token);
     data.role && localStorage.setItem('userRole', data.role);
-    data.usuarioId && localStorage.setItem('userId', data.usuarioId);
+    data.usuarioId && localStorage.setItem('usuarioId', data.usuarioId);
 
     setUser && setUser({
       token: data.access_token,
