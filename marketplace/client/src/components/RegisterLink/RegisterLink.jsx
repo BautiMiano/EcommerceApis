@@ -1,4 +1,3 @@
-
     const RegisterLink = ({ onClick }) => {
     return (
         <p className="register-link">
@@ -11,4 +10,3 @@
     }
 
 export default RegisterLink
-

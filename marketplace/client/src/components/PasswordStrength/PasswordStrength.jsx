@@ -1,4 +1,4 @@
-
+import './PasswordStrength.css';
 const etiquetas = ['BAJO', 'BAJO', 'MEDIO', 'ALTO', 'MUY ALTO']
 
 const calcularNivel = (contrasena) => {
