@@ -103,12 +103,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* Rutas viejas, para no romper enlaces */}
-        <Route path="/mis-productos" element={<Navigate to="/vendedor/productos" replace />} />
-        <Route path="/crear-publicacion" element={<Navigate to="/vendedor/productos/nuevo" replace />} />
-        <Route path="/mis-tickets" element={<Navigate to="/vendedor/tickets" replace />} />
-        <Route path="/tickets/nuevo" element={<Navigate to="/vendedor/tickets/nuevo" replace />} />
-
         {/* Redirección por defecto a Home si la ruta no existe */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
