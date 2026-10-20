@@ -9,8 +9,8 @@ const FORMATO_MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const FORMATO_TELEFONO = /^[0-9 +()-]{6,20}$/
 
 // Datos de la cuenta y cambio de contraseña, compartidos por el perfil del vendedor y el del comprador.
-// "completo" (comprador) suma teléfono y nombre de usuario, y pide el apellido como obligatorio.
-const usePerfilCuenta = (perfil, recargarPerfil, { completo = false } = {}) => {
+// Todos los datos son obligatorios menos el teléfono, igual para los dos perfiles.
+const usePerfilCuenta = (perfil, recargarPerfil) => {
   const [datos, setDatos] = useState({
     nombre: perfil.nombre,
     apellido: perfil.apellido || '',
@@ -39,13 +39,14 @@ const usePerfilCuenta = (perfil, recargarPerfil, { completo = false } = {}) => {
     if (!FORMATO_MAIL.test(datos.mail.trim())) {
       errores.mail = 'Ingresá un email válido.'
     }
-    if (completo && !datos.apellido.trim()) {
+    if (!datos.apellido.trim()) {
       errores.apellido = 'Ingresá tu apellido.'
     }
-    if (completo && !FORMATO_TELEFONO.test(datos.telefono.trim())) {
+    // El teléfono es opcional: solo se valida si lo completó
+    if (datos.telefono.trim() && !FORMATO_TELEFONO.test(datos.telefono.trim())) {
       errores.telefono = 'Ingresá un teléfono válido (solo números, espacios, + y -).'
     }
-    if (completo && !datos.nombreUsuario.trim()) {
+    if (!datos.nombreUsuario.trim()) {
       errores.nombreUsuario = 'Ingresá tu nombre de usuario.'
     }
     return errores
@@ -59,11 +60,12 @@ const usePerfilCuenta = (perfil, recargarPerfil, { completo = false } = {}) => {
       return
     }
 
-    // Teléfono y nombre de usuario solo se mandan desde el perfil completo: si no van, el backend no los toca
-    const cambios = { nombre: datos.nombre.trim(), apellido: datos.apellido.trim(), mail: datos.mail.trim() }
-    if (completo) {
-      cambios.telefono = datos.telefono.trim()
-      cambios.nombreUsuario = datos.nombreUsuario.trim()
+    const cambios = {
+      nombre: datos.nombre.trim(),
+      apellido: datos.apellido.trim(),
+      mail: datos.mail.trim(),
+      telefono: datos.telefono.trim(),
+      nombreUsuario: datos.nombreUsuario.trim(),
     }
 
     setGuardando(true)
@@ -89,7 +91,9 @@ const usePerfilCuenta = (perfil, recargarPerfil, { completo = false } = {}) => {
     if (contrasenas.nueva.length < LARGO_MINIMO_CONTRASENA) {
       errores.nueva = `Tiene que tener al menos ${LARGO_MINIMO_CONTRASENA} caracteres.`
     }
-    if (contrasenas.confirmar !== contrasenas.nueva) {
+    if (!contrasenas.confirmar) {
+      errores.confirmar = 'Repetí la nueva contraseña.'
+    } else if (contrasenas.confirmar !== contrasenas.nueva) {
       errores.confirmar = 'Las contraseñas no coinciden.'
     }
     setErroresContrasena(errores)
