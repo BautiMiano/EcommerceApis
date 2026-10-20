@@ -1,0 +1,10 @@
+.orden-detalle-modal {
+  position: relative;
+  max-width: 36rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.orden-detalle-item {
+  grid-template-columns: 1fr auto auto;
+}

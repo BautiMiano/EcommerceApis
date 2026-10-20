@@ -1,0 +1,11 @@
+.categorias-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 56.25em) {
+  .categorias-admin-stats {
+    grid-template-columns: 1fr;
+  }
+}

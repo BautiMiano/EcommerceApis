@@ -1,0 +1,17 @@
+.usuarios-filtro {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 56.25em) {
+  .usuarios-filtro {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .usuarios-filtro-busqueda {
+    grid-column: 1 / -1;
+  }
+}

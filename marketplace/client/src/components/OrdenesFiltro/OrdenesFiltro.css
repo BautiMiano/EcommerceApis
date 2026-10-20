@@ -1,0 +1,13 @@
+.ordenes-filtro {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 35em) {
+  .ordenes-filtro {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,22 @@
+.categoria-form {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.categoria-form-campo {
+  flex: 1;
+  max-width: 24rem;
+}
+
+@media (max-width: 35em) {
+  .categoria-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .categoria-form-campo {
+    max-width: none;
+  }
+}

@@ -1,0 +1,40 @@
+.usuario-fila-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 13rem;
+}
+
+.usuario-fila-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.usuario-fila-nombre {
+  font-weight: 600;
+}
+
+.usuario-fila-alias {
+  color: var(--uf-texto-suave);
+  font-size: 0.8125rem;
+}
+
+.usuario-fila-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.usuario-fila-acciones .panel-boton {
+  white-space: nowrap;
+}
+
+.usuario-fila-sin-acciones {
+  color: var(--uf-texto-suave);
+}

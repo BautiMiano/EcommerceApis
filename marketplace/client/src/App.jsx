@@ -24,6 +24,10 @@ import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
+import AdminLayout from './components/AdminLayout/AdminLayout.jsx';
+import UsuariosAdmin from './views/UsuariosAdmin.jsx';
+import CategoriasAdmin from './views/CategoriasAdmin.jsx';
+import OrdenesAdmin from './views/OrdenesAdmin.jsx';
 
 // Tienda pública y del comprador: navbar arriba y footer abajo
 const TiendaLayout = ({ onLogout }) => (
@@ -66,10 +70,18 @@ function App() {
             <Route path="/carrito" element={<MiCarrito />} />
           </Route>
 
-          {/* EXCLUSIVAS DEL ADMINISTRADOR */}
-          <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
-            <Route path="/admin/tickets" element={<TicketsAdmin />} />
-            <Route path="/admin/tickets/:id" element={<TicketDetalleAdmin />} />
+          
+        </Route>
+
+        {/* PANEL DEL ADMIN: layout propio, sin navbar ni footer de la tienda */}
+        <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
+          <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
+            <Route index element={<Navigate to="tickets" replace />} />
+            <Route path="usuarios" element={<UsuariosAdmin />} />
+            <Route path="categorias" element={<CategoriasAdmin />} />
+            <Route path="ordenes" element={<OrdenesAdmin />} />
+            <Route path="tickets" element={<TicketsAdmin />} />
+            <Route path="tickets/:id" element={<TicketDetalleAdmin />} />
           </Route>
         </Route>
 

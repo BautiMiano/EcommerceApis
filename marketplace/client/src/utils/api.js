@@ -343,3 +343,71 @@ export const enviarMensajeChat = (conversacionId, mensaje) =>
     headers: obtenerHeaders(true),
     body: JSON.stringify({ conversacionId, mensaje }),
   }, 'No se pudo enviar el mensaje.')
+
+// ---------- Usuarios (admin) ----------
+
+export const obtenerUsuarios = () =>
+  solicitar('/usuarios', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron cargar los usuarios.')
+
+export const activarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/activar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar el usuario.')
+
+export const desactivarUsuario = (usuarioId) =>
+  solicitar(`/usuarios/desactivar/${usuarioId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar el usuario.')
+
+export const cambiarRolUsuario = (usuarioId, rol) =>
+  solicitar(`/usuarios/${usuarioId}`, {
+    method: 'PUT',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ rolUsuario: rol }),
+  }, 'No se pudo cambiar el rol.')
+
+// ---------- Categorías (admin) ----------
+
+export const obtenerTodasLasCategorias = () =>
+  solicitar('/categories/todas', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron cargar las categorías.')
+
+export const crearCategoria = (nombre) =>
+  solicitar('/categories', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ nombre }),
+  }, 'No se pudo crear la categoría.')
+
+export const activarCategoria = (categoriaId) =>
+  solicitar(`/categories/activar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo activar la categoría.')
+
+export const desactivarCategoria = (categoriaId) =>
+  solicitar(`/categories/desactivar/${categoriaId}`, {
+    method: 'PATCH',
+    headers: obtenerHeaders(),
+  }, 'No se pudo desactivar la categoría.')
+
+// ---------- Órdenes (admin) ----------
+
+// El backend responde 404 cuando todavía no hay órdenes: para la pantalla es una lista vacía
+export const obtenerTodasLasOrdenes = async () => {
+  try {
+    return await solicitar('/ordenesDeCompra', {
+      headers: obtenerHeaders(),
+    }, 'No se pudieron cargar las órdenes.')
+  } catch (error) {
+    if (error.status === 404) {
+      return []
+    }
+    throw error
+  }
+}
