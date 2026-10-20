@@ -12,12 +12,6 @@ const handleLoginExitoso = (data) => {
     data.role && localStorage.setItem('userRole', data.role);
     data.usuarioId && localStorage.setItem('usuarioId', data.usuarioId);
 
-    setUser && setUser({
-      token: data.access_token,
-      role: data.role,
-      userId: data.usuarioId
-    });
-
     navigate('/');
   };
   return (
@@ -28,12 +22,12 @@ const handleLoginExitoso = (data) => {
           titulo="Iniciá sesión en Uniforma"
           descripcion="Ingresá con tus credenciales para gestionar tus pedidos y acceder a la plataforma."
         />
-  
+
         <LoginForm onLoginExitoso={handleLoginExitoso} />
-        
+
         <RegisterLink onClick={() => navigate('/registro')} />
       </main>
-      
+
     </div>
   );
 }
