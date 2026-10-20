@@ -5,6 +5,7 @@ import './UsuarioMenu.css'
 
 // Avatar con iniciales, nombre, enlace al perfil y menú desplegable (Mi perfil · Cerrar sesión).
 // Lo usan el header del vendedor ("Mi tienda") y el navbar de la tienda ("Mi perfil").
+// Sin rutaPerfil (el administrador, que no tiene perfil) no se muestran los enlaces al perfil.
 const UsuarioMenu = ({ perfil, rutaPerfil, textoEnlace, onLogout }) => {
   const [abierto, setAbierto] = useState(false)
 
@@ -13,9 +14,11 @@ const UsuarioMenu = ({ perfil, rutaPerfil, textoEnlace, onLogout }) => {
       <span className="usuario-menu-avatar" aria-hidden="true">{inicialesDe(perfil)}</span>
       <div className="usuario-menu-datos">
         <strong>{`${perfil.nombre} ${perfil.apellido || ''}`.trim()}</strong>
-        <Link to={rutaPerfil}>
-          {textoEnlace} <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-        </Link>
+        {rutaPerfil && (
+          <Link to={rutaPerfil}>
+            {textoEnlace} <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </Link>
+        )}
       </div>
       <button
         type="button"
@@ -30,10 +33,12 @@ const UsuarioMenu = ({ perfil, rutaPerfil, textoEnlace, onLogout }) => {
 
       {abierto && (
         <div className="usuario-menu-desplegable" role="menu">
-          <Link to={rutaPerfil} role="menuitem" onClick={() => setAbierto(false)}>
-            <span className="material-symbols-outlined" aria-hidden="true">person</span>
-            Mi perfil
-          </Link>
+          {rutaPerfil && (
+            <Link to={rutaPerfil} role="menuitem" onClick={() => setAbierto(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">person</span>
+              Mi perfil
+            </Link>
+          )}
           <button type="button" role="menuitem" onClick={onLogout}>
             <span className="material-symbols-outlined" aria-hidden="true">logout</span>
             Cerrar sesión

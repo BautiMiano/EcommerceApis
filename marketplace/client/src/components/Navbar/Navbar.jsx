@@ -14,7 +14,9 @@ export const Navbar = ({ perfil, onLogout }) => {
   // El vendedor usa su propio panel: este navbar es para visitantes y compradores
   const { logueado, rol } = obtenerSesion();
   // Si un vendedor entra a la tienda (por ejemplo, al detalle de un producto), su perfil está en el panel
-  const rutaPerfil = rol === 'VENDEDOR' ? '/vendedor/perfil' : '/perfil';
+  // El administrador no tiene pantalla de perfil: su menú queda solo con Cerrar sesión
+  const rutasPerfil = { COMPRADOR: '/perfil', VENDEDOR: '/vendedor/perfil' };
+  const rutaPerfil = rutasPerfil[rol];
 
   useEffect(() => {
     getCategories()
