@@ -1,22 +1,12 @@
 import { useOutletContext } from 'react-router-dom'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
-import CampoFormulario from '../components/CampoFormulario/CampoFormulario'
-import CampoContrasena from '../components/CampoContrasena/CampoContrasena'
+import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
 import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
 
-const RECOMENDACIONES = [
-  'Usá al menos 8 caracteres.',
-  'Incluí letras, números y un símbolo.',
-  'No uses datos personales.',
-]
-
-// Etiqueta con el asterisco naranja de los campos obligatorios
-const obligatorio = (texto) => <>{texto} <span className="mi-perfil-comprador-requerido">*</span></>
-
 // Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.
-// El perfil lo carga TiendaLayout; la lógica de guardado es la misma que la del vendedor (usePerfilCuenta).
+// El perfil lo carga TiendaLayout; las tarjetas y la lógica son las mismas que las del vendedor.
 const MiPerfilComprador = () => {
   const { perfil, cargandoPerfil, errorPerfil, recargarPerfil } = useOutletContext()
 
@@ -47,51 +37,12 @@ const MiPerfilComprador = () => {
 }
 
 const PerfilComprador = ({ perfil, recargarPerfil }) => {
-  const cuenta = usePerfilCuenta(perfil, recargarPerfil, { completo: true })
+  const cuenta = usePerfilCuenta(perfil, recargarPerfil)
 
   return (
     <div className="mi-perfil-comprador-grilla">
-      <section className="panel-tarjeta mi-perfil-comprador-tarjeta">
-        <h2 className="mi-perfil-comprador-titulo">INFORMACIÓN PERSONAL</h2>
-        <p className="mi-perfil-comprador-subtitulo">Estos datos se utilizan para tus compras y envíos.</p>
-
-        <form className="mi-perfil-comprador-form" onSubmit={cuenta.guardarDatos} noValidate>
-          <div className="mi-perfil-comprador-campos">
-            <CampoFormulario label={obligatorio('Nombre')} name="nombre" value={cuenta.datos.nombre} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.nombre} />
-            <CampoFormulario label={obligatorio('Apellido')} name="apellido" value={cuenta.datos.apellido} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.apellido} />
-            <CampoFormulario label={obligatorio('Email')} name="mail" type="email" value={cuenta.datos.mail} disabled />
-            <CampoFormulario label={obligatorio('Teléfono')} name="telefono" type="tel" value={cuenta.datos.telefono} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.telefono} />
-            <div className="mi-perfil-comprador-ancho">
-              <CampoFormulario label={obligatorio('Nombre de usuario')} name="nombreUsuario" value={cuenta.datos.nombreUsuario} onChange={cuenta.handleDatos} error={cuenta.erroresDatos.nombreUsuario} />
-            </div>
-          </div>
-          <button type="submit" className="panel-boton panel-boton-primario mi-perfil-comprador-guardar" disabled={cuenta.guardando}>
-            {cuenta.guardando ? 'Guardando...' : 'Guardar cambios'}
-          </button>
-        </form>
-      </section>
-
-      <section className="panel-tarjeta mi-perfil-comprador-tarjeta">
-        <h2 className="mi-perfil-comprador-titulo">CAMBIAR CONTRASEÑA</h2>
-        <p className="mi-perfil-comprador-subtitulo">Actualizá tu contraseña para mantener tu cuenta segura.</p>
-
-        <form className="mi-perfil-comprador-form" onSubmit={cuenta.guardarContrasena} noValidate>
-          <CampoContrasena label={obligatorio('Contraseña actual')} name="actual" value={cuenta.contrasenas.actual} placeholder="Ingresá tu contraseña actual" onChange={cuenta.handleContrasenas} error={cuenta.erroresContrasena.actual} />
-          <CampoContrasena label={obligatorio('Nueva contraseña')} name="nueva" value={cuenta.contrasenas.nueva} placeholder="Ingresá una nueva contraseña" onChange={cuenta.handleContrasenas} error={cuenta.erroresContrasena.nueva} />
-          <CampoContrasena label={obligatorio('Confirmar nueva contraseña')} name="confirmar" value={cuenta.contrasenas.confirmar} placeholder="Repetí la nueva contraseña" onChange={cuenta.handleContrasenas} error={cuenta.erroresContrasena.confirmar} />
-
-          <div className="mi-perfil-comprador-recomendaciones">
-            <p>Recomendaciones:</p>
-            <ul>
-              {RECOMENDACIONES.map((recomendacion) => <li key={recomendacion}>{recomendacion}</li>)}
-            </ul>
-          </div>
-
-          <button type="submit" className="panel-boton panel-boton-primario mi-perfil-comprador-actualizar" disabled={cuenta.guardando}>
-            {cuenta.guardando ? 'Guardando...' : 'Actualizar contraseña'}
-          </button>
-        </form>
-      </section>
+      <TarjetaDatosPersonales cuenta={cuenta} subtitulo="Estos datos se utilizan para tus compras y envíos." />
+      <TarjetaContrasena cuenta={cuenta} />
     </div>
   )
 }
