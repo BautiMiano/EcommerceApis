@@ -127,7 +127,9 @@ export const obtenerMisProductos = async () => {
 
 export const obtenerTodosLosProductos = async () => {
   try {
-    return await solicitar('/productos', {}, 'No se pudieron obtener los productos.')
+    return await solicitar('/productos/todos', {
+      headers: obtenerHeaders(),
+    }, 'No se pudieron obtener los productos.')
   } catch (error) {
 
     if (error.status === 404) {
@@ -136,7 +138,6 @@ export const obtenerTodosLosProductos = async () => {
     throw error
   }
 }
-
 export const actualizarProducto = (productoId, producto) =>
   solicitar(`/productos/${productoId}`, {
     method: 'PUT',
