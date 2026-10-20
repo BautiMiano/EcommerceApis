@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { Fragment, useState, useEffect, useRef } from 'react'
 import ChatMensaje from '../ChatMensaje/ChatMensaje'
 import ChatEntrada from '../ChatEntrada/ChatEntrada'
+import ChatProductos from '../ChatProductos/ChatProductos'
 import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
 import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
 import { obtenerSesion } from '../../utils/sesion'
@@ -43,7 +44,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
         enviarMensajeChat(idActual, texto)
             .then(data => {
                 setIdActual(data.conversacionId)
-                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta }])
+                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta, productos: data.productos || [] }])
             })
             .catch(err => {
                 console.error(err)
@@ -72,7 +73,10 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
             )}
             
             {mensajes.map((m, i) => (
-                <ChatMensaje key={i} autor={m.autor} texto={m.texto} />
+                <Fragment key={i}>
+                    <ChatMensaje autor={m.autor} texto={m.texto} />
+                    {m.productos?.length > 0 && <ChatProductos productos={m.productos} />}
+                </Fragment>
             ))}
 
             {enviando && <p className="chat-conversacion-escribiendo">Uni está escribiendo…</p>}
