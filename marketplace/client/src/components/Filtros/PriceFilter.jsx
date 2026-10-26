@@ -9,7 +9,6 @@ export const PriceFilter = ({ bounds = { min: 0, max: 400000 }, value, onChange 
   const sinRango = max <= min;
   const step = Math.max(1, Math.round((max - min) / 100));
 
-  // Si value es null o undefined (al limpiar filtros), toma el valor máximo por defecto
   const currentValue = value !== null && value !== undefined ? value : max;
 
   const handleChange = (_, newValue) => {
