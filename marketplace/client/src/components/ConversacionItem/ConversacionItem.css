@@ -34,12 +34,25 @@
 
 .conversacion-item-borrar {
   flex-shrink: 0;
+  display: grid;
+  place-items: center;
   width: 44px;
+  padding: 0;
   border: 1px solid #e5e5e5;
   border-radius: 16px;
   background-color: #ffffff;
   color: #4a4a4a;
   cursor: pointer;
+}
+
+.conversacion-item-borrar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.conversacion-item-borrar .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
 }
 
 .conversacion-item-borrar:hover,
@@ -48,33 +61,5 @@
   color: #000000;
 }
 
-.conversacion-item-confirmar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px;
-  border: 1px solid #000000;
-  border-radius: 16px;
-  background-color: #ffffff;
-  font-size: 14px;
-}
 
-.conversacion-item-confirmar-botones {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
 
-.conversacion-item-confirmar-botones button {
-  padding: 6px 14px;
-  border: 1px solid #000000;
-  border-radius: 999px;
-  background-color: #ffffff;
-  font: inherit;
-  cursor: pointer;
-}
-
-.conversacion-item-confirmar-botones .conversacion-item-si {
-  background-color: #000000;
-  color: #ffffff;
-}

@@ -1,4 +1,5 @@
 .chat-historial {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -50,4 +51,29 @@
 
 .chat-historial-nueva:hover {
   background-color: #262626;
+}
+
+.chat-historial-vacio {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+.chat-historial-vacio-titulo {
+  margin: 4px 0 0 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.chat-historial-vacio-texto {
+  max-width: 260px;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #4a4a4a;
 }

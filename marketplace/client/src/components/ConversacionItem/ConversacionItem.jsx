@@ -2,7 +2,6 @@ import { useState } from 'react'
 import './ConversacionItem.css'
 
 const ConversacionItem = ({ conversacion, onSeleccionar, onEliminar }) => {
-    const [confirmando, setConfirmando] = useState(false)
     const [eliminando, setEliminando] = useState(false)
 
     const fecha = new Date(conversacion.actualizadaEn).toLocaleString('es-AR', {
@@ -12,25 +11,10 @@ const ConversacionItem = ({ conversacion, onSeleccionar, onEliminar }) => {
         minute: '2-digit'
     })
 
-    const confirmarEliminar = () => {
+    // Borra directo, sin preguntar: una charla con Uni se puede volver a empezar
+    const eliminar = () => {
         setEliminando(true)
         onEliminar(conversacion.id).finally(() => setEliminando(false))
-    }
-
-    if (confirmando) {
-        return (
-            <li className="conversacion-item-confirmar">
-                <span>¿Borrar esta conversación?</span>
-                <div className="conversacion-item-confirmar-botones">
-                    <button type="button" onClick={() => setConfirmando(false)} disabled={eliminando}>
-                        No
-                    </button>
-                    <button type="button" className="conversacion-item-si" onClick={confirmarEliminar} disabled={eliminando}>
-                        {eliminando ? 'Borrando...' : 'Sí, borrar'}
-                    </button>
-                </div>
-            </li>
-        )
     }
 
     return (
@@ -42,7 +26,8 @@ const ConversacionItem = ({ conversacion, onSeleccionar, onEliminar }) => {
             </button>
             <button type="button" className="conversacion-item-borrar"
                 aria-label={`Borrar la conversación ${conversacion.titulo}`}
-                onClick={() => setConfirmando(true)}>
+                onClick={eliminar}
+                disabled={eliminando}>
                 <span className="material-symbols-outlined" aria-hidden="true">delete</span>
             </button>
         </li>

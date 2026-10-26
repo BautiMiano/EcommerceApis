@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ConversacionItem from '../ConversacionItem/ConversacionItem'
+import CaritaUni from '../CaritaUni/CaritaUni'
 import { obtenerConversaciones, eliminarConversacion } from '../../utils/api'
 import './ChatHistorial.css'
 
@@ -29,14 +30,26 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
 
     return (
         <section className="chat-historial">
-            <button type="button" className="chat-historial-nueva" onClick={onNueva}>
-                + Nueva conversación
-            </button>
+            {/* Con charlas, el botón va arriba de la lista; sin charlas, va en el centro */}
+            {conversaciones.length > 0 && (
+                <button type="button" className="chat-historial-nueva" onClick={onNueva}>
+                    + Nueva conversación
+                </button>
+            )}
 
             {cargando && <p className="chat-historial-estado">Cargando conversaciones...</p>}
             {error && <p className="chat-historial-error">{error}</p>}
-            {!cargando && !error && conversaciones.length === 0 && (
-                <p className="chat-historial-estado">Todavía no tenés conversaciones.</p>
+                        {!cargando && !error && conversaciones.length === 0 && (
+                <div className="chat-historial-vacio">
+                    <CaritaUni tamano={64} />
+                    <h4 className="chat-historial-vacio-titulo">¡Hola! ¿Charlamos?</h4>
+                    <p className="chat-historial-vacio-texto">
+                        Preguntame lo que necesites de la tienda. Tus charlas van a quedar guardadas acá.
+                    </p>
+                    <button type="button" className="chat-historial-nueva" onClick={onNueva}>
+                        + Nueva conversación
+                    </button>
+                </div>
             )}
 
             {conversaciones.length > 0 && (
