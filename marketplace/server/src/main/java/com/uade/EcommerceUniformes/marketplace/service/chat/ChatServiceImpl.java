@@ -73,10 +73,11 @@ public class ChatServiceImpl implements ChatService {
         List<Map<String, Object>> contenidos = new ArrayList<>(cargarHistorial(conversacion));
         contenidos.add(Contenidos.texto(RolMensaje.USER, mensaje));
 
+        guardarMensaje(conversacion, RolMensaje.USER, mensaje);
+        
         List<ProductoResultado> productos = new ArrayList<>();
         String respuesta = conversar(contenidos, usuario, rol, productos);
 
-        guardarMensaje(conversacion, RolMensaje.USER, mensaje);
         guardarMensaje(conversacion, RolMensaje.MODEL, respuesta);
         conversacion.setActualizadaEn(LocalDateTime.now());
         conversacionRepository.save(conversacion);
