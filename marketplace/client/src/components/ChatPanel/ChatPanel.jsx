@@ -23,7 +23,7 @@ const ChatPanel = ({ onCerrar, logueado }) => {
         <>
             <div className="chat-panel-fondo" onClick={onCerrar}></div>
             <aside className="chat-panel" aria-label="Chat con Uni">
-                <ChatHeader onCerrar={onCerrar} />
+                                <ChatHeader onCerrar={onCerrar} enConversacion={logueado && vista === 'conversacion'} />
                 <div className="chat-panel-cuerpo">
                     {!logueado ? (
                         <ChatInvitado onCerrar={onCerrar} />
