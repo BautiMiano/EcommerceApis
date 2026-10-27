@@ -33,7 +33,7 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
             {/* Con charlas, el botón va arriba de la lista; sin charlas, va en el centro */}
             {conversaciones.length > 0 && (
                 <button type="button" className="chat-historial-nueva" onClick={onNueva}>
-                    + Nueva conversación
+                    Nueva conversación
                 </button>
             )}
 
@@ -42,12 +42,12 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
                         {!cargando && !error && conversaciones.length === 0 && (
                 <div className="chat-historial-vacio">
                     <CaritaUni tamano={64} />
-                    <h4 className="chat-historial-vacio-titulo">¡Hola! ¿Charlamos?</h4>
+                    <h4 className="chat-historial-vacio-titulo">¡Hola! Soy Uni. ¿Charlamos?</h4>
                     <p className="chat-historial-vacio-texto">
                         Preguntame lo que necesites de la tienda. Tus charlas van a quedar guardadas acá.
                     </p>
                     <button type="button" className="chat-historial-nueva" onClick={onNueva}>
-                        + Nueva conversación
+                        Nueva conversación
                     </button>
                 </div>
             )}
