@@ -30,12 +30,13 @@ import com.uade.EcommerceUniformes.marketplace.repository.UsuarioRepository;
 
 import io.jsonwebtoken.lang.Collections;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProductoServiceImpl implements ProductoService {
+
+    private static final int STOCK_BAJO = 5;
 
     private final ProductoRepository productoRepository;
     private final CategoryRepository categoryRepository;
@@ -59,9 +60,22 @@ public class ProductoServiceImpl implements ProductoService {
         response.setPrecio(producto.getPrecio());
         response.setTalles(producto.getTalles().stream()
                 .sorted(Comparator.comparing(StockTalle::getTalle))
-                .map(t -> new TalleStockDto(t.getTalle(), t.getStock(), t.getStockReservado()))
+                .map(t -> new TalleStockDto(t.getTalle(), t.getStock(), t.getStockReservado(), t.getStockDisponible()))
                 .toList());
         response.setStock(producto.getStockTotal());
+        String nivel = nivelStock(producto);
+        String estado = estadoPublicacion(producto, nivel);
+
+        response.setStockDisponible(producto.getStockDisponible());
+        response.setNivelStock(nivel);
+        response.setMensajeStock(mensajeStock(producto, nivel));
+        response.setEstadoPublicacion(estado);
+        response.setTonoPublicacion(tonoPublicacion(estado));
+        response.setTallesTexto(producto.getTallesTexto());
+
+        if (producto.getTalles().size() == 1) {
+            response.setTalleUnico(producto.getTalles().get(0).getTalle());
+        }
         response.setActivo(producto.isActivo());
         response.setEstado(producto.getEstado());
         response.setVendedorId(producto.getVendedor().getId());
@@ -102,7 +116,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (producto.getImagenes() == null) {
             return null;
         }
-        
+
         return producto.getImagenes().stream()
                 .map(this::aDataUri)
                 .filter(Objects::nonNull)
@@ -110,7 +124,6 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElse(null);
     }
 
-    
     private String aDataUri(Imagen img) {
         if (!Boolean.TRUE.equals(img.getActivo()) || img.getImagen() == null) {
             return null;
@@ -239,7 +252,10 @@ public class ProductoServiceImpl implements ProductoService {
         return toResponse(producto);
     }
 
-    /** Al menos un talle, sin repetidos, stock no negativo, y UNICO no se combina con otros. */
+    /**
+     * Al menos un talle, sin repetidos, stock no negativo, y UNICO no se combina
+     * con otros.
+     */
     private void validarTalles(List<TalleStockDto> talles) {
         if (talles == null || talles.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto debe tener al menos un talle");
@@ -267,7 +283,10 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
-    /** Deja el producto con exactamente los talles recibidos, sin perder stock reservado. */
+    /**
+     * Deja el producto con exactamente los talles recibidos, sin perder stock
+     * reservado.
+     */
     private void sincronizarTalles(Producto producto, List<TalleStockDto> talles) {
         validarTalles(talles);
 
@@ -539,7 +558,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public List<ProductoRequest> getProductosByTalle(String talle) {
-        
+
         if (talle == null || talle.trim().isEmpty()) {
             return Collections.emptyList();
         }
@@ -568,5 +587,56 @@ public class ProductoServiceImpl implements ProductoService {
                 .map(Talle::name)
                 .toList();
     }
+
+    private String estadoStock(Producto producto) {
+        boolean agotado = producto.getStockDisponible() == 0;
+        boolean hayPocoStock = producto.getTalles().stream()
+                .anyMatch(t -> t.getStockDisponible() <= STOCK_BAJO);
+
+        if (agotado) {
+            return "Agotado";
+        }
+        return hayPocoStock ? "Últimas unidades" : "En stock";
+    }
+
+    private String nivelStock(Producto producto) {
+    if (producto.getStockDisponible() == 0) {
+        return "agotado";
+    }
+    boolean algunTalleBajo = producto.getTalles().stream()
+            .anyMatch(t -> t.getStockDisponible() <= STOCK_BAJO);
+    return algunTalleBajo ? "bajo" : "ok";
+}
+
+private String mensajeStock(Producto producto, String nivel) {
+    if (nivel.equals("agotado")) {
+        return "Sin stock por el momento";
+    }
+    if (nivel.equals("bajo")) {
+        return "Quedan pocas unidades en algún talle";
+    }
+    return producto.getStockDisponible() + " u. listas para despacho";
+}
+
+private String estadoPublicacion(Producto producto, String nivel) {
+    if (!producto.isActivo()) {
+        return "Pausado";
+    }
+    if (nivel.equals("agotado")) {
+        return "Sin stock";
+    }
+    if (nivel.equals("bajo")) {
+        return "Stock bajo";
+    }
+    return "Activo";
+}
+
+private String tonoPublicacion(String estado) {
+    return switch (estado) {
+        case "Pausado" -> "naranja";
+        case "Sin stock", "Stock bajo" -> "rojo";
+        default -> "verde";
+    };
+}
 
 }

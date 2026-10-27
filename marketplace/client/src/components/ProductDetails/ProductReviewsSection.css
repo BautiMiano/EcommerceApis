@@ -1,0 +1,242 @@
+.product-reviews-section {
+  width: 100%;
+  max-width: 68.75rem; /* 1100px */
+  margin: 2.5rem auto 0 auto; /* 40px */
+  padding: 1.875rem; /* 30px */
+  background-color: #f9f9f9;
+  border-radius: 0.5rem; /* 8px */
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Header */
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 0.0625rem solid #e5e5e5; /* 1px */
+  padding-bottom: 1.25rem; /* 20px */
+  margin-bottom: 1.5625rem; /* 25px */
+}
+
+.reviews-tag {
+  font-size: 0.75rem; /* 12px */
+  color: #888;
+  letter-spacing: 0.0625rem; /* 1px */
+  font-weight: 600;
+}
+
+.reviews-title {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 800;
+  margin: 0.3125rem 0 0 0; /* 5px */
+  color: #111;
+}
+
+.reviews-score-box {
+  text-align: right;
+}
+
+.score-number {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #111;
+}
+
+.score-stars {
+  color: #111;
+  letter-spacing: 0.125rem; /* 2px */
+  margin: 0.125rem 0; /* 2px */
+}
+
+.score-subtext {
+  font-size: 0.75rem; /* 12px */
+  color: #777;
+}
+
+/* Review Cards */
+.reviews-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9375rem; /* 15px */
+  margin-bottom: 1.875rem; /* 30px */
+}
+
+.review-card {
+  background: #ffffff;
+  padding: 1.25rem; /* 20px */
+  border-radius: 0.375rem; /* 6px */
+  border: 0.0625rem solid #e0e0e0; /* 1px */
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  font-size: 0.9rem;
+}
+
+.reviewer-badge {
+  background: #eee;
+  padding: 0.125rem 0.375rem; /* 2px 6px */
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 0.1875rem; /* 3px */
+}
+
+.verified-purchase-tag {
+  color: #111;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem; /* 3px */
+}
+
+.verified-purchase-tag .material-symbols-outlined {
+  font-size: 1rem; /* 16px */
+}
+
+.review-meta-details {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 0.25rem; /* 4px */
+}
+
+.review-comment-text {
+  margin: 0.75rem 0; /* 12px */
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.review-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.btn-useful {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  font-size: 0.8rem;
+}
+
+/* Formulario */
+.review-form-box {
+  background: #ffffff;
+  border: 0.0625rem solid #111; /* 1px */
+  padding: 1.5625rem; /* 25px */
+  border-radius: 0.375rem; /* 6px */
+}
+
+.form-header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.9375rem; /* 15px */
+  margin-bottom: 1.25rem; /* 20px */
+}
+
+.user-avatar-placeholder {
+  width: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  background: #111;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.form-title {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.form-subtitle {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0.125rem 0 0 0; /* 2px */
+}
+
+.star-rating-selector {
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+.rating-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #555;
+  display: block;
+  margin-bottom: 0.3125rem; /* 5px */
+}
+
+.stars-interactive .star-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #ccc;
+  cursor: pointer;
+  padding: 0 0.125rem; /* 2px */
+}
+
+.stars-interactive .star-btn.active {
+  color: #111;
+}
+
+.review-textarea {
+  width: 100%;
+  border: 0.0625rem solid #e0e0e0; /* 1px */
+  background: #f7f7f7;
+  padding: 0.75rem; /* 12px */
+  border-radius: 0.25rem; /* 4px */
+  font-family: inherit;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.form-footer-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.9375rem; /* 15px */
+}
+
+.fiscal-notice {
+  font-size: 0.8rem;
+  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 0.3125rem; /* 5px */
+}
+
+.btn-publish-review {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  font-weight: 800;
+  border-radius: 1.25rem; /* 20px */
+  cursor: pointer;
+  letter-spacing: 0.03125rem; /* 0.5px */
+}
+
+.btn-publish-review:hover {
+  background-color: #222;
+}

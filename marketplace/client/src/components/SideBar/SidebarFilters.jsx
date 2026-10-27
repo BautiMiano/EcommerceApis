@@ -32,21 +32,18 @@ export const SidebarFilters = ({
 
   const { idCategoria } = useParams();
 
-  // 1. Obtener categorías desde la DB
   useEffect(() => {
     getCategories()
       .then((data) => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
 
-  // 2. Obtener talles disponibles desde la DB
   useEffect(() => {
     getTalles()
       .then((data) => setSizes(data))
       .catch(() => setSizes([]));
   }, []);
 
-  // 3. Obtener productos por categoría según la URL
   useEffect(() => {
     getCategoryProducts(idCategoria)
       .then((data) => {
@@ -59,12 +56,9 @@ export const SidebarFilters = ({
       });
   }, [idCategoria]);
 
-  // 4. Obtener productos por rango de precio desde la API
-  // 4. Obtener productos por rango de precio desde la API sin 'if' ni '?'
 useEffect(() => {
   const tienePrecio = maxPrice !== null && maxPrice !== undefined;
 
-  // Caso 1: Si hay precio máximo seleccionado, consulta la API y filtra por la propiedad 'precio'
   tienePrecio &&
     getProductosByPrice(0, maxPrice)
       .then((data) => {
@@ -77,12 +71,10 @@ useEffect(() => {
         onPriceResults && onPriceResults([]);
       });
 
-  // Caso 2: Si no hay precio (limpieza de filtro), resetea los estados
   !tienePrecio && setPrecios([]);
   !tienePrecio && onPriceResults && onPriceResults(null);
 }, [maxPrice]);
 
-  // 5. Obtener productos filtrados por talle desde la API
   useEffect(() => {
     selectedSize.trim() !== '' && getProductosByTalle(selectedSize)
       .then((data) => {

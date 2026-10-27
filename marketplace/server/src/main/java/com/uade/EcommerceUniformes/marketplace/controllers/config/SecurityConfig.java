@@ -65,12 +65,14 @@ public class SecurityConfig {
                         // Carritos (el orden importa: lo mas especifico primero)
                         .requestMatchers(HttpMethod.GET, "/carritos/usuario/*").hasAnyRole("COMPRADOR", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/carritos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/carritos/metodos-de-pago").permitAll()
                         .requestMatchers(HttpMethod.GET, "/carritos/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/carritos/*/pagar").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.POST, "/carritos/*/confirmar").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.POST, "/carritos/**").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.PUT, "/carritos/**").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/carritos/**").hasRole("COMPRADOR")
+
 
                         // Productos (mis-productos ANTES del permitAll de GET /productos/**)
                         .requestMatchers(HttpMethod.GET, "/productos/mis-productos").hasRole("VENDEDOR")

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.MetodoDePagoDto;
 
 public interface CarritoService {
     public List<CarritoResponse> getCarritos();
@@ -20,4 +21,6 @@ public interface CarritoService {
     public CarritoResponse confirmarPago(Long carritoId, CarritoRequest request);
     
     void expirarCarritosVencidos();
+
+    List<MetodoDePagoDto> getMetodosDePago();
 }

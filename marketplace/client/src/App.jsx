@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import TiendaLayout from './components/TiendaLayout/TiendaLayout.jsx';
@@ -24,30 +25,42 @@ import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
+
 import AdminLayout from './components/AdminLayout/AdminLayout.jsx';
 import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
 import AdminCategorias from './views/AdminCategorias.jsx';
 import GestionUsuarios from './views/GestionUsuarios.jsx';
 import AdminVendedores from './views/AdminVendedores.jsx';
-
-
+import { PaymentSection } from './views/PaymentSection/PaymentSection.jsx';
 function App() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+    const usuarioId = localStorage.getItem('usuarioId');
+
+    token && setUser({ token, role: userRole, usuarioId });
+  }, []);
 
   const handleLogout = () => {
     cerrarSesion();
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('userId');
+    setUser(null);
     navigate('/login');
   };
 
   return (
     <>
       <Routes>
-        <Route element={<TiendaLayout onLogout={handleLogout} />}>
+        <Route element={<TiendaLayout user={user} onLogout={handleLogout} />}>
           {/* RUTAS PÚBLICAS */}
           <Route path="/" element={<Home />} />
           <Route path="/producto/:id" element={<ProductDetailPage />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/registro" element={<Register />} />
 
           {/* CATÁLOGO: VISITANTES, COMPRADORES Y ADMIN (EL VENDEDOR VUELVE A SU PANEL) */}
@@ -60,6 +73,7 @@ function App() {
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} />}>
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
+            <Route path="/checkout" element={<PaymentSection />} />
             <Route path="/perfil" element={<MiPerfilComprador />} />
           </Route>
 

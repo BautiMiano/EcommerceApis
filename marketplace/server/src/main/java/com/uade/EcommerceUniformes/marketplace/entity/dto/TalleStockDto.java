@@ -16,4 +16,7 @@ public class TalleStockDto {
     private Talle talle;
     private Integer stock;
     private Integer stockReservado;
+
+    private Integer stockDisponible;
+
 }

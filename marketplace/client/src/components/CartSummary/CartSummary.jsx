@@ -1,19 +1,7 @@
-import { useState } from "react"
-import PaymentOption from "../PaymentOption/PaymentOption"
 import Button from "../Button/Button"
 import './CartSummary.css'
 
-const metodos = [
-    {valor: 'MERCADOPAGO', nombre: 'Mercado Pago'},
-    {valor: 'TARJETA', nombre: 'Tarjeta de crédito o débito'},
-    {valor: 'TRANSFERENCIA', nombre: 'Transferencia bancaria'}
-]
-
-const CartSummary = ({total, unidades}) => {
-
-    const [metodo, setMetodo] = useState('MERCADOPAGO')
-
-    const handleSelect = (valor) => {setMetodo(valor)}
+const CartSummary = ({total, unidades, onIniciarPago}) => {
 
     return(
         <aside className="cart-summary">
@@ -30,25 +18,12 @@ const CartSummary = ({total, unidades}) => {
                 <p>TOTAL</p>
                 <p className="cart-summary-total-valor">{'$' + total.toLocaleString('es-AR')} <span>ARS</span></p>
             </div>
-            <p className="cart-summary-etiqueta">MÉTODO DE PAGO:</p>
-            <ul className="cart-summary-metodos">
-                {
-                    metodos.map((value)=>(
-                        <PaymentOption
-                        key={value.valor}
-                        valor={value.valor}
-                        nombre={value.nombre}
-                        metodoSeleccionado={metodo}
-                        handleSelect={handleSelect}
-                        />
-                    ))
-                }
-            </ul>
             <Button
             texto="Iniciar pago"
             icono="/icons/flecha-blanca.svg"
             iconoAlt="Flecha"
             variante="oscuro"
+            handleClick={onIniciarPago}
             />
             <p className="cart-summary-nota">
                 Al iniciar el pago reservamos el stock de tus productos por 15 minutos.

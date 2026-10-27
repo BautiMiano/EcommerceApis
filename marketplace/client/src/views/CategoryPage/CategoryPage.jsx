@@ -16,6 +16,7 @@ export const CategoryPage = () => {
 
   const { idCategoria } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(idCategoria || '');
+  const [onSelectCategory, setOnSelectCategory] = useState([]);
   const [selectedSize, setSelectedSize] = useState('');
   const [maxPrice, setMaxPrice] = useState(null);
 
@@ -44,11 +45,6 @@ export const CategoryPage = () => {
     setMaxPrice(null);
     setPage(1);
     setLoading(true); 
-
-    getCategoryProducts()
-      .then((data) => setProducts(data))
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false)); 
 
     navigate('/categorias');
   };
@@ -111,10 +107,7 @@ export const CategoryPage = () => {
         <SidebarFilters
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
-          onProductsFiltered={(data) => {
-            setProducts(data);
-            setPage(1);
-          }}
+
           priceLimit={maxPrice}
           maxPrice={maxPrice}
           onFilterPrice={setMaxPrice}
@@ -128,14 +121,12 @@ export const CategoryPage = () => {
         />
 
         <div className="catalog-content-area">
-          {/* 1. INDICADOR DE CARGA MIENTRAS ESPERA LA RESPUESTA DE LA API */}
           {loading && (
             <div className="loading-catalog-container" style={{ padding: '3rem', textAlign: 'center', width: '100%' }}>
               <p style={{ fontWeight: '600', color: '#5e5e60' }}>Cargando catálogo...</p>
             </div>
           )}
 
-          {/* 2. MENSAJE SOLO CUANDO TERMINÓ DE CARGAR Y REALMENTE VIENE VACÍO */}
           {!loading && products.length === 0 && (
             <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
               <h2>No se encontraron productos</h2>
@@ -143,7 +134,6 @@ export const CategoryPage = () => {
             </div>
           )}
 
-          {/* 3. GRILLA DE PRODUCTOS CUANDO YA CARGÓ Y HAY ELEMENTOS */}
           {!loading && products.length > 0 && (
             <>
               <ProductGridSection

@@ -411,8 +411,49 @@ export const enviarMensajeChat = (conversacionId, mensaje) =>
     body: JSON.stringify({ conversacionId, mensaje }),
   }, 'No se pudo enviar el mensaje.')
 
-  export const eliminarConversacion = (conversacionId) =>
+
+export const eliminarConversacion = (conversacionId) =>
   solicitar(`/chat/conversaciones/${conversacionId}`, {
     method: 'DELETE',
     headers: obtenerHeaders(),
   }, 'No se pudo borrar la conversación.')
+
+// ---------- Comentarios ----------
+
+export const obtenerComentariosPorProducto = (productoId) =>
+  solicitar(`/comentarios/producto/${productoId}`, {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron recuperar las reseñas del producto.');
+
+export const crearResenaProducto = (productoId, resenaData) =>
+  solicitar('/comentarios', {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({
+      productoId: productoId,
+      comentarioProducto: resenaData.comentario,
+      calificacion: resenaData.calificacion,
+    }),
+  }, 'No se pudo publicar el comentario.');
+
+
+  // ---------- Ordenes de Compra y Pago ----------
+
+export const getMetodosDePago = () =>
+  solicitar('/carritos/metodos-de-pago', {
+    headers: obtenerHeaders(),
+  }, 'No se pudieron obtener los medios de pago.')
+
+export const iniciarPagoCarrito = (carritoId) =>
+  solicitar(`/carritos/${carritoId}/pagar`, {
+    method: 'POST',
+    headers: obtenerHeaders(),
+  }, 'No se pudo iniciar el pago.')
+
+export const confirmarPagoCarrito = (carritoId, metodoDePago) =>
+  solicitar(`/carritos/${carritoId}/confirmar`, {
+    method: 'POST',
+    headers: obtenerHeaders(true),
+    body: JSON.stringify({ metodoDePago }),
+  }, 'No se pudo procesar el pago.')
+
