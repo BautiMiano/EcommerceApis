@@ -5,7 +5,7 @@ const CaritaUni = ({ tamano }) => {
 
     return (
         <span className="carita-uni" style={{ width: tamano, height: tamano }}>
-            <img src="/icons/carita-uni.svg" width={tamanoDibujo} height={tamanoDibujo} alt="" />
+            <img src="/icons/carita-uni.png" width={tamanoDibujo} height={tamanoDibujo} alt="" />
         </span>
     )
 }

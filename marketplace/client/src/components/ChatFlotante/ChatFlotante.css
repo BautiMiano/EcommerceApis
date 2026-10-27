@@ -41,7 +41,7 @@
   padding: 0;
   border: 2px solid #000000;
   border-radius: 50%;
-  background-color: #cfff46;
+  background-color: #ffffff;
   color: #000000;
   display: flex;
   align-items: center;
@@ -57,5 +57,35 @@
 
   .chat-flotante-globo {
     display: none;
+  }
+}
+
+/* Uni saluda: saltito moviéndose de un lado al otro */
+.chat-flotante-boton-saludo {
+  animation: uni-saludo 0.6s ease-in-out;
+}
+
+@keyframes uni-saludo {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25%      { transform: translateY(-8px) rotate(-8deg); }
+  50%      { transform: translateY(-4px) rotate(8deg); }
+  75%      { transform: translateY(-6px) rotate(-4deg); }
+}
+
+/* El globito del saludo aparece suave, desde abajo */
+.chat-flotante-globo-saludo {
+  animation: uni-globo 0.25s ease-out;
+}
+
+@keyframes uni-globo {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Si la persona pidió menos movimiento en su compu, no se anima */
+@media (prefers-reduced-motion: reduce) {
+  .chat-flotante-boton-saludo,
+  .chat-flotante-globo-saludo {
+    animation: none;
   }
 }

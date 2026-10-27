@@ -4,5 +4,10 @@
   justify-content: center;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: #cfff46;
+  background-color: #ffffff;
+}
+
+.carita-uni img {
+  border-radius: 50%;
+  object-fit: cover;
 }
