@@ -19,6 +19,7 @@
 }
 
 .chat-productos-datos {
+    flex-grow: 1;
     min-width: 0;
 }
 
@@ -69,4 +70,19 @@
 .chat-productos-ver:hover,
 .chat-productos-ver:focus-visible {
     background-color: #333333;
+}
+
+.chat-productos-foto {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    background-color: #f5f5f5;
+}
+
+.chat-productos-sin-foto {
+    display: grid;
+    place-items: center;
+    color: #9a9a9a;
 }

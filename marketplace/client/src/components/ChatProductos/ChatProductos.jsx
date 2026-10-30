@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatoPrecio } from '../../utils/formato'
+import { urlImagen } from '../../utils/api'
 import './ChatProductos.css'
 
 // Tarjetas de los productos que encontró Uni. El bot solo los muestra: comprar lo decide la persona.
@@ -11,6 +12,18 @@ const ChatProductos = ({ productos }) => {
 
                 return (
                     <li key={producto.id} className="chat-productos-tarjeta">
+                        {producto.imagenId ? (
+                            <img
+                                src={urlImagen(producto.imagenId)}
+                                alt=""
+                                className="chat-productos-foto"
+                                loading="lazy"
+                            />
+                        ) : (
+                            <span className="chat-productos-foto chat-productos-sin-foto" aria-hidden="true">
+                                <span className="material-symbols-outlined">checkroom</span>
+                            </span>
+                        )}
                         <div className="chat-productos-datos">
                             <p className="chat-productos-nombre">{producto.nombre}</p>
                             <p className="chat-productos-detalle">

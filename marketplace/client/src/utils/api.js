@@ -418,6 +418,10 @@ export const eliminarConversacion = (conversacionId) =>
     headers: obtenerHeaders(),
   }, 'No se pudo borrar la conversación.')
 
+
+// La dirección de una foto, para usar en un <img>
+export const urlImagen = (imagenId) => `${API_URL}/imagenes/${imagenId}/archivo`
+
 // ---------- Comentarios ----------
 
 export const obtenerComentariosPorProducto = (productoId) =>

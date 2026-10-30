@@ -77,6 +77,20 @@ public class ImagenController {
                 .body(ImagenResponse.builder().file(encodedString).id(id).build());
     }
 
+    /** La foto tal cual (no en base64), para usarla directo en un <img>. */
+    @GetMapping("/{id}/archivo")
+    public ResponseEntity<byte[]> verArchivo(@PathVariable Long id) throws SQLException {
+        Imagen imagen = imagenService.viewById(id);
+        byte[] bytes = imagen.getImagen().getBytes(1, (int) imagen.getImagen().length());
+
+        String tipo = imagen.getTipoContenido() != null ? imagen.getTipoContenido() : "image/jpeg";
+
+        return ResponseEntity.ok()
+                .header("Content-Type", tipo)
+                .header("Cache-Control", "max-age=86400")
+                .body(bytes);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<String> desactivarImagen(@PathVariable Long id) {
         imagenService.desactivarImagen(id);
