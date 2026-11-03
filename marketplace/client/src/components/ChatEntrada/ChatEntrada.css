@@ -1,12 +1,26 @@
 .chat-entrada {
   position: sticky;
   bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-top: auto;
   padding: 14px 0 20px 0;
   background-color: #fbf9f9;
+}
+
+/* La barra redondeada que envuelve todo */
+.chat-entrada-barra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 8px;
+  border: 1px solid #d4d4d4;
+  border-radius: 50px;
+  background-color: #ffffff;
+}
+
+/* Cuando escribís, se marca toda la barra, no solo el campo */
+.chat-entrada-barra:focus-within {
+  border-color: #000000;
+  outline: 1px solid #000000;
 }
 
 .chat-entrada-etiqueta {
@@ -18,33 +32,35 @@
   white-space: nowrap;
 }
 
+/* El campo sin borde propio: el borde lo tiene la barra */
 .chat-entrada-texto {
   flex-grow: 1;
   min-width: 0;
-  padding: 14px 18px;
-  border: 1px solid #d4d4d4;
-  border-radius: 50px;
-  background-color: #ffffff;
+  padding: 10px 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
   color: #000000;
   font-family: inherit;
   font-size: 14px;
 }
 
-.chat-entrada-texto:focus {
-  outline: 2px solid #000000;
-  outline-offset: 1px;
-}
-
 .chat-entrada-boton {
-  width: 48px;
-  height: 48px;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
+  width: 40px;
+  height: 40px;
   padding: 0;
+  border: none;
   border-radius: 50%;
   background-color: #000000;
   color: #ffffff;
+  cursor: pointer;
   font-size: 20px;
 }
+
+
 
 .chat-entrada-boton:disabled {
   background-color: #d4d4d4;

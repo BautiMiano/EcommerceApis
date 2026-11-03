@@ -411,6 +411,17 @@ export const enviarMensajeChat = (conversacionId, mensaje) =>
     body: JSON.stringify({ conversacionId, mensaje }),
   }, 'No se pudo enviar el mensaje.')
 
+
+export const eliminarConversacion = (conversacionId) =>
+  solicitar(`/chat/conversaciones/${conversacionId}`, {
+    method: 'DELETE',
+    headers: obtenerHeaders(),
+  }, 'No se pudo borrar la conversación.')
+
+
+// La dirección de una foto, para usar en un <img>
+export const urlImagen = (imagenId) => `${API_URL}/imagenes/${imagenId}/archivo`
+
 // ---------- Comentarios ----------
 
 export const obtenerComentariosPorProducto = (productoId) =>
@@ -449,3 +460,4 @@ export const confirmarPagoCarrito = (carritoId, metodoDePago) =>
     headers: obtenerHeaders(true),
     body: JSON.stringify({ metodoDePago }),
   }, 'No se pudo procesar el pago.')
+

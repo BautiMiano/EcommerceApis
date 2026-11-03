@@ -7,6 +7,7 @@ import './ChatFlotante.css'
 const ChatFlotante = () => {
     const [abierto, setAbierto] = useState(false)
     const [mostrarGlobo, setMostrarGlobo] = useState(true)
+    const [saludando, setSaludando] = useState(false)
 
     const abrir = () => {
         setAbierto(true)
@@ -25,24 +26,30 @@ const ChatFlotante = () => {
 
     return (
         <div className="chat-flotante">
-            {mostrarGlobo && (
-                <div className="chat-flotante-globo">
-                    <span>¿Te ayudo a encontrar algo?</span>
-                    <button type="button" className="chat-flotante-globo-cerrar"
-                        aria-label="Cerrar mensaje" onClick={() => setMostrarGlobo(false)}>
-                        
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
-                            <path d="M6 6l12 12M18 6L6 18" />
-                        </svg>
-                        
-                    </button>
+                {(mostrarGlobo || saludando) && (
+                <div className={`chat-flotante-globo ${saludando ? 'chat-flotante-globo-saludo' : ''}`}>
+                    <span>{saludando ? '¡Hola! Soy Uni, ¿te ayudo con algo?' : '¿Te ayudo a encontrar algo?'}</span>
+                    {!saludando && (
+                        <button type="button" className="chat-flotante-globo-cerrar"
+                            aria-label="Cerrar mensaje" onClick={() => setMostrarGlobo(false)}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
+                                <path d="M6 6l12 12M18 6L6 18" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
             )}
-            <button type="button" className="chat-flotante-boton" 
-                aria-label="Abrir el chat con Uni" onClick={abrir}>
+            <button type="button"
+                className={`chat-flotante-boton ${saludando ? 'chat-flotante-boton-saludo' : ''}`}
+                aria-label="Abrir el chat con Uni"
+                onClick={abrir}
+                onMouseEnter={() => setSaludando(true)}
+                onMouseLeave={() => setSaludando(false)}
+                onFocus={() => setSaludando(true)}
+                onBlur={() => setSaludando(false)}>
                 <CaritaUni tamano={68} />
-            </button>
+            </button>   
         </div>
     )
 }

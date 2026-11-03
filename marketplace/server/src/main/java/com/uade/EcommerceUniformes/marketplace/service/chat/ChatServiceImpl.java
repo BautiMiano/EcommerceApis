@@ -2,6 +2,8 @@ package com.uade.EcommerceUniformes.marketplace.service.chat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -15,10 +17,12 @@ import com.uade.EcommerceUniformes.marketplace.entity.Conversacion;
 import com.uade.EcommerceUniformes.marketplace.entity.MensajeChat;
 import com.uade.EcommerceUniformes.marketplace.entity.RolMensaje;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+import com.uade.EcommerceUniformes.marketplace.entity.Producto;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ChatRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ChatResponse;
 import com.uade.EcommerceUniformes.marketplace.repository.ConversacionRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.MensajeChatRepository;
+import com.uade.EcommerceUniformes.marketplace.repository.ProductoChatRepository;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioLogueadoService;
 import com.uade.EcommerceUniformes.marketplace.service.chat.tools.ChatTool;
 import com.uade.EcommerceUniformes.marketplace.service.llm.Contenidos;
@@ -28,6 +32,8 @@ import com.uade.EcommerceUniformes.marketplace.service.llm.RespuestaLlm;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionDetalleResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ConversacionResumenResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.MensajeDto;
+import com.uade.EcommerceUniformes.marketplace.service.chat.tools.ProductoResultado;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,12 +45,20 @@ public class ChatServiceImpl implements ChatService {
     private static final int MAX_PASOS = 5;
     private static final String RESPUESTA_FALLBACK =
             "Perdón, no pude resolver tu consulta. ¿Podés reformularla?";
-
+        /** Qué botón mostrar según la herramienta que usó Uni. Lo decide el backend, no Gemini. */
+    private static final Map<String, AccionChat> ACCIONES = Map.of(
+            "verMiCarrito", new AccionChat("Ver mi carrito", "/carrito"),
+            "verMisFavoritos", new AccionChat("Ver mis favoritos", "/favoritos"),
+            "verMisProductos", new AccionChat("Ir a mis productos", "/vendedor/productos"),
+            "verMisVentas", new AccionChat("Ver mis pedidos", "/vendedor/pedidos"),
+            "verMisTickets", new AccionChat("Ir a mis tickets", "/vendedor/tickets"));
+    
     private final LlmClient llmClient;
     private final SystemPromptProvider systemPromptProvider;
     private final UsuarioLogueadoService usuarioLogueadoService;
     private final ConversacionRepository conversacionRepository;
     private final MensajeChatRepository mensajeChatRepository;
+    private final ProductoChatRepository productoChatRepository;
     private final Map<String, ChatTool> herramientas;
 
     public ChatServiceImpl(LlmClient llmClient,
@@ -52,12 +66,14 @@ public class ChatServiceImpl implements ChatService {
                            UsuarioLogueadoService usuarioLogueadoService,
                            ConversacionRepository conversacionRepository,
                            MensajeChatRepository mensajeChatRepository,
+                           ProductoChatRepository productoChatRepository,
                            List<ChatTool> herramientas) {
         this.llmClient = llmClient;
         this.systemPromptProvider = systemPromptProvider;
         this.usuarioLogueadoService = usuarioLogueadoService;
         this.conversacionRepository = conversacionRepository;
         this.mensajeChatRepository = mensajeChatRepository;
+        this.productoChatRepository = productoChatRepository;
         this.herramientas = herramientas.stream()
                 .collect(Collectors.toMap(ChatTool::nombre, Function.identity()));
     }
@@ -71,17 +87,22 @@ public class ChatServiceImpl implements ChatService {
         List<Map<String, Object>> contenidos = new ArrayList<>(cargarHistorial(conversacion));
         contenidos.add(Contenidos.texto(RolMensaje.USER, mensaje));
 
-        String respuesta = conversar(contenidos, usuario, rol);
-
         guardarMensaje(conversacion, RolMensaje.USER, mensaje);
-        guardarMensaje(conversacion, RolMensaje.MODEL, respuesta);
+        
+        List<ProductoResultado> productos = new ArrayList<>();
+        List<AccionChat> acciones = new ArrayList<>();
+        String respuesta = conversar(contenidos, usuario, rol, productos, acciones);
+
+        // Junto con la respuesta, guarda qué productos se mostraron como tarjetas
+        guardarMensaje(conversacion, RolMensaje.MODEL, respuesta,
+                productos.stream().map(ProductoResultado::id).toList());
         conversacion.setActualizadaEn(LocalDateTime.now());
         conversacionRepository.save(conversacion);
 
-        return new ChatResponse(conversacion.getId(), respuesta);
+        return new ChatResponse(conversacion.getId(), respuesta, productos, acciones);
     }
 
-        @Override
+    @Override
     public List<ConversacionResumenResponse> listarConversaciones() {
         Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
         return conversacionRepository.findByUsuarioIdOrderByActualizadaEnDesc(usuario.getId())
@@ -91,6 +112,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ConversacionDetalleResponse verConversacion(Long conversacionId) {
         Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
         // Solo la encuentra si es del usuario logueado; si no, 404
@@ -105,10 +127,42 @@ public class ChatServiceImpl implements ChatService {
                 .map(m -> new MensajeDto(
                         m.getRol() == RolMensaje.USER ? "USUARIO" : "ASISTENTE",
                         m.getTexto(),
-                        m.getCreadoEn()))
+                        m.getCreadoEn(),
+                        productosDe(m.getProductoIds())))
                 .toList();
 
         return new ConversacionDetalleResponse(conversacion.getId(), tituloDe(conversacion), mensajes);
+    }
+
+        /** Arma las tarjetas a partir de los ids guardados, con los datos de hoy. Saltea los productos borrados o pausados. */
+    private List<ProductoResultado> productosDe(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Producto> porId = productoChatRepository.findAllById(ids).stream()
+                .filter(Producto::isActivo)
+                .collect(Collectors.toMap(Producto::getId, p -> p));
+
+        return ids.stream()
+                .map(porId::get)
+                .filter(Objects::nonNull)
+                .map(ProductoResultado::desde)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void eliminarConversacion(Long conversacionId) {
+        Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+        // Solo la encuentra si es del usuario logueado; si no, 404
+        Conversacion conversacion = conversacionRepository
+                .findByIdAndUsuarioId(conversacionId, usuario.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Conversación no encontrada"));
+
+        // Primero los mensajes: dependen de la conversación
+        mensajeChatRepository.deleteByConversacionId(conversacion.getId());
+        conversacionRepository.delete(conversacion);
     }
 
     /** Las charlas viejas no tienen título: se muestran como "Conversación #id". */
@@ -122,7 +176,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /** El loop: llamar al modelo, ejecutar las herramientas que pida, repetir. */
-    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario, RolChat rol) {
+    private String conversar(List<Map<String, Object>> contenidos, Usuario usuario, RolChat rol, List<ProductoResultado> productos, List<AccionChat> acciones) {
         String instrucciones = systemPromptProvider.para(rol);
         List<Map<String, Object>> declaraciones = herramientasPara(rol).stream()
                 .map(ChatTool::declaracion)
@@ -139,13 +193,41 @@ public class ChatServiceImpl implements ChatService {
 
             List<Object> resultados = new ArrayList<>();
             for (LlamadaHerramienta llamada : respuesta.llamadas()) {
-                resultados.add(ejecutar(llamada, usuario, rol));
+                Object resultado = ejecutar(llamada, usuario, rol);
+                resultados.add(resultado);
+                agregarProductos(resultado, productos);
+                agregarAccion(llamada.nombre(), acciones);
             }
             contenidos.add(Contenidos.resultadosHerramientas(respuesta.llamadas(), resultados));
         }
 
         log.warn("Se alcanzó el máximo de {} pasos sin respuesta final", MAX_PASOS);
         return RESPUESTA_FALLBACK;
+    }
+
+    /** Si la herramienta devolvió productos del catálogo, los guarda para mostrarlos como tarjetas (sin repetir). */
+    /** Junta los productos para las tarjetas: usa "tarjetas" si la herramienta la manda, o si no "productos". Sin repetir. */
+    private void agregarProductos(Object resultado, List<ProductoResultado> productos) {
+        if (!(resultado instanceof Map<?, ?> mapa)) {
+            return;
+        }
+        Object lista = mapa.containsKey("tarjetas") ? mapa.get("tarjetas") : mapa.get("productos");
+        if (lista instanceof List<?> elementos) {
+            for (Object elemento : elementos) {
+                if (elemento instanceof ProductoResultado producto
+                        && productos.stream().noneMatch(p -> p.id().equals(producto.id()))) {
+                    productos.add(producto);
+                }
+            }
+        }
+    }
+
+    /** Si la herramienta tiene un botón asociado, lo agrega (una sola vez). */
+    private void agregarAccion(String herramienta, List<AccionChat> acciones) {
+        AccionChat accion = ACCIONES.get(herramienta);
+        if (accion != null && !acciones.contains(accion)) {
+            acciones.add(accion);
+        }
     }
 
     /** Solo las herramientas habilitadas para este rol. */
@@ -195,11 +277,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void guardarMensaje(Conversacion conversacion, RolMensaje rol, String texto) {
+        guardarMensaje(conversacion, rol, texto, List.of());
+    }
+
+    private void guardarMensaje(Conversacion conversacion, RolMensaje rol, String texto, List<Long> productoIds) {
         MensajeChat m = new MensajeChat();
         m.setConversacion(conversacion);
         m.setRol(rol);
         m.setTexto(texto);
         m.setCreadoEn(LocalDateTime.now());
+        m.setProductoIds(new ArrayList<>(productoIds));
         mensajeChatRepository.save(m);
     }
 

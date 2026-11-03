@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class BuscarProductosTool implements ChatTool {
 
     private static final int MAX_RESULTADOS = 8;
-    private static final int MAX_DESCRIPCION = 150;
 
     private final ProductoChatRepository productoChatRepository;
 
@@ -63,30 +62,13 @@ public class BuscarProductosTool implements ChatTool {
         List<ProductoResultado> productos = productoChatRepository
                 .buscarParaChat(texto, talle, categoria, precioMaximo, estado, PageRequest.of(0, MAX_RESULTADOS))
                 .stream()
-                .map(this::aResultado)
+                .map(ProductoResultado::desde)
                 .toList();
 
         return Map.of("cantidad", productos.size(), "productos", productos);
     }
 
-    private ProductoResultado aResultado(Producto p) {
-        Double porcentaje = p.getDescuento() != null ? p.getDescuento().getPorcentaje() : null;
-        double precioFinal = porcentaje != null
-                ? Math.round(p.getPrecio() * (1 - porcentaje / 100))
-                : p.getPrecio();
-
-        return new ProductoResultado(
-                p.getId(),
-                p.getNombre(),
-                recortar(p.getDescripcion()),
-                p.getTallesTexto(),
-                p.getCategoria() != null ? p.getCategoria().getNombre() : null,
-                p.getEstado() != null ? p.getEstado().name() : null,
-                p.getPrecio(),
-                precioFinal,
-                porcentaje,
-                p.getStockDisponible());
-    }
+   
 
     private Talle leerTalle(String valor) {
         if (valor == null) {
@@ -114,10 +96,4 @@ public class BuscarProductosTool implements ChatTool {
         }
     }
 
-    private String recortar(String texto) {
-        if (texto == null || texto.length() <= MAX_DESCRIPCION) {
-            return texto;
-        }
-        return texto.substring(0, MAX_DESCRIPCION) + "...";
-    }
 }

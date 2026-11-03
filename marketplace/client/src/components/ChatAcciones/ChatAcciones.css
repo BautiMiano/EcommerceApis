@@ -1,0 +1,23 @@
+.chat-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.25rem 0 0.75rem;
+}
+
+.chat-acciones-boton {
+    padding: 0.5rem 0.875rem;
+    border: 1px solid #111111;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #111111;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.chat-acciones-boton:hover,
+.chat-acciones-boton:focus-visible {
+    background-color: #111111;
+    color: #ffffff;
+}

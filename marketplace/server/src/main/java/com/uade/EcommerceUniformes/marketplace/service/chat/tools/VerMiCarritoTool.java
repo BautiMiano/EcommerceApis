@@ -2,6 +2,8 @@ package com.uade.EcommerceUniformes.marketplace.service.chat.tools;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class VerMiCarritoTool implements ChatTool {
 
     private final CarritoChatRepository carritoChatRepository;
+    private static final int MAX_TARJETAS = 3;
 
     @Override
     public String nombre() {
@@ -37,7 +40,9 @@ public class VerMiCarritoTool implements ChatTool {
     @Transactional(readOnly = true)
     public Object ejecutar(Map<String, Object> args, Usuario usuario) {
         return carritoChatRepository.findTopByUsuarioIdOrderByIdDesc(usuario.getId())
-                .<Object>map(this::aResultado)
+                .<Object>map(carrito -> Map.of(
+                        "carrito", aResultado(carrito),
+                        "tarjetas", tarjetasDe(carrito)))
                 .orElse(Map.of("mensaje", "El usuario no tiene ningún carrito"));
     }
 
@@ -60,5 +65,17 @@ public class VerMiCarritoTool implements ChatTool {
                 cantidad,
                 total,
                 items);
+    }
+
+    /** Hasta 3 productos del carrito para mostrar como tarjetas (sin repetir si está en dos talles). */
+    private List<ProductoResultado> tarjetasDe(Carrito carrito) {
+        Map<Long, ProductoResultado> porId = new LinkedHashMap<>();
+        for (var item : carrito.getItems()) {
+            if (porId.size() == MAX_TARJETAS) {
+                break;
+            }
+            porId.putIfAbsent(item.getProducto().getId(), ProductoResultado.desde(item.getProducto()));
+        }
+        return new ArrayList<>(porId.values());
     }
 }

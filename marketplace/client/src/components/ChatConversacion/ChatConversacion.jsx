@@ -1,7 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { Fragment, useState, useEffect, useRef } from 'react'
 import ChatMensaje from '../ChatMensaje/ChatMensaje'
 import ChatEntrada from '../ChatEntrada/ChatEntrada'
+import ChatProductos from '../ChatProductos/ChatProductos'
 import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
+import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
+import ChatAcciones from '../ChatAcciones/ChatAcciones'
+import { obtenerSesion } from '../../utils/sesion'
+import { saludoPorRol, sugerenciasPorRol } from '../../utils/chat'
 import './ChatConversacion.css'
 
 const ChatConversacion = ({ conversacionId, onVolver }) => {
@@ -10,7 +15,8 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
     const [error, setError] = useState(null)
     const [enviando, setEnviando] = useState(false)
     const [idActual, setIdActual] = useState(conversacionId)         // NUEVO
-    const finRef = useRef(null)                               // NUEVO
+    const finRef = useRef(null)
+    const { rol } = obtenerSesion()                               // NUEVO
 
     useEffect(() => {
         if (conversacionId === null) {
@@ -39,7 +45,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
         enviarMensajeChat(idActual, texto)
             .then(data => {
                 setIdActual(data.conversacionId)
-                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta }])
+                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta, productos: data.productos || [], acciones: data.acciones || [] }])
             })
             .catch(err => {
                 console.error(err)
@@ -61,14 +67,18 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
             {error && <p className="chat-conversacion-estado">{error}</p>}
 
             {!cargando && mensajes.length === 0 && (
-                <ChatMensaje
-                    autor="ASISTENTE"
-                    texto="¡Hola! Soy Uni. Puedo ayudarte a buscar uniformes, ver tus pedidos o revisar tu carrito. ¿Qué necesitás?"
-                />
+                <>
+                    <ChatMensaje autor="ASISTENTE" texto={saludoPorRol(rol)} />
+                    <ChatSugerencias sugerencias={sugerenciasPorRol(rol)} onElegir={enviar} />
+                </>
             )}
             
             {mensajes.map((m, i) => (
-                <ChatMensaje key={i} autor={m.autor} texto={m.texto} />
+                <Fragment key={i}>
+                    <ChatMensaje autor={m.autor} texto={m.texto} />
+                    {m.productos?.length > 0 && <ChatProductos productos={m.productos} />}
+                    {m.acciones?.length > 0 && <ChatAcciones acciones={m.acciones} />}
+                </Fragment>
             ))}
 
             {enviando && <p className="chat-conversacion-escribiendo">Uni está escribiendo…</p>}

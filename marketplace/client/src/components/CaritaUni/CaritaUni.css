@@ -1,8 +1,18 @@
 .carita-uni {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 50%;
-  background-color: #cfff46;
+}
+
+.carita-uni img {
+  object-fit: contain;
+}
+
+/* La del guiño va justo encima de la otra, invisible */
+.carita-uni-guino {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
 }
