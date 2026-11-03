@@ -1,9 +1,9 @@
 import { useOutletContext } from 'react-router-dom'
-import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
-import PanelEstado from '../components/PanelEstado/PanelEstado'
-import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
-import usePerfilCuenta from '../hooks/usePerfilCuenta'
-import { inicialesDe } from '../utils/formato'
+import SellerPageHeader from '../../components/SellerPageHeader/SellerPageHeader'
+import PanelEstado from '../../components/PanelEstado/PanelEstado'
+import { TarjetaDatosPersonales, TarjetaContrasena } from '../../components/PerfilCuenta/PerfilCuenta'
+import usePerfilCuenta from '../../hooks/usePerfilCuenta'
+import { inicialesDe } from '../../utils/formato'
 import './MiPerfilVendedor.css'
 
 // Datos del vendedor (GET /usuarios/me): a la izquierda el resumen de la cuenta y a la derecha

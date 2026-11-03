@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import TicketForm from '../components/TicketForm/TicketForm'
-import TicketAyudaUni from '../components/TicketAyudaUni/TicketAyudaUni'
-import { crearTicket } from '../utils/api'
+import TicketForm from '../../components/TicketForm/TicketForm'
+import TicketAyudaUni from '../../components/TicketAyudaUni/TicketAyudaUni'
+import { crearTicket } from '../../utils/api'
 import './NuevoTicket.css'
 
 const NuevoTicket = () => {

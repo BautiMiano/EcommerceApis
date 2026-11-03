@@ -1,9 +1,9 @@
-import Hero from "../../components/Hero/Hero"
-import FeatureBar from "../../components/FeatureBar/FeatureBar"
-import CategorySearch from "../../components/CategorySearch/CategorySearch"
-import RoleSection from "../../components/RoleSection/RoleSection"
+import Hero from "../components/Hero/Hero"
+import FeatureBar from "../components/FeatureBar/FeatureBar"
+import CategorySearch from "../components/CategorySearch/CategorySearch"
+import RoleSection from "../components/RoleSection/RoleSection"
 import { Navigate } from "react-router-dom"
-import HomeComprador from "../HomeComprador"
+import HomeComprador from "./HomeComprador"
 
 const Home = () => {
 

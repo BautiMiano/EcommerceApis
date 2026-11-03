@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import TicketCard from '../components/TicketCard/TicketCard'
-import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
-import { obtenerMisTickets } from '../utils/api'
-import { contarPorEstado } from '../utils/tickets'
+import TicketCard from '../../components/TicketCard/TicketCard'
+import TicketFiltro from '../../components/TicketFiltro/TicketFiltro'
+import { obtenerMisTickets } from '../../utils/api'
+import { contarPorEstado } from '../../utils/tickets'
 import './MisTickets.css'
 
 const MisTickets = () => {

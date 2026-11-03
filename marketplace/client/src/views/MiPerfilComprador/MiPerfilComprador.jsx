@@ -1,8 +1,8 @@
 import { useOutletContext } from 'react-router-dom'
-import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
-import PanelEstado from '../components/PanelEstado/PanelEstado'
-import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
-import usePerfilCuenta from '../hooks/usePerfilCuenta'
+import SellerPageHeader from '../../components/SellerPageHeader/SellerPageHeader'
+import PanelEstado from '../../components/PanelEstado/PanelEstado'
+import { TarjetaDatosPersonales, TarjetaContrasena } from '../../components/PerfilCuenta/PerfilCuenta'
+import usePerfilCuenta from '../../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
 
 // Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.

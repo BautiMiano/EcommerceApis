@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import TicketResumen from '../components/TicketResumen/TicketResumen'
-import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
-import TicketTabla from '../components/TicketTabla/TicketTabla'
-import { obtenerTodosLosTickets } from '../utils/api'
-import { contarPorEstado } from '../utils/tickets'
+import TicketResumen from '../../components/TicketResumen/TicketResumen'
+import TicketFiltro from '../../components/TicketFiltro/TicketFiltro'
+import TicketTabla from '../../components/TicketTabla/TicketTabla'
+import { obtenerTodosLosTickets } from '../../utils/api'
+import { contarPorEstado } from '../../utils/tickets'
 import './TicketsAdmin.css'
 
 const TicketsAdmin = () => {

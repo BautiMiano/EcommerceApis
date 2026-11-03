@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
-import PanelEstado from '../components/PanelEstado/PanelEstado'
-import StatCard from '../components/StatCard/StatCard'
-import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
-import { activarUsuario, desactivarUsuario, obtenerUsuarios } from '../utils/api'
+import SellerPageHeader from '../../components/SellerPageHeader/SellerPageHeader'
+import PanelEstado from '../../components/PanelEstado/PanelEstado'
+import StatCard from '../../components/StatCard/StatCard'
+import EstadoBadge from '../../components/EstadoBadge/EstadoBadge'
+import { activarUsuario, desactivarUsuario, obtenerUsuarios } from '../../utils/api'
 import './AdminVendedores.css'
 
 const AdminVendedores = () => {

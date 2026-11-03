@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
-import PanelEstado from '../components/PanelEstado/PanelEstado'
-import StatCard from '../components/StatCard/StatCard'
-import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
+import SellerPageHeader from '../../components/SellerPageHeader/SellerPageHeader'
+import PanelEstado from '../../components/PanelEstado/PanelEstado'
+import StatCard from '../../components/StatCard/StatCard'
+import EstadoBadge from '../../components/EstadoBadge/EstadoBadge'
 import {
   activarCategoria,
   crearCategoria,
   desactivarCategoria,
   obtenerTodasLasCategorias,
   obtenerTodosLosProductos,
-} from '../utils/api'
+} from '../../utils/api'
 import './AdminCategorias.css'
 
 // Categorías del admin: crear nuevas y activar o desactivar las existentes

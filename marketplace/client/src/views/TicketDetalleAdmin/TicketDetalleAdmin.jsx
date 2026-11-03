@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import TicketEstado from '../components/TicketEstado/TicketEstado'
-import TicketMensaje from '../components/TicketMensaje/TicketMensaje'
-import TicketRespuestaForm from '../components/TicketRespuestaForm/TicketRespuestaForm'
-import TicketRespuesta from '../components/TicketRespuesta/TicketRespuesta'
-import { obtenerTicket, responderTicket } from '../utils/api'
+import TicketEstado from '../../components/TicketEstado/TicketEstado'
+import TicketMensaje from '../../components/TicketMensaje/TicketMensaje'
+import TicketRespuestaForm from '../../components/TicketRespuestaForm/TicketRespuestaForm'
+import TicketRespuesta from '../../components/TicketRespuesta/TicketRespuesta'
+import { obtenerTicket, responderTicket } from '../../utils/api'
 import './TicketDetalleAdmin.css'
 
 const TicketDetalleAdmin = () => {
