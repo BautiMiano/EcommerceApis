@@ -57,7 +57,15 @@
   text-transform: uppercase;
   color: #5e5e60;
 }
-.product-title { margin: 0 0 0.35rem; font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; line-height: 1.25; color: #000; }
+.product-card-kinetic .product-title {
+  margin: 0 0 0.35rem;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #000;
+}
 .product-desc {
   margin-bottom: 0.75rem;
   font-size: 0.8rem;
