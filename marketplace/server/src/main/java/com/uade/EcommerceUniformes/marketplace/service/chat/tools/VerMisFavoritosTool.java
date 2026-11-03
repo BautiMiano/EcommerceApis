@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class VerMisFavoritosTool implements ChatTool {
 
     private final FavoritoRepository favoritoRepository;
+    private static final int MAX_TARJETAS = 3;
 
     @Override
     public String nombre() {
@@ -40,6 +41,8 @@ public class VerMisFavoritosTool implements ChatTool {
                 .map(favorito -> ProductoResultado.desde(favorito.getProducto()))
                 .toList();
 
-        return Map.of("cantidad", productos.size(), "productos", productos);
+        return Map.of("cantidad", productos.size(), 
+                      "productos", productos,
+                      "tarjetas", productos.stream().limit(MAX_TARJETAS).toList());
     }
 }

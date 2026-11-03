@@ -4,6 +4,7 @@ import ChatEntrada from '../ChatEntrada/ChatEntrada'
 import ChatProductos from '../ChatProductos/ChatProductos'
 import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
 import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
+import ChatAcciones from '../ChatAcciones/ChatAcciones'
 import { obtenerSesion } from '../../utils/sesion'
 import { saludoPorRol, sugerenciasPorRol } from '../../utils/chat'
 import './ChatConversacion.css'
@@ -44,7 +45,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
         enviarMensajeChat(idActual, texto)
             .then(data => {
                 setIdActual(data.conversacionId)
-                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta, productos: data.productos || [] }])
+                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta, productos: data.productos || [], acciones: data.acciones || [] }])
             })
             .catch(err => {
                 console.error(err)
@@ -76,6 +77,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
                 <Fragment key={i}>
                     <ChatMensaje autor={m.autor} texto={m.texto} />
                     {m.productos?.length > 0 && <ChatProductos productos={m.productos} />}
+                    {m.acciones?.length > 0 && <ChatAcciones acciones={m.acciones} />}
                 </Fragment>
             ))}
 
