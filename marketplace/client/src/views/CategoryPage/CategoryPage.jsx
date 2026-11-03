@@ -1,30 +1,47 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
 import { ProductGridSection } from '../../components/ProductGridSection/ProductGridSection';
-import { searchProductsByName, getCategoryProducts } from '../../utils/api.js';
+import {
+  buscarProductos,
+  fetchProductosPorCategoria,
+  fetchProductosPorPrecio,
+  fetchProductosPorTalle,
+} from '../../redux/slice/ProductSlice.js';
 import './CategoryPage.css';
 
 const PAGE_SIZE = 6;
 
 export const CategoryPage = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [page, setPage] = useState(1);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { idCategoria } = useParams();
-  const [selectedCategory, setSelectedCategory] = useState(idCategoria || '');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [maxPrice, setMaxPrice] = useState(null);
-
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
-  const navigate = useNavigate();
+
+
+  // Estado global: los productos, sus 3 estados y los filtros elegidos vienen de Redux
+  const products = useSelector((state) => state.productos.items);
+  const loading = useSelector((state) => state.productos.loading);
+  const error = useSelector((state) => state.productos.error);
+  const { talle, precioMax } = useSelector((state) => state.productos.filtros);
+
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    setSelectedCategory(idCategoria || '');
+    const accion = talle
+      ? fetchProductosPorTalle(talle)
+      : precioMax !== null
+        ? fetchProductosPorPrecio(precioMax)
+        : query
+          ? buscarProductos(query)
+          : fetchProductosPorCategoria(idCategoria);
+
+    dispatch(accion);
     setPage(1);
-  }, [idCategoria]);
+  }, [dispatch, idCategoria, query, talle, precioMax]);
+
 
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
   const visible = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -56,21 +73,6 @@ export const CategoryPage = () => {
     hayAnterior && setPage(page - 1);
   };
 
-  useEffect(() => {
-    setPage(1);
-    setLoading(true);
-
-    query && searchProductsByName(query)
-      .then((data) => setProducts(data))
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false));
-
-    !query && getCategoryProducts(idCategoria)
-      .then((data) => setProducts(data))
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false));
-  }, [query, idCategoria]);
-
   return (
     <div className="category-page-wrapper">
       <section className="catalog-hero-banner">
@@ -93,21 +95,7 @@ export const CategoryPage = () => {
       </section>
 
       <main className="catalog-main-layout">
-        <SidebarFilters
-          selectedCategory={selectedCategory}
-          onSelectCategory={handleSelectCategory}
-
-          priceLimit={maxPrice}
-          maxPrice={maxPrice}
-          onFilterPrice={setMaxPrice}
-          onPriceResults={(data) => {
-            data && setProducts(data);
-            setPage(1);
-          }}
-          selectedSize={selectedSize}
-          onSelectSize={setSelectedSize}
-          onReset={handleReset}
-        />
+        <SidebarFilters/>
 
         <div className="catalog-content-area">
           {loading && (
@@ -116,14 +104,21 @@ export const CategoryPage = () => {
             </div>
           )}
 
-          {!loading && products.length === 0 && (
+          {!loading && error && (
+            <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
+              <h2>No pudimos cargar los productos</h2>
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && products.length === 0 && (
             <div className="no-products-container" style={{ padding: '2rem', textAlign: 'center', width: '100%' }}>
               <h2>No se encontraron productos</h2>
               <p>Intenta con otro término de búsqueda o limpia los filtros.</p>
             </div>
           )}
 
-          {!loading && products.length > 0 && (
+          {!loading && !error && products.length > 0 && (
             <>
               <ProductGridSection
                 products={visible}

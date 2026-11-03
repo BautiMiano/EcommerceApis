@@ -1,10 +1,16 @@
 import React from 'react';
 import Slider from '@mui/material/Slider';
+import { useDispatch, useSelector } from 'react-redux';
+import { seleccionarPrecioMax } from '../../redux/slice/ProductSlice';
 import './PriceFilter.css';
 
 const ars = (n) => `$${Number(n).toLocaleString('es-AR')}`;
 
-export const PriceFilter = ({ bounds = { min: 0, max: 400000 }, value, onChange }) => {
+// Filtro de precio: lee el precio máximo elegido desde Redux y lo cambia con una acción
+export const PriceFilter = ({ bounds = { min: 0, max: 400000 } }) => {
+  const dispatch = useDispatch();
+  const value = useSelector((state) => state.productos.filtros.precioMax);
+
   const { min, max } = bounds;
   const sinRango = max <= min;
   const step = Math.max(1, Math.round((max - min) / 100));
@@ -12,7 +18,7 @@ export const PriceFilter = ({ bounds = { min: 0, max: 400000 }, value, onChange 
   const currentValue = value !== null && value !== undefined ? value : max;
 
   const handleChange = (_, newValue) => {
-    onChange(newValue);
+    dispatch(seleccionarPrecioMax(newValue));
   };
 
   return (
