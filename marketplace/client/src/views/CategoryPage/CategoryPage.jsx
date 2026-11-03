@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
 import { ProductGridSection } from '../../components/ProductGridSection/ProductGridSection';
@@ -10,13 +10,10 @@ const PAGE_SIZE = 6;
 export const CategoryPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); 
-  const [sort, setSort] = useState('relevancia');
   const [page, setPage] = useState(1);
-  const [showAll, setShowAll] = useState(false);
 
   const { idCategoria } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(idCategoria || '');
-  const [onSelectCategory, setOnSelectCategory] = useState([]);
   const [selectedSize, setSelectedSize] = useState('');
   const [maxPrice, setMaxPrice] = useState(null);
 
@@ -30,7 +27,7 @@ export const CategoryPage = () => {
   }, [idCategoria]);
 
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
-  const visible = showAll ? products : products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const visible = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSelectCategory = (catId) => {
     setSelectedCategory(catId);
@@ -88,18 +85,10 @@ export const CategoryPage = () => {
             Precios mayoristas y minoristas oficiales. Registrate gratis para cotizaciones al granel
           </p>
 
-          <div className="hero-row">
-            <div>
-              <h1 className="hero-title">Catálogo oficial de uniformes y equipamiento de trabajo</h1>
-              <p className="hero-subtitle">
-                La plataforma líder que nuclea a los principales fabricantes e importadores industriales certificados.
-              </p>
-            </div>
-
-            <dl className="catalog-hero-stats">
-              <div><dt>Productos activos</dt><dd>{products.length}</dd></div>
-            </dl>
-          </div>
+          <h1 className="hero-title">Catálogo oficial de uniformes y equipamiento de trabajo</h1>
+          <p className="hero-subtitle">
+            La plataforma líder que nuclea a los principales fabricantes e importadores industriales certificados.
+          </p>
         </div>
       </section>
 
