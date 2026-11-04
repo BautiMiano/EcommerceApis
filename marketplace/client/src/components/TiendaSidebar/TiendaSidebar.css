@@ -1,0 +1,18 @@
+/* Agregados al sidebar del vendedor (SellerSidebar.css). Todas las medidas en rem. */
+
+.tienda-sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tienda-sidebar-aviso {
+  margin: 0 0.25rem 0.75rem;
+  padding: 0.875rem 1rem;
+  border-left: 0.1875rem solid var(--uf-naranja);
+  border-radius: 0.625rem;
+  background-color: #141414;
+  color: #cfcfcf;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}

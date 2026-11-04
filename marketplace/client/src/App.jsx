@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { cerrarSesionUsuario } from './redux/slice/UsuarioSlice';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import TiendaLayout from './components/TiendaLayout/TiendaLayout.jsx';
@@ -35,6 +37,7 @@ import AdminVendedores from './views/AdminVendedores.jsx';
 import { PaymentSection } from './views/PaymentSection/PaymentSection.jsx';
 function App() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -49,6 +52,8 @@ function App() {
     cerrarSesion();
     localStorage.removeItem('usuarioId');
     localStorage.removeItem('userId');
+    // Avisa a Redux que ya no hay sesión: la tienda vuelve a la vista de visitante
+    dispatch(cerrarSesionUsuario());
     setUser(null);
     navigate('/login');
   };

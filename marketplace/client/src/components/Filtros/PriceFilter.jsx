@@ -1,49 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from '@mui/material/Slider';
 import { useDispatch, useSelector } from 'react-redux';
-import { seleccionarPrecioMax } from '../../redux/slice/ProductSlice';
+import { seleccionarPrecioMax, selectPrecioMaximo, selectPrecioMinimo } from '../../redux/slice/ProductSlice';
 import './PriceFilter.css';
 
 const ars = (n) => `$${Number(n).toLocaleString('es-AR')}`;
 
-// Filtro de precio: lee el precio máximo elegido desde Redux y lo cambia con una acción
-export const PriceFilter = ({ bounds = { min: 0, max: 400000 } }) => {
-  const dispatch = useDispatch();
-  const value = useSelector((state) => state.productos.filtros.precioMax);
 
-  const { min, max } = bounds;
+export const PriceFilter = () => {
+  const dispatch = useDispatch();
+  const precioMax = useSelector((state) => state.productos.filtros.precioMax);
+  const min = useSelector(selectPrecioMinimo);
+  const max = useSelector(selectPrecioMaximo);
+
   const sinRango = max <= min;
   const step = Math.max(1, Math.round((max - min) / 100));
 
-  const currentValue = value !== null && value !== undefined ? value : max;
+  const [valor, setValor] = useState(precioMax ?? max);
 
-  const handleChange = (_, newValue) => {
-    dispatch(seleccionarPrecioMax(newValue));
-  };
+  useEffect(() => {
+    setValor(precioMax ?? max);
+  }, [precioMax, max]);
 
   return (
     <div className="price-filter-group">
       <div className="price-header">
         <h3 className="filter-title">Rango de precio (ARS)</h3>
-        <span className="price-value">{ars(currentValue)}</span>
+        <span className="price-value">{ars(valor)}</span>
       </div>
 
       <Slider
         min={min}
         max={max}
         step={step}
-        value={currentValue}
+        value={valor}
         disabled={sinRango}
-        onChange={handleChange}
+        onChange={(_, nuevo) => setValor(nuevo)}
+        onChangeCommitted={(_, nuevo) => dispatch(seleccionarPrecioMax(nuevo))}
         sx={{
           color: '#000000',
-          height: 6,
+          height: '0.375rem',
           '& .MuiSlider-thumb': {
-            width: 18,
-            height: 18,
+            width: '1.125rem',
+            height: '1.125rem',
             backgroundColor: '#000000',
             '&:hover, &.Mui-focusVisible': {
-              boxShadow: '0px 0px 0px 8px rgba(0, 0, 0, 0.16)',
+              boxShadow: '0 0 0 0.5rem rgba(0, 0, 0, 0.16)',
             },
           },
           '& .MuiSlider-rail': {

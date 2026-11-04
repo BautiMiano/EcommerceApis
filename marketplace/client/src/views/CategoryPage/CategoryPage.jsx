@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
 import { ProductGridSection } from '../../components/ProductGridSection/ProductGridSection';
 import {
-  buscarProductos,
-  fetchProductosPorCategoria,
-  fetchProductosPorPrecio,
-  fetchProductosPorTalle,
+  aplicarFiltros,
+  fetchTalles,
+  setBusqueda,
+  setCategorias,
 } from '../../redux/slice/ProductSlice.js';
 import './CategoryPage.css';
 
@@ -20,40 +20,50 @@ export const CategoryPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
 
-
-  // Estado global: los productos, sus 3 estados y los filtros elegidos vienen de Redux
+  // Estado global: los productos ya filtrados, sus 3 estados y los filtros vienen de Redux
   const products = useSelector((state) => state.productos.items);
   const loading = useSelector((state) => state.productos.loading);
   const error = useSelector((state) => state.productos.error);
-  const { talle, precioMax } = useSelector((state) => state.productos.filtros);
+  const filtros = useSelector((state) => state.productos.filtros);
+  const statusTalles = useSelector((state) => state.productos.statusTalles);
 
+  useEffect(() => {
+    if (!idCategoria) return;
+    dispatch(setCategorias([Number(idCategoria)]));
+    navigate('/categorias', { replace: true });
+  }, [dispatch, navigate, idCategoria]);
+
+  useEffect(() => {
+    const texto = query || '';
+    texto !== filtros.busqueda && dispatch(setBusqueda(texto));
+  }, [dispatch, query, filtros.busqueda]);
+
+  // Talles para el filtro: se piden una sola vez
+  useEffect(() => {
+    statusTalles === 'idle' && dispatch(fetchTalles());
+  }, [dispatch, statusTalles]);
+
+  // Cada vez que cambian los filtros, el thunk decide qué llamados faltan
+  useEffect(() => {
+    dispatch(aplicarFiltros());
+  }, [dispatch, filtros]);
+
+  // Paginación del front: al cambiar un filtro se vuelve a la página 1
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const accion = talle
-      ? fetchProductosPorTalle(talle)
-      : precioMax !== null
-        ? fetchProductosPorPrecio(precioMax)
-        : query
-          ? buscarProductos(query)
-          : fetchProductosPorCategoria(idCategoria);
-
-    dispatch(accion);
     setPage(1);
-  }, [dispatch, idCategoria, query, talle, precioMax]);
-
+  }, [filtros]);
 
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
   const visible = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleNextPage = () => {
-    const haySiguiente = page < pageCount;
-    haySiguiente && setPage(page + 1);
+    page < pageCount && setPage(page + 1);
   };
 
   const handlePrevPage = () => {
-    const hayAnterior = page > 1;
-    hayAnterior && setPage(page - 1);
+    page > 1 && setPage(page - 1);
   };
 
   return (

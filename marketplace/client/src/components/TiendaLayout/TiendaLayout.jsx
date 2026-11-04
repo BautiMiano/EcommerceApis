@@ -1,45 +1,53 @@
-import { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer.jsx'
-import { obtenerMiPerfil } from '../../utils/api'
-import { obtenerSesion } from '../../utils/sesion'
+import TiendaPanelLayout from '../TiendaPanelLayout/TiendaPanelLayout'
+import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 
-// Tienda pública y del comprador: navbar arriba, footer abajo y la vista en el Outlet.
-// Si hay sesión, carga el perfil una vez para el navbar (nombre y menú) y para "Mi perfil".
+// Tienda: el visitante y el comprador la ven con el diseño del panel (sidebar a la izquierda).
+// El admin la sigue viendo con el Navbar arriba y el Footer abajo.
 const TiendaLayout = ({ onLogout }) => {
-  // useLocation hace que el layout se vuelva a dibujar al navegar, así lee la sesión nueva
-  // después de iniciar o cerrar sesión sin recargar la página
-  useLocation()
-  const { token } = obtenerSesion()
-  const [perfil, setPerfil] = useState(null)
-  const [cargandoPerfil, setCargandoPerfil] = useState(true)
-  const [errorPerfil, setErrorPerfil] = useState('')
+  const dispatch = useDispatch()
 
-  const recargarPerfil = () => obtenerMiPerfil()
-    .then((perfilObtenido) => {
-      setPerfil(perfilObtenido)
-      setErrorPerfil('')
-    })
-    .catch((error) => setErrorPerfil(error.message))
-    .finally(() => setCargandoPerfil(false))
+  // Todo sale del UsuarioSlice
+  const { token, rol } = useSelector((state) => state.usuario.sesion)
+  const perfil = useSelector((state) => state.usuario.perfil)
+  const loading = useSelector((state) => state.usuario.loading)
+  const error = useSelector((state) => state.usuario.error)
+  const status = useSelector((state) => state.usuario.status)
 
+  // El perfil se pide una sola vez por sesión: solo si hay token y nunca se pidió ('idle')
   useEffect(() => {
-    Promise.resolve().then(() => {
-      if (token) {
-        recargarPerfil()
-        return
-      }
-      setPerfil(null)
-      setCargandoPerfil(false)
-    })
-  }, [token])
+    token && status === 'idle' && dispatch(fetchPerfil())
+  }, [dispatch, token, status])
+
+  // Lo mismo que antes recibían las pantallas por el Outlet (por ejemplo, Mi perfil)
+  const contexto = {
+    perfil,
+    cargandoPerfil: Boolean(token) && (status === 'idle' || loading),
+    errorPerfil: error || '',
+    // Después de guardar el perfil se vuelve a pedir para mostrar los datos nuevos
+    recargarPerfil: () => dispatch(fetchPerfil()),
+  }
+
+  if (!token || rol === 'COMPRADOR') {
+    return (
+      <TiendaPanelLayout
+        logueado={Boolean(token)}
+        perfil={perfil}
+        onLogout={onLogout}
+        contexto={contexto}
+      />
+    )
+  }
 
   return (
     <div className="app-container">
       <Navbar perfil={perfil} onLogout={onLogout} />
       <main className="main-content">
-        <Outlet context={{ perfil, cargandoPerfil, errorPerfil, recargarPerfil }} />
+        <Outlet context={contexto} />
       </main>
       <Footer />
     </div>
