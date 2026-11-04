@@ -1,10 +1,11 @@
-import PageHeader from "../components/PageHeader/PageHeader"
+import PageTitle from "../components/PageTitle/PageTitle"
 import FavoritesCatalog from "../components/FavoritesCatalog/FavoritesCatalog"
 
 const MisFavoritos = () => {
     return(
         <main>
-            <PageHeader
+            <PageTitle
+            variante="seccion"
             etiqueta="TU CUENTA"
             titulo="MIS FAVORITOS"
             descripcion="Los uniformes que guardaste para más adelante. Cuando estés listo, movelos al carrito."

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import PageTitle from "../components/PageTitle/PageTitle";
 import LoginForm from "../components/LoginForm/LoginForm";
-import RegisterLink from "../components/RegisterLink/RegisterLink";
+import EnlaceCuenta from "../components/EnlaceCuenta/EnlaceCuenta";
 import { iniciarSesion } from '../redux/slice/UsuarioSlice';
 
 const Login = () => {
@@ -31,7 +31,11 @@ const Login = () => {
 
         <LoginForm onLoginExitoso={handleLoginExitoso} />
 
-        <RegisterLink onClick={() => navigate('/registro')} />
+        <EnlaceCuenta
+          pregunta="¿No tenés cuenta?"
+          textoBoton="Creá tu cuenta acá"
+          onClick={() => navigate('/registro')}
+        />
       </main>
     </div>
   );

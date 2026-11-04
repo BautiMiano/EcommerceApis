@@ -1,5 +1,4 @@
 import AccionActivo from '../AccionActivo/AccionActivo'
-import ActivoBadge from '../ActivoBadge/ActivoBadge'
 import EstadoBadge from '../EstadoBadge/EstadoBadge'
 import { inicialesDe } from '../../utils/formato'
 import './UsuarioFila.css'
@@ -9,6 +8,9 @@ const ROLES = {
   VENDEDOR: { texto: 'Vendedor', tono: 'naranja' },
   ADMIN: { texto: 'Administrador', tono: 'gris' },
 }
+
+const ESTADO_ACTIVO = { texto: 'Activo', tono: 'verde' }
+const ESTADO_INACTIVO = { texto: 'Inactivo', tono: 'gris' }
 
 // Un usuario en la tabla
 const UsuarioFila = ({ usuario, ocupado, onCambiarActivo }) => {
@@ -23,7 +25,7 @@ const UsuarioFila = ({ usuario, ocupado, onCambiarActivo }) => {
       <td>@{usuario.nombreUsuario}</td>
       <td>{usuario.mail}</td>
       <td><EstadoBadge estado={ROLES[usuario.rolUsuario] || { texto: usuario.rolUsuario, tono: 'gris' }} /></td>
-      <td><ActivoBadge activo={usuario.activo} /></td>
+      <td><EstadoBadge estado={usuario.activo ? ESTADO_ACTIVO : ESTADO_INACTIVO} /></td>
       <td><AccionActivo activo={usuario.activo} ocupado={ocupado} onClick={onCambiarActivo} /></td>
     </tr>
   )

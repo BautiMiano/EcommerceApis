@@ -147,3 +147,28 @@
   width: 14px;
   height: 14px;
 }
+
+/* Variantes de formulario (antes estaban en ButtonRL) */
+.boton-primary,
+.boton-secondary {
+  width: 100%;
+  padding: 1rem;
+  border: 0.125rem solid #111111;
+  border-radius: 62.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.0375rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.boton-primary {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.boton-secondary {
+  background-color: #ffffff;
+  color: #111111;
+}

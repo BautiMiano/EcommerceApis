@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import FormField from "../FormField/FormField";
+import CampoFormulario from "../CampoFormulario/CampoFormulario";
 import PasswordStrength from "../PasswordStrength/PasswordStrength";
-import Button from "../ButtonRL/Button";
+import Button from "../Button/Button";
 
 import { registrarUsuario } from "../../utils/api";
 
@@ -94,7 +94,9 @@ const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
     <>
       <form className="register-form" onSubmit={handleSubmit}>
         {campos.map((campo) => (
-          <FormField
+          <CampoFormulario
+            variante="formulario"
+            required
             key={campo.name}
             label={campo.label}
             name={campo.name}
@@ -106,7 +108,7 @@ const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
             onChange={handleChange} 
           >
             {campo.name === 'contrasena' && <PasswordStrength contrasena={form.contrasena} />}
-          </FormField>
+          </CampoFormulario>
         ))}
 
         <div className="register-actions">
@@ -114,7 +116,7 @@ const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
           <Button
             texto="Solicitar aprobación como vendedor"
             variante="secondary"
-            type="button"
+            tipo="button"
             onClick={() => registrar('VENDEDOR')}
           />
         </div>

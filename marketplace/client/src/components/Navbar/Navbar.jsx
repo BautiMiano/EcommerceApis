@@ -32,12 +32,6 @@ export const Navbar = ({ perfil, onLogout }) => {
 
   return (
     <>
-      {!logueado && (
-        <div className="topbar">
-          Navegando como visitante. Registrate como Comprador para cotizaciones o como Vendedor para publicar productos.{' '}
-          <Link to="/registro">Acceder ahora</Link>
-        </div>
-      )}
       <header className="navbar">
         <Link to="/" className="navbar-logo">
           <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
@@ -126,12 +120,6 @@ export const Navbar = ({ perfil, onLogout }) => {
             </button>
           )}
 
-          {!logueado && (
-            <>
-              <Link to="/login" className="btn-pill btn-pill-outline">Iniciar sesión</Link>
-              <Link to="/registro" className="btn-pill btn-pill-solid">Registrarse</Link>
-            </>
-          )}
         </div>
       </header>
     </>

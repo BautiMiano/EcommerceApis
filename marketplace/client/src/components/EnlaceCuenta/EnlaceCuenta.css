@@ -1,0 +1,17 @@
+.enlace-cuenta {
+  margin: 2rem 0 0;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.enlace-cuenta button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #111111;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-transform: uppercase;
+  cursor: pointer;
+}

@@ -1,7 +1,7 @@
 import { loginUser } from '../../utils/api';
 import { useState } from 'react';
-import FormField from '../FormField/FormField';
-import Button from '../ButtonRL/Button';
+import CampoFormulario from '../CampoFormulario/CampoFormulario';
+import Button from '../Button/Button';
 
 export default function LoginForm({ onLoginExitoso }) {
 const [mail, setMail] = useState('');
@@ -31,7 +31,9 @@ const handleSubmit = async (e) => {
 return (
     <form onSubmit={handleSubmit} className="register-form"> 
     
-    <FormField 
+    <CampoFormulario
+        variante="formulario"
+        required
         label="Correo electrónico:"
         name="mail"
         type="email"
@@ -41,7 +43,9 @@ return (
         full={true} 
     />
 
-    <FormField 
+    <CampoFormulario
+        variante="formulario"
+        required
         label="Contraseña:"
         name="contrasena"
         type="password"

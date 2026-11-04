@@ -2,12 +2,11 @@ import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../Navbar/Navbar'
-import Footer from '../Footer/Footer.jsx'
 import TiendaPanelLayout from '../TiendaPanelLayout/TiendaPanelLayout'
 import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 
 // Tienda: el visitante y el comprador la ven con el diseño del panel (sidebar a la izquierda).
-// El admin la sigue viendo con el Navbar arriba y el Footer abajo.
+// El admin la sigue viendo con el Navbar arriba.
 const TiendaLayout = ({ onLogout }) => {
   const dispatch = useDispatch()
 
@@ -49,7 +48,6 @@ const TiendaLayout = ({ onLogout }) => {
       <main className="main-content">
         <Outlet context={contexto} />
       </main>
-      <Footer />
     </div>
   )
 }
