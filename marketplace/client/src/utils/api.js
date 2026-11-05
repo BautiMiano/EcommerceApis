@@ -1,5 +1,5 @@
 // Centraliza todas las solicitudes al backend. Las vistas y componentes solo importan y llaman estas funciones.
-const API_URL = 'http://localhost:4002'
+export const API_URL = 'http://localhost:4002'
 
 const obtenerHeaders = (incluyeJson = false) => {
   const token = localStorage.getItem('token')
