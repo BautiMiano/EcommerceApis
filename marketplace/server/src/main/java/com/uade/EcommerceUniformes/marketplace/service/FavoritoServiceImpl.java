@@ -37,7 +37,9 @@ public class FavoritoServiceImpl implements FavoritoService {
         // 1. Consulta limpia por ID de usuario
         List<Favorito> favoritos = favoritoRepository.findByUsuarioId(usuarioLogueado.getId());
 
-        return favoritos.stream().map(fav -> {
+        return favoritos.stream()
+        .filter(fav -> fav.getProducto().isActivo()) 
+        .map(fav -> {
             FavoritoResponse dto = new FavoritoResponse();
             dto.setId(fav.getId());
             dto.setProducto(productoService.toResponse(fav.getProducto()));
