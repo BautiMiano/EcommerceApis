@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import TicketCard from '../components/TicketCard/TicketCard'
 import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
-import { fetchMisTickets } from '../redux/slice/TicketSlice'
+import { fetchMyTickets } from '../redux/slice/TicketSlice'
 import { contarPorEstado } from '../utils/tickets'
 import './MisTickets.css'
 
@@ -13,7 +13,7 @@ const MisTickets = () => {
     const [filtro, setFiltro] = useState('TODOS')
 
     useEffect(() => {
-        dispatch(fetchMisTickets())
+        dispatch(fetchMyTickets())
     }, [dispatch])
 
     const conteos = contarPorEstado(tickets)

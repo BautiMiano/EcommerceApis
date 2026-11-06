@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import axios from "axios";
 import {API_URL} from "../../utils/api";
 
@@ -9,13 +9,18 @@ const headers = (token) => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
 
-export const fetchMisTickets = createAsyncThunk("tickets/fetchMisTickets", async () => {
+export const fetchMyTickets = createAsyncThunk("tickets/fetchMyTickets", async () => {
     const { data } = await axios.get(`${URL}/mis-tickets`, { headers: headers()});
     return data;
 });
 
-export const fetchTodosLosTickets = createAsyncThunk("tickets/fetchTodosLosTickets", async () => {
+export const fetchAllTickets = createAsyncThunk("tickets/fetchAllTickets", async () => {
     const { data } = await axios.get(URL, { headers: headers()});
+    return data;
+});
+
+export const createTicket = createAsyncThunk("tickets/createTicket", async (newTicket) => {
+    const { data } = await axios.post(URL, newTicket, { headers: headers() });
     return data;
 });
 
@@ -25,35 +30,38 @@ const ticketsSlice = createSlice({
         items: [],
         loading: false,
         error: null,
+        createStatus: "idle",
     },
-    reducers: {},
+    reducers: {
+        resetCreateStatus: (state) => {
+            state.createStatus = "idle";
+        },
+    },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchMisTickets.pending, (state) => {
+            .addCase(createTicket.pending, (state) => {
+                state.createStatus = "pending";
+            })
+            .addCase(createTicket.fulfilled, (state, action) => {
+                state.createStatus = "succeeded";
+                state.items = [...state.items, action.payload];
+            })
+            .addCase(createTicket.rejected, (state) => {
+                state.createStatus = "failed";
+            })
+            .addMatcher(isAnyOf(fetchMyTickets.pending, fetchAllTickets.pending), (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchMisTickets.fulfilled, (state, action) => {
+            .addMatcher(isAnyOf(fetchMyTickets.fulfilled,fetchAllTickets.fulfilled), (state, action) => {
                 state.loading = false;
                 state.items = action.payload;
             })
-            .addCase(fetchMisTickets.rejected, (state, action) => {
+            .addMatcher(isAnyOf(fetchMyTickets.rejected, fetchAllTickets.rejected), (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            })
-            .addCase(fetchTodosLosTickets.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchTodosLosTickets.fulfilled, (state, action) => {
-                state.loading = false;
-                state.items = action.payload;
-            })
-            .addCase(fetchTodosLosTickets.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
-         });
+            });
     },
 });
-
+export const { resetCreateStatus } = ticketsSlice.actions;
 export default ticketsSlice.reducer;

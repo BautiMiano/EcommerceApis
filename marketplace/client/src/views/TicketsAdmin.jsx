@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import TicketResumen from '../components/TicketResumen/TicketResumen'
 import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
 import TicketTabla from '../components/TicketTabla/TicketTabla'
-import { fetchTodosLosTickets } from '../redux/slice/TicketSlice'
+import { fetchAllTickets } from '../redux/slice/TicketSlice'
 import { contarPorEstado } from '../utils/tickets'
 import './TicketsAdmin.css'
 
@@ -14,7 +14,7 @@ const TicketsAdmin = () => {
     const [busqueda, setBusqueda] = useState('')
 
     useEffect(() => {
-        dispatch(fetchTodosLosTickets())
+        dispatch(fetchAllTickets())
     }, [dispatch])
 
     const conteos = contarPorEstado(tickets)
