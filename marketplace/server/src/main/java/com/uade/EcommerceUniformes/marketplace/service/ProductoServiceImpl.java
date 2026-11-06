@@ -77,6 +77,7 @@ public class ProductoServiceImpl implements ProductoService {
             response.setTalleUnico(producto.getTalles().get(0).getTalle());
         }
         response.setActivo(producto.isActivo());
+        response.setDesactivadoPorAdmin(producto.isDesactivadoPorAdmin());
         response.setEstado(producto.getEstado());
         response.setVendedorId(producto.getVendedor().getId());
         response.setVendedor(producto.getVendedor().getNombreUsuario());
@@ -170,7 +171,25 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Producto no encontrado con id: " + productoId));
 
+        // Un producto inactivo no existe para el comprador
+        if (!producto.isActivo() && !puedeVerInactivo(producto)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Producto no encontrado con id: " + productoId);
+        }
+
         return toResponse(producto);
+    }
+
+    /** Un producto inactivo solo lo ven su vendedor y el admin (para poder editarlo). */
+    private boolean puedeVerInactivo(Producto producto) {
+        try {
+            Usuario usuario = usuarioLogueadoService.obtenerUsuarioLogueado();
+            return usuario.getRolUsuario() == Rol.ADMIN
+                    || producto.getVendedor().getId().equals(usuario.getId());
+        } catch (RuntimeException e) {
+            // Visitante sin sesión: no hay usuario logueado
+            return false;
+        }
     }
 
     @Override
@@ -410,6 +429,8 @@ public class ProductoServiceImpl implements ProductoService {
         }
 
         producto.setActivo(false);
+        // Si lo desactiva el admin (y no es el dueño), queda marcado: el vendedor no lo puede reactivar
+        producto.setDesactivadoPorAdmin(esAdmin && !esDueño);
         productoRepository.save(producto);
     }
 
@@ -428,6 +449,11 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permiso para activar este producto");
         }
 
+        if (producto.isDesactivadoPorAdmin() && !esAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Este producto lo desactivó el administrador. Solo él puede volver a activarlo");
+        }
+
         if (!usuarioLogueado.isActivo()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario desactivado no puede activar productos");
         }
@@ -443,6 +469,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         producto.setActivo(true);
         producto.setDesactivadoPorCategoria(false);
+        producto.setDesactivadoPorAdmin(false);
         productoRepository.save(producto);
     }
 

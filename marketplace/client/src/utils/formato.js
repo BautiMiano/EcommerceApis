@@ -33,9 +33,13 @@ export const ACCION_ESTADO = {
 
 // Estado que se muestra de una publicación: pausada (inactiva) primero, después el nivel de stock
 export const estadoPublicacion = (producto) => {
+  if (!producto.activo && producto.desactivadoPorAdmin) {
+    return { texto: 'Suspendido', tono: 'rojo' }
+  }
   if (!producto.activo) {
     return { texto: 'Pausado', tono: 'naranja' }
   }
+
   const nivel = nivelStock(producto.talles)
   if (nivel === 'agotado') {
     return { texto: 'Sin stock', tono: 'rojo' }

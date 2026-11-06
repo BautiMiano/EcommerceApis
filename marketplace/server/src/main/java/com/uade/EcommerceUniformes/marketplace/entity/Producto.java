@@ -53,6 +53,7 @@ public class Producto {
     @Builder.Default
     private boolean activo = true;
     private boolean desactivadoPorCategoria;
+    private boolean desactivadoPorAdmin;
 
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado;
