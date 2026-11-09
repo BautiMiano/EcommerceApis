@@ -19,6 +19,16 @@ export const deleteConversation = createAsyncThunk("chat/deleteConversation", as
   return id;
 });
 
+export const fetchConversation = createAsyncThunk("chat/fetchConversation", async (id) => {
+  const { data } = await axios.get(`${URL}/conversaciones/${id}`, { headers: headers() });
+  return data;
+});
+
+export const sendMessage = createAsyncThunk("chat/sendMessage", async ({ conversacionId, mensaje }) => {
+  const { data } = await axios.post(URL, { conversacionId, mensaje }, { headers: headers() });
+  return data;
+});
+
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
@@ -26,8 +36,20 @@ const chatSlice = createSlice({
     loading: true,
     error: null,
     deletingId: null,
+    messages: [],
+    currentId: null,
+    messagesLoading: false,
+    messagesError: null,
+    sendStatus: "idle",
   },
-  reducers: {},
+  reducers: {
+    openConversation: (state, action) => {
+      state.currentId = action.payload;
+      state.messages = [];
+      state.messagesError = null;
+      state.sendStatus = "idle";
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchConversations.pending, (state) => {
@@ -51,8 +73,43 @@ const chatSlice = createSlice({
       })
       .addCase(deleteConversation.rejected, (state) => {
         state.deletingId = null;
+      })
+            .addCase(fetchConversation.pending, (state) => {
+        state.messagesLoading = true;
+        state.messagesError = null;
+      })
+      .addCase(fetchConversation.fulfilled, (state, action) => {
+        state.messagesLoading = false;
+        state.messages = action.payload.mensajes;
+      })
+      .addCase(fetchConversation.rejected, (state) => {
+        state.messagesLoading = false;
+        state.messagesError = "No se pudo cargar la conversación";
+      })
+      .addCase(sendMessage.pending, (state, action) => {
+        state.sendStatus = "pending";
+        // Tu mensaje aparece enseguida, sin esperar a Uni
+        state.messages.push({ autor: "USUARIO", texto: action.meta.arg.mensaje });
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.sendStatus = "succeeded";
+        state.currentId = action.payload.conversacionId;
+        state.messages.push({
+          autor: "ASISTENTE",
+          texto: action.payload.respuesta,
+          productos: action.payload.productos || [],
+          acciones: action.payload.acciones || [],
+        });
+      })
+      .addCase(sendMessage.rejected, (state) => {
+        state.sendStatus = "failed";
+        state.messages.push({
+          autor: "ASISTENTE",
+          texto: "No pude responder en este momento. Probá de nuevo en unos segundos.",
+        });
       });
   },
 });
 
+export const { openConversation } = chatSlice.actions;
 export default chatSlice.reducer;
