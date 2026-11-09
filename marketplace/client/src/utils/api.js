@@ -13,11 +13,16 @@ const obtenerHeaders = (incluyeJson = false) => {
 }
 
 const obtenerMensajeError = async (response, mensajePorDefecto) => {
+  const texto = await response.text()
+  if (!texto) {
+    return mensajePorDefecto
+  }
   try {
-    const cuerpo = await response.json()
+    const cuerpo = JSON.parse(texto)
     return cuerpo.message || cuerpo.error || mensajePorDefecto
   } catch {
-    return mensajePorDefecto
+    // El backend a veces manda el motivo como texto simple: lo mostramos tal cual
+    return texto
   }
 }
 
