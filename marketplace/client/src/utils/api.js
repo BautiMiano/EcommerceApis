@@ -363,60 +363,11 @@ export const getProductosByTalle = (talle) => {
 
 // ---------- Tickets ----------
 
-export const obtenerMisTickets = () =>
-  solicitar('/tickets/mis-tickets', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener tus tickets.')
 
-export const crearTicket = (ticket) =>
-  solicitar('/tickets', {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify(ticket),
-  }, 'No se pudo enviar el ticket.')
-
-export const obtenerTodosLosTickets = () =>
-  solicitar('/tickets', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener los tickets.')
-
-export const obtenerTicket = (ticketId) =>
-  solicitar(`/tickets/${ticketId}`, {
-    headers: obtenerHeaders(),
-  }, 'No se pudo obtener el ticket.')
-
-export const responderTicket = (ticketId, respuesta) =>
-  solicitar(`/tickets/${ticketId}/responder`, {
-    method: 'PATCH',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify({ respuesta }),
-  }, 'No se pudo enviar la respuesta.')
 
 // ---------- Chat ----------
 
-export const obtenerConversaciones = () =>
-  solicitar('/chat/conversaciones', {
-    headers: obtenerHeaders(),
-  }, 'No se pudo cargar el historial.')
 
-export const obtenerConversacion = (conversacionId) =>
-  solicitar(`/chat/conversaciones/${conversacionId}`, {
-    headers: obtenerHeaders(),
-  }, 'No se pudo cargar la conversación.')
-
-export const enviarMensajeChat = (conversacionId, mensaje) =>
-  solicitar('/chat', {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify({ conversacionId, mensaje }),
-  }, 'No se pudo enviar el mensaje.')
-
-
-export const eliminarConversacion = (conversacionId) =>
-  solicitar(`/chat/conversaciones/${conversacionId}`, {
-    method: 'DELETE',
-    headers: obtenerHeaders(),
-  }, 'No se pudo borrar la conversación.')
 
 
 // La dirección de una foto, para usar en un <img>
