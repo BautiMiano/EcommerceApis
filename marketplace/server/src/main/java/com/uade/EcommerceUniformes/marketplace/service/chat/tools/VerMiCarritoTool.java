@@ -74,6 +74,9 @@ public class VerMiCarritoTool implements ChatTool {
             if (porId.size() == MAX_TARJETAS) {
                 break;
             }
+            if (!item.getProducto().isActivo()) {
+                continue;
+            }
             porId.putIfAbsent(item.getProducto().getId(), ProductoResultado.desde(item.getProducto()));
         }
         return new ArrayList<>(porId.values());

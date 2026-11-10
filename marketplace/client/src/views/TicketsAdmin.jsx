@@ -1,24 +1,21 @@
 import { useEffect, useState } from 'react'
+import {useDispatch, useSelector} from 'react-redux'
 import TicketResumen from '../components/TicketResumen/TicketResumen'
 import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
 import TicketTabla from '../components/TicketTabla/TicketTabla'
-import { obtenerTodosLosTickets } from '../utils/api'
+import { fetchAllTickets } from '../redux/slice/TicketSlice'
 import { contarPorEstado } from '../utils/tickets'
 import './TicketsAdmin.css'
 
 const TicketsAdmin = () => {
-    const [tickets, setTickets] = useState([])
-    const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState('')
+    const dispatch = useDispatch()
+    const { items: tickets, loading, error } = useSelector((state) => state.tickets)
     const [filtro, setFiltro] = useState('ABIERTO')
     const [busqueda, setBusqueda] = useState('')
 
     useEffect(() => {
-        obtenerTodosLosTickets()
-            .then((data) => setTickets(data))
-            .catch((err) => setError(err.message))
-            .finally(() => setCargando(false))
-    }, [])
+        dispatch(fetchAllTickets())
+    }, [dispatch])
 
     const conteos = contarPorEstado(tickets)
     const texto = busqueda.toLowerCase()
@@ -37,10 +34,10 @@ const TicketsAdmin = () => {
                 <p>Atendé las consultas de los vendedores. Los más antiguos van primero.</p>
             </div>
 
-            {cargando && <p className="tickets-admin-mensaje">Cargando tickets...</p>}
-            {!cargando && error && <p className="tickets-admin-mensaje" role="alert">{error}</p>}
+            {loading && <p className="tickets-admin-mensaje">Cargando tickets...</p>}
+            {!loading && error && <p className="tickets-admin-mensaje" role="alert">{error}</p>}
 
-            {!cargando && !error && (
+            {!loading && !error && (
                 <>
                     <TicketResumen conteos={conteos} />
 

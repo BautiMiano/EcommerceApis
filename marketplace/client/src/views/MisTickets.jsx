@@ -1,23 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import TicketCard from '../components/TicketCard/TicketCard'
 import TicketFiltro from '../components/TicketFiltro/TicketFiltro'
-import { obtenerMisTickets } from '../utils/api'
+import { fetchMyTickets } from '../redux/slice/TicketSlice'
 import { contarPorEstado } from '../utils/tickets'
 import './MisTickets.css'
 
 const MisTickets = () => {
-    const [tickets, setTickets] = useState([])
-    const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState('')
+    const dispatch = useDispatch()
+    const { items: tickets, loading, error } = useSelector((state) => state.tickets)
     const [filtro, setFiltro] = useState('TODOS')
 
     useEffect(() => {
-        obtenerMisTickets()
-            .then((data) => setTickets(data))
-            .catch((err) => setError(err.message))
-            .finally(() => setCargando(false))
-    }, [])
+        dispatch(fetchMyTickets())
+    }, [dispatch])
 
     const conteos = contarPorEstado(tickets)
 
@@ -40,9 +37,9 @@ const MisTickets = () => {
                 <TicketFiltro filtro={filtro} conteos={conteos} onCambiar={setFiltro} />
             )}
 
-            {cargando && <p className="mis-tickets-mensaje">Cargando tus tickets...</p>}
-            {!cargando && error && <p className="mis-tickets-mensaje" role="alert">{error}</p>}
-            {!cargando && !error && tickets.length === 0 && (
+            {loading && <p className="mis-tickets-mensaje">Cargando tus tickets...</p>}
+            {!loading && error && <p className="mis-tickets-mensaje" role="alert">{error}</p>}
+            {!loading && !error && tickets.length === 0 && (
                 <p className="mis-tickets-mensaje">Todavía no abriste ningún ticket.</p>
             )}
 

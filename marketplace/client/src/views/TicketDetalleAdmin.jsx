@@ -1,30 +1,39 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import TicketEstado from '../components/TicketEstado/TicketEstado'
 import TicketMensaje from '../components/TicketMensaje/TicketMensaje'
 import TicketRespuestaForm from '../components/TicketRespuestaForm/TicketRespuestaForm'
 import TicketRespuesta from '../components/TicketRespuesta/TicketRespuesta'
-import { obtenerTicket, responderTicket } from '../utils/api'
+import { fetchTicketById, answerTicket, resetAnswerStatus } from '../redux/slice/TicketSlice'
 import './TicketDetalleAdmin.css'
 
 const TicketDetalleAdmin = () => {
     const { id } = useParams()
     const navigate = useNavigate()
-    const [ticket, setTicket] = useState(null)
-    const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState('')
+    const dispatch = useDispatch()
+    const { selected: ticket, loading, error, answerStatus } = useSelector((state) => state.tickets)
     const [respuesta, setRespuesta] = useState('')
-    const [enviando, setEnviando] = useState(false)
 
     useEffect(() => {
-        obtenerTicket(id)
-            .then((data) => setTicket(data))
-            .catch((err) => setError(err.message))
-            .finally(() => setCargando(false))
-    }, [id])
+        dispatch(fetchTicketById(id))
+    }, [dispatch, id])
 
-    const handleSubmit = async (e) => {
+    // Reacciona a cómo terminó la respuesta
+    useEffect(() => {
+        if (answerStatus === "succeeded") {
+            toast.success('Respuesta enviada.')
+            dispatch(resetAnswerStatus())
+            navigate('/admin/tickets')
+        }
+        if (answerStatus === "failed") {
+            toast.error('No se pudo enviar la respuesta.')
+            dispatch(resetAnswerStatus())
+        }
+    }, [answerStatus, dispatch, navigate])
+
+    const handleSubmit = (e) => {
         e.preventDefault()
         const texto = respuesta.trim()
 
@@ -33,24 +42,15 @@ const TicketDetalleAdmin = () => {
             return
         }
 
-        setEnviando(true)
-        try {
-            await responderTicket(id, texto)
-            toast.success('Respuesta enviada.')
-            navigate('/admin/tickets')
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setEnviando(false)
-        }
+        dispatch(answerTicket({ id, respuesta: texto }))
     }
 
     return (
         <main className="ticket-detalle">
             <Link to="/admin/tickets" className="ticket-detalle-volver">← Volver a todos los tickets</Link>
 
-            {cargando && <p className="ticket-detalle-mensaje">Cargando ticket...</p>}
-            {!cargando && error && <p className="ticket-detalle-mensaje" role="alert">{error}</p>}
+            {loading && <p className="ticket-detalle-mensaje">Cargando ticket...</p>}
+            {!loading && error && <p className="ticket-detalle-mensaje" role="alert">No se pudo cargar el ticket.</p>}
 
             {ticket && (
                 <>
@@ -69,7 +69,7 @@ const TicketDetalleAdmin = () => {
                             respuesta={respuesta}
                             onChange={(e) => setRespuesta(e.target.value)}
                             onSubmit={handleSubmit}
-                            enviando={enviando}
+                            enviando={answerStatus === "pending"}
                         />
                     ) : (
                         <TicketRespuesta respuesta={ticket.respuesta} fecha={ticket.fechaRespuesta} />
