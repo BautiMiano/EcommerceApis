@@ -1,9 +1,9 @@
-import { obtenerSesion } from '../../utils/sesion'
+import { useSelector } from 'react-redux'
 import './ProductoAcciones.css'
 
 // Editar y activar/desactivar (baja lógica: la publicación no se borra)
 const ProductoAcciones = ({ producto, ocupado, onEditar, onCambiarActivo }) => {
-  const { rol } = obtenerSesion()
+  const { rol } = useSelector((state) => state.auth)
   // Si lo desactivó el admin, solo el admin lo puede reactivar
   const bloqueado = producto.desactivadoPorAdmin && rol !== 'ADMIN'
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import CaritaUni from '../CaritaUni/CaritaUni'
 import ChatPanel from '../ChatPanel/ChatPanel'
-import { obtenerSesion } from '../../utils/sesion'
+import { useSelector } from 'react-redux'
 import './ChatFlotante.css'
 
 const ChatFlotante = () => {
@@ -14,7 +14,8 @@ const ChatFlotante = () => {
         setMostrarGlobo(false)
     }
 
-    const { logueado, rol } = obtenerSesion()
+    const { token, rol } = useSelector((state) => state.auth)
+    const logueado = Boolean(token)
 
     if (rol === 'ADMIN') {
         return null

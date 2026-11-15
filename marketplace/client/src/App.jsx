@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import TiendaLayout from './components/TiendaLayout/TiendaLayout.jsx';
@@ -20,6 +20,7 @@ import PedidosRecibidos from './views/PedidosRecibidos.jsx';
 import MiPerfilVendedor from './views/MiPerfilVendedor.jsx';
 import MiPerfilComprador from './views/MiPerfilComprador.jsx';
 import { cerrarSesion } from './utils/sesion.js';
+import { logout } from './redux/slice/AuthSlice';
 import ChatFlotante from './components/ChatFlotante/ChatFlotante';
 import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
@@ -35,32 +36,23 @@ import AdminVendedores from './views/AdminVendedores.jsx';
 import { PaymentSection } from './views/PaymentSection/PaymentSection.jsx';
 function App() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole');
-    const usuarioId = localStorage.getItem('usuarioId');
-
-    token && setUser({ token, role: userRole, usuarioId });
-  }, []);
-
+  // cerrarSesion limpia el localStorage y logout limpia el estado global
   const handleLogout = () => {
     cerrarSesion();
-    localStorage.removeItem('usuarioId');
-    localStorage.removeItem('userId');
-    setUser(null);
+    dispatch(logout());
     navigate('/login');
   };
 
   return (
     <>
       <Routes>
-        <Route element={<TiendaLayout user={user} onLogout={handleLogout} />}>
+        <Route element={<TiendaLayout onLogout={handleLogout} />}>
           {/* RUTAS PÚBLICAS */}
           <Route path="/" element={<Home />} />
           <Route path="/producto/:id" element={<ProductDetailPage />} />
-          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
 
           {/* CATÁLOGO: VISITANTES, COMPRADORES Y ADMIN (EL VENDEDOR VUELVE A SU PANEL) */}

@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer.jsx'
 import { obtenerMiPerfil } from '../../utils/api'
-import { obtenerSesion } from '../../utils/sesion'
 
 // Tienda pública y del comprador: navbar arriba, footer abajo y la vista en el Outlet.
 // Si hay sesión, carga el perfil una vez para el navbar (nombre y menú) y para "Mi perfil".
 const TiendaLayout = ({ onLogout }) => {
-  // useLocation hace que el layout se vuelva a dibujar al navegar, así lee la sesión nueva
-  // después de iniciar o cerrar sesión sin recargar la página
-  useLocation()
-  const { token } = obtenerSesion()
+  // Suscripto al token: al iniciar o cerrar sesión el layout se actualiza solo
+  const { token } = useSelector((state) => state.auth)
   const [perfil, setPerfil] = useState(null)
   const [cargandoPerfil, setCargandoPerfil] = useState(true)
   const [errorPerfil, setErrorPerfil] = useState('')

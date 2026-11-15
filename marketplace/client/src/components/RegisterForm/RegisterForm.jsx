@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import FormField from "../FormField/FormField";
 import PasswordStrength from "../PasswordStrength/PasswordStrength";
 import Button from "../ButtonRL/Button";
 
-import { registrarUsuario } from "../../utils/api";
+import { registerUser, resetRegisterStatus } from "../../redux/slice/AuthSlice";
+import { rutaInicioPorRol } from "../../utils/sesion";
 
 const campos = [
   { name: 'nombre', label: 'Nombre *', type: 'text', placeholder: 'Ej: Juan' },
@@ -22,7 +25,31 @@ const campos = [
   { name: 'confirmar', label: 'Confirmar contraseña *', type: 'password', placeholder: 'Repetir contraseña' },
 ]
 
-const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
+const RegisterForm = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { token, rol, registerStatus, registerRol } = useSelector((state) => state.auth)
+
+  // Reacciona al resultado del registro que guardó el slice
+  useEffect(() => {
+    if (registerStatus === 'succeeded') {
+      if (registerRol === 'VENDEDOR') {
+        toast.success('¡Solicitud enviada! Vas a poder ingresar cuando un administrador apruebe tu cuenta.')
+        navigate('/login')
+      } else if (token) {
+        toast.success('¡Cuenta creada con éxito!')
+        navigate(rutaInicioPorRol(rol))
+      } else {
+        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+      }
+      dispatch(resetRegisterStatus())
+    }
+    if (registerStatus === 'failed') {
+      toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+      dispatch(resetRegisterStatus())
+    }
+  }, [registerStatus, registerRol, token, rol, navigate, dispatch])
+
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
@@ -62,27 +89,7 @@ const RegisterForm = ({ onRegistroExitoso, onSolicitudEnviada }) => {
       rol: rol,
     };
 
-    //función importada de api.js
-    registrarUsuario(userData)
-      .then((data) => {
-        if (data.role === 'VENDEDOR') {
-          toast.success('¡Solicitud enviada! Vas a poder ingresar cuando un administrador apruebe tu cuenta.')
-          onSolicitudEnviada()
-          return
-        }
-        if (data.access_token) {
-          localStorage.setItem('token', data.access_token)
-          localStorage.setItem('userRole', data.role)
-          localStorage.setItem('usuarioId', data.usuarioId)
-          toast.success('¡Cuenta creada con éxito!')
-          onRegistroExitoso()
-        } else {
-          toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
-        }
-      })
-      .catch(() => {
-        toast.error('No se pudo conectar con el servidor.')
-      })
+    dispatch(registerUser(userData))
   }
 
   const handleSubmit = (e) => {

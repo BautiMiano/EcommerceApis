@@ -6,7 +6,6 @@ import ChatProductos from '../ChatProductos/ChatProductos'
 import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
 import ChatAcciones from '../ChatAcciones/ChatAcciones'
 import { openConversation, fetchConversation, sendMessage } from '../../redux/slice/ChatSlice'
-import { obtenerSesion } from '../../utils/sesion'
 import { saludoPorRol, sugerenciasPorRol } from '../../utils/chat'
 import './ChatConversacion.css'
 
@@ -21,7 +20,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
     } = useSelector((state) => state.chat)
     const enviando = sendStatus === "pending"
     const finRef = useRef(null)
-    const { rol } = obtenerSesion()
+    const { rol } = useSelector((state) => state.auth)
 
     // Al abrir: se limpia la charla anterior y, si no es nueva, se traen sus mensajes
     useEffect(() => {

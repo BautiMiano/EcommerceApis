@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getCategories } from '../../utils/api.js';
 import { Search } from '../Search/Search.jsx';
-import { obtenerSesion } from '../../utils/sesion.js';
+import { useSelector } from 'react-redux';
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu.jsx';
 import './Navbar.css';
 
@@ -12,7 +12,8 @@ export const Navbar = ({ perfil, onLogout }) => {
   const navigate = useNavigate();
 
   // El vendedor usa su propio panel: este navbar es para visitantes, compradores y el admin
-  const { logueado, rol } = obtenerSesion();
+  const { token, rol } = useSelector((state) => state.auth);
+  const logueado = Boolean(token);
   const esAdmin = rol === 'ADMIN';
   // Si un vendedor entra a la tienda (por ejemplo, al detalle de un producto), su perfil está en el panel
   // El administrador no tiene pantalla de perfil: su menú queda solo con Cerrar sesión
