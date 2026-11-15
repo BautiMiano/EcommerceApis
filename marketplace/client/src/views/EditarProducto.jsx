@@ -9,7 +9,7 @@ import ProductoPreview from '../components/ProductoPreview/ProductoPreview'
 import useProductoFormulario from '../hooks/useProductoFormulario'
 import { actualizarProducto, desactivarImagen, getCategories, getProductoById, subirImagen } from '../utils/api'
 import { armarProductoRequest, formularioDesdeProducto, guardarDescuentoYEstado } from '../utils/productoFormulario'
-import { obtenerSesion } from '../utils/sesion'
+import { useSelector } from 'react-redux'
 
 // Editar producto: mismo formulario que Publicar, precargado. Actualiza el producto existente (PUT).
 // La usan el vendedor (sus productos) y el admin (productos de cualquier vendedor).
@@ -25,7 +25,8 @@ const EditarProducto = () => {
   const [errorCarga, setErrorCarga] = useState('')
   const [guardando, setGuardando] = useState(false)
 
-  const esAdmin = obtenerSesion().rol === 'ADMIN'
+  const { rol } = useSelector((state) => state.auth)
+  const esAdmin = rol === 'ADMIN'
   const rutaListado = esAdmin ? '/admin/productos' : '/vendedor/productos'
 
   useEffect(() => {

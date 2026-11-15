@@ -1,0 +1,22 @@
+/* Fila del botón: ocupa todo el ancho del formulario y repite sus 2 columnas,
+   así el botón queda siempre en la columna izquierda con el mismo ancho */
+.login-acciones {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.login-error {
+  margin: 0;
+  color: red;
+  text-align: left;
+}
+
+/* En pantallas chicas el error pasa debajo del botón */
+@media (max-width: 520px) {
+  .login-acciones {
+    grid-template-columns: 1fr;
+  }
+}

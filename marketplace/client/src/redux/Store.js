@@ -5,9 +5,11 @@ import { configureStore } from '@reduxjs/toolkit'
 import productosReducer, { categoriasReducer } from './slice/ProductSlice'
 import ticketsReducer from './slice/TicketSlice'
 import chatReducer from './slice/ChatSlice'
+import authReducer from './slice/AuthSlice'
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     categorias: categoriasReducer,
     productos: productosReducer,
     tickets: ticketsReducer,

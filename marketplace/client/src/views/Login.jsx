@@ -6,13 +6,6 @@ import RegisterLink from "../components/RegisterLink/RegisterLink";
 const Login = () => {
   const navigate = useNavigate();
 
-const handleLoginExitoso = (data) => {
-    data.access_token && localStorage.setItem('token', data.access_token);
-    data.role && localStorage.setItem('userRole', data.role);
-    data.usuarioId && localStorage.setItem('usuarioId', data.usuarioId);
-
-    navigate('/');
-  };
   return (
     <div className="register-page">
       <main className="register-main">
@@ -22,7 +15,7 @@ const handleLoginExitoso = (data) => {
           descripcion="Ingresá con tus credenciales para gestionar tus pedidos y acceder a la plataforma."
         />
 
-        <LoginForm onLoginExitoso={handleLoginExitoso} />
+        <LoginForm />
 
         <RegisterLink onClick={() => navigate('/registro')} />
       </main>

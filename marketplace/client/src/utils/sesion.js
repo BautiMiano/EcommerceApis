@@ -1,10 +1,5 @@
-// Lectura y cierre de la sesión guardada en localStorage al loguearse o registrarse.
-export const obtenerSesion = () => {
-  const token = localStorage.getItem('token')
-  const rol = String(localStorage.getItem('userRole') || '').toUpperCase()
-  return { token, rol, logueado: Boolean(token) }
-}
-
+// La sesión vive en el estado global (redux/slice/AuthSlice.js): los componentes la leen con useSelector.
+// Acá queda solo borrar la copia guardada en localStorage al cerrar sesión.
 export const cerrarSesion = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('userRole')

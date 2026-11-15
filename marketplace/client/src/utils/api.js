@@ -47,15 +47,6 @@ const solicitar = async (ruta, opciones = {}, mensajePorDefecto = 'No se pudo co
     : response.text()
 }
 
-// ---------- Auth ----------
-
-export const registrarUsuario = (datos) =>
-  solicitar('/auth/register', {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify(datos),
-  }, 'No se pudo crear la cuenta.')
-
 // ---------- Categorías ----------
 
 export const getCategories = () =>
@@ -303,28 +294,6 @@ export const subirImagen = (archivo, productoId) => {
     headers: obtenerHeaders(),
     body: formData,
   }, 'No se pudo subir una de las imágenes.')
-}
-
-// ---------- Login ----------
-
-export const loginUser = async (credenciales) => {
-  const response = await fetch(`${API_URL}/auth/authenticate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credenciales),
-  })
-
-  if (response.status === 403) {
-    throw new Error(await response.text())
-  }
-
-  if (!response.ok) {
-    throw new Error('Correo o contraseña incorrectos')
-  }
-
-  return await response.json()
 }
 
 // ---------- Búsqueda y filtros de productos ----------
