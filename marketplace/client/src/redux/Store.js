@@ -6,6 +6,7 @@ import productosReducer, { categoriasReducer } from './slice/ProductSlice'
 import ticketsReducer from './slice/TicketSlice'
 import chatReducer from './slice/ChatSlice'
 import authReducer from './slice/AuthSlice'
+import usuariosReducer from './slice/UsuarioSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     productos: productosReducer,
     tickets: ticketsReducer,
     chat: chatReducer,
+    usuarios: usuariosReducer,
   },
 })

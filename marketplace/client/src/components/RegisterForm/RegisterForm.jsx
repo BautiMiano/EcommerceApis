@@ -28,7 +28,8 @@ const campos = [
 const RegisterForm = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { token, rol, registerStatus, registerRol } = useSelector((state) => state.auth)
+  const { token, rol, registerStatus, registerRol, registerError } = useSelector((state) => state.auth)
+  const enviando = registerStatus === 'pending'
 
   // Reacciona al resultado del registro que guardó el slice
   useEffect(() => {
@@ -39,16 +40,15 @@ const RegisterForm = () => {
       } else if (token) {
         toast.success('¡Cuenta creada con éxito!')
         navigate(rutaInicioPorRol(rol))
-      } else {
-        toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
       }
       dispatch(resetRegisterStatus())
     }
     if (registerStatus === 'failed') {
-      toast.error('No se pudo crear la cuenta. Verificá que el mail y el usuario no estén ya registrados.')
+      // Muestra el motivo que mandó el backend (mail o usuario ya registrado, etc.)
+      toast.error(registerError || 'No se pudo crear la cuenta.')
       dispatch(resetRegisterStatus())
     }
-  }, [registerStatus, registerRol, token, rol, navigate, dispatch])
+  }, [registerStatus, registerRol, registerError, token, rol, navigate, dispatch])
 
   const [form, setForm] = useState({
     nombre: '',
@@ -67,6 +67,8 @@ const RegisterForm = () => {
   }
 
   const registrar = (rol) => {
+    // Evita mandar dos registros si el usuario hace doble clic mientras se procesa el primero
+    if (enviando) return
     if (Object.values(form).some((valor) => valor.trim() === '')) {
       toast.error('Completá todos los campos.')
       return
@@ -117,11 +119,15 @@ const RegisterForm = () => {
         ))}
 
         <div className="register-actions">
-          <Button texto="Registrarse como comprador →" tipo="submit" variante="primary" />
           <Button
-            texto="Solicitar aprobación como vendedor"
+            texto={enviando ? 'Registrando...' : 'Registrarse como comprador →'}
+            tipo="submit"
+            variante="primary"
+          />
+          <Button
+            texto={enviando ? 'Registrando...' : 'Solicitar aprobación como vendedor'}
             variante="secondary"
-            type="button"
+            tipo="button"
             onClick={() => registrar('VENDEDOR')}
           />
         </div>
