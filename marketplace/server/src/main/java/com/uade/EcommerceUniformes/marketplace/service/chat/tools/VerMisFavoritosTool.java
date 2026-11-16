@@ -38,6 +38,7 @@ public class VerMisFavoritosTool implements ChatTool {
     public Object ejecutar(Map<String, Object> args, Usuario usuario) {
         List<ProductoResultado> productos = favoritoRepository.findByUsuarioId(usuario.getId())
                 .stream()
+                .filter(favorito -> favorito.getProducto().isActivo()) 
                 .map(favorito -> ProductoResultado.desde(favorito.getProducto()))
                 .toList();
 

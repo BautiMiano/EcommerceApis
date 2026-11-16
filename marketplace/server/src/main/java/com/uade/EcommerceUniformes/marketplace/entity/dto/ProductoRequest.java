@@ -47,6 +47,9 @@ public class ProductoRequest {
     @JsonProperty("activo")
     private Boolean activo;
 
+    @JsonProperty("desactivadoPorAdmin")
+    private Boolean desactivadoPorAdmin;
+
     @JsonProperty("categoryId")
     private Long categoryId;
 

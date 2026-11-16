@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
@@ -58,6 +58,23 @@ export const CategoryPage = () => {
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
   const visible = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  const handleSelectCategory = (catId) => {
+    setSelectedCategory(catId);
+    setPage(1);
+    catId && navigate(`/categorias/${catId}`);
+    !catId && navigate('/categorias');
+  };
+
+  const handleReset = () => {
+    setSelectedCategory('');
+    setSelectedSize('');
+    setMaxPrice(null);
+    setPage(1);
+    setLoading(true); 
+
+    navigate('/categorias');
+  };
+
   const handleNextPage = () => {
     page < pageCount && setPage(page + 1);
   };
@@ -80,18 +97,10 @@ export const CategoryPage = () => {
             Precios mayoristas y minoristas oficiales. Registrate gratis para cotizaciones al granel
           </p>
 
-          <div className="hero-row">
-            <div>
-              <h1 className="hero-title">Catálogo oficial de uniformes y equipamiento de trabajo</h1>
-              <p className="hero-subtitle">
-                La plataforma líder que nuclea a los principales fabricantes e importadores industriales certificados.
-              </p>
-            </div>
-
-            <dl className="catalog-hero-stats">
-              <div><dt>Productos activos</dt><dd>{products.length}</dd></div>
-            </dl>
-          </div>
+          <h1 className="hero-title">Catálogo oficial de uniformes y equipamiento de trabajo</h1>
+          <p className="hero-subtitle">
+            La plataforma líder que nuclea a los principales fabricantes e importadores industriales certificados.
+          </p>
         </div>
       </section>
 

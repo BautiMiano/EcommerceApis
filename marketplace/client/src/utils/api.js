@@ -1,5 +1,5 @@
 // Centraliza todas las solicitudes al backend. Las vistas y componentes solo importan y llaman estas funciones.
-const API_URL = 'http://localhost:4002'
+export const API_URL = 'http://localhost:4002'
 
 const obtenerHeaders = (incluyeJson = false) => {
   const token = localStorage.getItem('token')
@@ -13,11 +13,16 @@ const obtenerHeaders = (incluyeJson = false) => {
 }
 
 const obtenerMensajeError = async (response, mensajePorDefecto) => {
+  const texto = await response.text()
+  if (!texto) {
+    return mensajePorDefecto
+  }
   try {
-    const cuerpo = await response.json()
+    const cuerpo = JSON.parse(texto)
     return cuerpo.message || cuerpo.error || mensajePorDefecto
   } catch {
-    return mensajePorDefecto
+    // El backend a veces manda el motivo como texto simple: lo mostramos tal cual
+    return texto
   }
 }
 
@@ -363,60 +368,11 @@ export const getProductosByTalle = (talle) => {
 
 // ---------- Tickets ----------
 
-export const obtenerMisTickets = () =>
-  solicitar('/tickets/mis-tickets', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener tus tickets.')
 
-export const crearTicket = (ticket) =>
-  solicitar('/tickets', {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify(ticket),
-  }, 'No se pudo enviar el ticket.')
-
-export const obtenerTodosLosTickets = () =>
-  solicitar('/tickets', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener los tickets.')
-
-export const obtenerTicket = (ticketId) =>
-  solicitar(`/tickets/${ticketId}`, {
-    headers: obtenerHeaders(),
-  }, 'No se pudo obtener el ticket.')
-
-export const responderTicket = (ticketId, respuesta) =>
-  solicitar(`/tickets/${ticketId}/responder`, {
-    method: 'PATCH',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify({ respuesta }),
-  }, 'No se pudo enviar la respuesta.')
 
 // ---------- Chat ----------
 
-export const obtenerConversaciones = () =>
-  solicitar('/chat/conversaciones', {
-    headers: obtenerHeaders(),
-  }, 'No se pudo cargar el historial.')
 
-export const obtenerConversacion = (conversacionId) =>
-  solicitar(`/chat/conversaciones/${conversacionId}`, {
-    headers: obtenerHeaders(),
-  }, 'No se pudo cargar la conversación.')
-
-export const enviarMensajeChat = (conversacionId, mensaje) =>
-  solicitar('/chat', {
-    method: 'POST',
-    headers: obtenerHeaders(true),
-    body: JSON.stringify({ conversacionId, mensaje }),
-  }, 'No se pudo enviar el mensaje.')
-
-
-export const eliminarConversacion = (conversacionId) =>
-  solicitar(`/chat/conversaciones/${conversacionId}`, {
-    method: 'DELETE',
-    headers: obtenerHeaders(),
-  }, 'No se pudo borrar la conversación.')
 
 
 // La dirección de una foto, para usar en un <img>

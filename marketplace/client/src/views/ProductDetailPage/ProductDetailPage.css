@@ -116,7 +116,7 @@
 
 .product-title {
   font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: 2.75rem;
+  font-size: 2.25rem;
   line-height: 1;
   text-transform: uppercase;
   margin: 0;
@@ -132,7 +132,7 @@
 }
 
 .price-amount {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
 }
 

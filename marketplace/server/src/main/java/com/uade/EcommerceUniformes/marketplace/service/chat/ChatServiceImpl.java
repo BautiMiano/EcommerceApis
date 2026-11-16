@@ -211,7 +211,8 @@ public class ChatServiceImpl implements ChatService {
         if (!(resultado instanceof Map<?, ?> mapa)) {
             return;
         }
-        Object lista = mapa.containsKey("tarjetas") ? mapa.get("tarjetas") : mapa.get("productos");
+        // Solo se muestran como tarjetas los productos que se eligieron mostrar
+        Object lista = mapa.get("tarjetas");
         if (lista instanceof List<?> elementos) {
             for (Object elemento : elementos) {
                 if (elemento instanceof ProductoResultado producto

@@ -1,60 +1,43 @@
-import { Fragment, useState, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import ChatMensaje from '../ChatMensaje/ChatMensaje'
 import ChatEntrada from '../ChatEntrada/ChatEntrada'
 import ChatProductos from '../ChatProductos/ChatProductos'
-import { obtenerConversacion, enviarMensajeChat } from '../../utils/api'
 import ChatSugerencias from '../ChatSugerencias/ChatSugerencias'
 import ChatAcciones from '../ChatAcciones/ChatAcciones'
+import { openConversation, fetchConversation, sendMessage } from '../../redux/slice/ChatSlice'
 import { obtenerSesion } from '../../utils/sesion'
 import { saludoPorRol, sugerenciasPorRol } from '../../utils/chat'
 import './ChatConversacion.css'
 
 const ChatConversacion = ({ conversacionId, onVolver }) => {
-    const [mensajes, setMensajes] = useState([])
-    const [cargando, setCargando] = useState(conversacionId !== null)
-    const [error, setError] = useState(null)
-    const [enviando, setEnviando] = useState(false)
-    const [idActual, setIdActual] = useState(conversacionId)         // NUEVO
+    const dispatch = useDispatch()
+    const {
+        messages: mensajes,
+        currentId,
+        messagesLoading: cargando,
+        messagesError: error,
+        sendStatus,
+    } = useSelector((state) => state.chat)
+    const enviando = sendStatus === "pending"
     const finRef = useRef(null)
-    const { rol } = obtenerSesion()                               // NUEVO
+    const { rol } = obtenerSesion()
 
+    // Al abrir: se limpia la charla anterior y, si no es nueva, se traen sus mensajes
     useEffect(() => {
-        if (conversacionId === null) {
-            return
+        dispatch(openConversation(conversacionId))
+        if (conversacionId !== null) {
+            dispatch(fetchConversation(conversacionId))
         }
+    }, [dispatch, conversacionId])
 
-        obtenerConversacion(conversacionId)
-            .then(data => setMensajes(data.mensajes))
-            .catch(err => {
-                console.error(err)
-                setError('No se pudo cargar la conversación')
-            })
-            .finally(() => setCargando(false))
-    }, [conversacionId])
-
-    // NUEVO: cada vez que cambian los mensajes, baja hasta el último
+    // Cada vez que cambian los mensajes, baja hasta el último
     useEffect(() => {
         finRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [mensajes, enviando])
 
-    // NUEVO: mandar un mensaje a Uni
-        const enviar = (texto) => {
-        setMensajes(prev => [...prev, { autor: 'USUARIO', texto: texto }])
-        setEnviando(true)
-
-        enviarMensajeChat(idActual, texto)
-            .then(data => {
-                setIdActual(data.conversacionId)
-                setMensajes(prev => [...prev, { autor: 'ASISTENTE', texto: data.respuesta, productos: data.productos || [], acciones: data.acciones || [] }])
-            })
-            .catch(err => {
-                console.error(err)
-                setMensajes(prev => [...prev, {
-                    autor: 'ASISTENTE',
-                    texto: 'No pude responder en este momento. Probá de nuevo en unos segundos.'
-                }])
-            })
-            .finally(() => setEnviando(false))
+    const enviar = (texto) => {
+        dispatch(sendMessage({ conversacionId: currentId, mensaje: texto }))
     }
 
     return (
@@ -72,7 +55,7 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
                     <ChatSugerencias sugerencias={sugerenciasPorRol(rol)} onElegir={enviar} />
                 </>
             )}
-            
+
             {mensajes.map((m, i) => (
                 <Fragment key={i}>
                     <ChatMensaje autor={m.autor} texto={m.texto} />

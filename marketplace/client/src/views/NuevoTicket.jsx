@@ -1,21 +1,36 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { createTicket, resetCreateStatus } from '../redux/slice/TicketSlice'
 import TicketForm from '../components/TicketForm/TicketForm'
 import TicketAyudaUni from '../components/TicketAyudaUni/TicketAyudaUni'
-import { crearTicket } from '../utils/api'
 import './NuevoTicket.css'
 
 const NuevoTicket = () => {
     const [formulario, setFormulario] = useState({ asunto: '', mensaje: '' })
-    const [enviando, setEnviando] = useState(false)
+    const { createStatus } = useSelector((state) => state.tickets)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    // Reacciona a cómo terminó la creación del ticket
+    useEffect(() => {
+        if (createStatus === "succeeded") {
+            toast.success('Ticket enviado. Te vamos a responder a la brevedad.')
+            dispatch(resetCreateStatus())
+            navigate('/vendedor/tickets')
+        }
+        if (createStatus === "failed") {
+            toast.error('No se pudo enviar el ticket.')
+            dispatch(resetCreateStatus())
+        }
+    }, [createStatus, dispatch, navigate])
 
     const handleChange = (e) => {
         setFormulario({ ...formulario, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
         const asunto = formulario.asunto.trim()
         const mensaje = formulario.mensaje.trim()
@@ -25,16 +40,7 @@ const NuevoTicket = () => {
             return
         }
 
-        setEnviando(true)
-        try {
-            await crearTicket({ asunto, mensaje })
-            toast.success('Ticket enviado. Te vamos a responder a la brevedad.')
-            navigate('/vendedor/tickets')
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setEnviando(false)
-        }
+        dispatch(createTicket({ asunto, mensaje }))
     }
 
     return (
@@ -50,7 +56,7 @@ const NuevoTicket = () => {
                     formulario={formulario}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
-                    enviando={enviando}
+                    enviando={createStatus === "pending"}
                 />
             </div>
             <TicketAyudaUni />

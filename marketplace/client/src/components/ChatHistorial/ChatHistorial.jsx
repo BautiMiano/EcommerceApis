@@ -1,32 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import ConversacionItem from '../ConversacionItem/ConversacionItem'
 import CaritaUni from '../CaritaUni/CaritaUni'
-import { obtenerConversaciones, eliminarConversacion } from '../../utils/api'
+import { fetchConversations, deleteConversation } from '../../redux/slice/ChatSlice'
 import './ChatHistorial.css'
 
 const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
-    const [conversaciones, setConversaciones] = useState([])
-    const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState(null)
+    const dispatch = useDispatch()
+    const { items: conversaciones, loading, error, deletingId } = useSelector((state) => state.chat)
 
     useEffect(() => {
-        obtenerConversaciones()
-            .then(data => setConversaciones(data))
-            .catch(err => {
-                console.error(err)
-                setError('No se pudo cargar el historial')
-            })
-            .finally(() => setCargando(false))
-    }, [])
-
-        // Borra en el backend y, si salió bien, la saca de la lista sin volver a pedirla
-    const eliminar = (id) =>
-        eliminarConversacion(id)
-            .then(() => setConversaciones(prev => prev.filter(conv => conv.id !== id)))
-            .catch(err => {
-                console.error(err)
-                setError('No se pudo borrar la conversación')
-            })
+        dispatch(fetchConversations())
+    }, [dispatch])
 
     return (
         <section className="chat-historial">
@@ -37,9 +22,9 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
                 </button>
             )}
 
-            {cargando && <p className="chat-historial-estado">Cargando conversaciones...</p>}
-            {error && <p className="chat-historial-error">{error}</p>}
-                        {!cargando && !error && conversaciones.length === 0 && (
+            {loading && <p className="chat-historial-estado">Cargando conversaciones...</p>}
+            {error && <p className="chat-historial-error">No se pudo cargar el historial</p>}
+            {!loading && !error && conversaciones.length === 0 && (
                 <div className="chat-historial-vacio">
                     <CaritaUni tamano={64} />
                     <h4 className="chat-historial-vacio-titulo">¡Hola! Soy Uni. ¿Charlamos?</h4>
@@ -56,12 +41,13 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
                 <>
                     <h4 className="chat-historial-subtitulo">Tus conversaciones</h4>
                     <ul className="chat-historial-lista">
-                        {conversaciones.map(conv => (
+                        {conversaciones.map((conv) => (
                             <ConversacionItem
                                 key={conv.id}
                                 conversacion={conv}
+                                eliminando={deletingId === conv.id}
                                 onSeleccionar={onSeleccionarConversacion}
-                                onEliminar={eliminar}
+                                onEliminar={(id) => dispatch(deleteConversation(id))}
                             />
                         ))}
                     </ul>
