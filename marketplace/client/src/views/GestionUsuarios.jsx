@@ -1,47 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import SellerPageHeader from "../components/SellerPageHeader/SellerPageHeader";
 import PanelEstado from "../components/PanelEstado/PanelEstado";
 import AdminStats from "../components/AdminStats/AdminStats";
 import UsuariosSeccion from '../components/UsuariosSeccion/UsuariosSeccion'
-import { activarUsuario, desactivarUsuario, obtenerUsuarios } from '../utils/api'
+import { fetchUsuarios, resetAccionStatus } from '../redux/slice/UsuarioSlice'
 
 // Pantalla del administrador para ver todos los usuarios y activarlos o desactivarlos.
-// La lista vive en el estado local; las validaciones las hace el backend y acá solo se muestra su mensaje.
+// La lista vive en el estado global (state.usuarios); las validaciones las hace el backend y acá solo se muestra su mensaje.
 const GestionUsuarios = () => {
-  const [usuarios, setUsuarios] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-  const [usuarioEnAccion, setUsuarioEnAccion] = useState(null)
+  const dispatch = useDispatch()
+  const { status, error, accionStatus, accionError, ultimaAccion } = useSelector((state) => state.usuarios)
+  const cargando = status === 'idle' || status === 'pending'
 
-  const cargarUsuarios = async () => {
-    setError('')
-    try {
-      setUsuarios(await obtenerUsuarios())
-    } catch (errorObteniendo) {
-      setError(errorObteniendo.message)
-    } finally {
-      setCargando(false)
-    }
-  }
-
+  // Solo se pide al backend si la lista todavía no está en la store
   useEffect(() => {
-    Promise.resolve().then(cargarUsuarios)
-  }, [])
-
-  // Si el backend acepta el cambio, se refleja en la lista local sin volver a pedirla
-  const handleCambiarActivo = async (usuario) => {
-    setUsuarioEnAccion(usuario.id)
-    try {
-      await (usuario.activo ? desactivarUsuario(usuario.id) : activarUsuario(usuario.id))
-      setUsuarios((lista) => lista.map((item) => (item.id === usuario.id ? { ...item, activo: !usuario.activo } : item)))
-      toast.success(usuario.activo ? 'Usuario desactivado.' : 'Usuario activado.')
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setUsuarioEnAccion(null)
+    if (status === 'idle') {
+      dispatch(fetchUsuarios())
     }
-  }
+  }, [status, dispatch])
+
+  // Los toasts son un efecto secundario: van acá y no en el reducer
+  useEffect(() => {
+    if (accionStatus === 'succeeded') {
+      toast.success(ultimaAccion.activo ? 'Usuario activado.' : 'Usuario desactivado.')
+      dispatch(resetAccionStatus())
+    }
+    if (accionStatus === 'failed') {
+      toast.error(accionError)
+      dispatch(resetAccionStatus())
+    }
+  }, [accionStatus, accionError, ultimaAccion, dispatch])
 
   return (
     <div className="panel-pagina">
@@ -52,16 +42,16 @@ const GestionUsuarios = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando usuarios..." />}
 
-      {!cargando && error && (
+      {status === 'failed' && (
         <PanelEstado tipo="error" titulo="No pudimos cargar los usuarios" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarUsuarios}>Reintentar</button>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchUsuarios())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {status === 'succeeded' && (
         <>
-          <AdminStats usuarios={usuarios} />
-          <UsuariosSeccion usuarios={usuarios} ocupadoId={usuarioEnAccion} onCambiarActivo={handleCambiarActivo} />
+          <AdminStats />
+          <UsuariosSeccion />
         </>
       )}
     </div>

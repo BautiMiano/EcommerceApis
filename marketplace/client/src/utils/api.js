@@ -189,26 +189,6 @@ export const quitarDescuento = (productoId) =>
   }, 'No se pudo quitar el descuento.')
 
 
-    // ---------- Usuarios (rol ADMIN) ----------
-
-export const obtenerUsuarios = () =>
-  solicitar('/usuarios', {
-    headers: obtenerHeaders(),
-  }, 'No se pudieron obtener los usuarios.')
-
-export const activarUsuario = (usuarioId) =>
-  solicitar(`/usuarios/activar/${usuarioId}`, {
-    method: 'PATCH',
-    headers: obtenerHeaders(),
-  }, 'No se pudo activar el usuario.')
-
-export const desactivarUsuario = (usuarioId) =>
-  solicitar(`/usuarios/desactivar/${usuarioId}`, {
-    method: 'PATCH',
-    headers: obtenerHeaders(),
-  }, 'No se pudo desactivar el usuario.')
-
-
 // ---------- Perfil ----------
 
 export const obtenerMiPerfil = () =>

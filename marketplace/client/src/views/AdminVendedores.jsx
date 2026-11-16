@@ -1,60 +1,40 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import StatCard from '../components/StatCard/StatCard'
 import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
-import { activarUsuario, desactivarUsuario, obtenerUsuarios } from '../utils/api'
+import { cambiarActivoUsuario, fetchUsuarios, resetAccionStatus } from '../redux/slice/UsuarioSlice'
 import './AdminVendedores.css'
 
+// Usa la misma lista de usuarios de la store que Gestión de usuarios: si ya se cargó allá, no se vuelve a pedir.
 const AdminVendedores = () => {
-  const [vendedores, setVendedores] = useState([])
+  const dispatch = useDispatch()
+  const { items: usuarios, status, error, accionId, accionStatus, accionError, ultimaAccion } =
+    useSelector((state) => state.usuarios)
   const [filtro, setFiltro] = useState('PENDIENTES')
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-  const [vendedorEnAccion, setVendedorEnAccion] = useState(null)
-
-  const cargarDatos = async () => {
-    setError('')
-    try {
-      const usuarios = await obtenerUsuarios()
-      setVendedores(usuarios.filter((usuario) => usuario.rolUsuario === 'VENDEDOR'))
-    } catch (errorObteniendo) {
-      setError(errorObteniendo.message)
-    } finally {
-      setCargando(false)
-    }
-  }
+  const cargando = status === 'idle' || status === 'pending'
+  const vendedores = usuarios.filter((usuario) => usuario.rolUsuario === 'VENDEDOR')
 
   useEffect(() => {
-    Promise.resolve().then(cargarDatos)
-  }, [])
-
-  const handleAprobar = async (vendedor) => {
-    setVendedorEnAccion(vendedor.id)
-    try {
-      await activarUsuario(vendedor.id)
-      await cargarDatos()
-      toast.success(`${vendedor.nombreUsuario} ya puede ingresar y publicar productos.`)
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setVendedorEnAccion(null)
+    if (status === 'idle') {
+      dispatch(fetchUsuarios())
     }
-  }
+  }, [status, dispatch])
 
-  const handleDesactivar = async (vendedor) => {
-    setVendedorEnAccion(vendedor.id)
-    try {
-      await desactivarUsuario(vendedor.id)
-      await cargarDatos()
-      toast.success(`${vendedor.nombreUsuario} ya no puede ingresar.`)
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setVendedorEnAccion(null)
+  useEffect(() => {
+    if (accionStatus === 'succeeded') {
+      toast.success(ultimaAccion.activo
+        ? `${ultimaAccion.nombreUsuario} ya puede ingresar y publicar productos.`
+        : `${ultimaAccion.nombreUsuario} ya no puede ingresar.`)
+      dispatch(resetAccionStatus())
     }
-  }
+    if (accionStatus === 'failed') {
+      toast.error(accionError)
+      dispatch(resetAccionStatus())
+    }
+  }, [accionStatus, accionError, ultimaAccion, dispatch])
 
   const pendientes = vendedores.filter((vendedor) => !vendedor.activo)
 
@@ -72,13 +52,13 @@ const AdminVendedores = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando los vendedores..." />}
 
-      {!cargando && error && (
+      {status === 'failed' && (
         <PanelEstado tipo="error" titulo="No pudimos cargar los vendedores" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarDatos}>Reintentar</button>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchUsuarios())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {status === 'succeeded' && (
         <>
           <div className="admin-vendedores-stats">
             <StatCard icono="storefront" etiqueta="Vendedores" valor={vendedores.length} detalle="registrados" />
@@ -133,8 +113,8 @@ const AdminVendedores = () => {
                             <button
                               type="button"
                               className="panel-boton panel-boton-primario panel-boton-chico"
-                              onClick={() => handleAprobar(vendedor)}
-                              disabled={vendedorEnAccion === vendedor.id}
+                              onClick={() => dispatch(cambiarActivoUsuario(vendedor))}
+                              disabled={accionId === vendedor.id}
                             >
                               Aprobar
                             </button>
@@ -143,8 +123,8 @@ const AdminVendedores = () => {
                             <button
                               type="button"
                               className="panel-boton panel-boton-secundario panel-boton-chico"
-                              onClick={() => handleDesactivar(vendedor)}
-                              disabled={vendedorEnAccion === vendedor.id}
+                              onClick={() => dispatch(cambiarActivoUsuario(vendedor))}
+                              disabled={accionId === vendedor.id}
                             >
                               Desactivar
                             </button>

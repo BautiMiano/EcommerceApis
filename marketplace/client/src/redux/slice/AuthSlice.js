@@ -27,8 +27,15 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (credenciales)
 });
 
 // El comprador recibe su token al registrarse. El vendedor no: queda pendiente de aprobación.
+// Igual que en loginUser, validateStatus permite leer el motivo del error que manda el backend
+// (por ejemplo, "El mail que se intenta agregar ya esta creado").
 export const registerUser = createAsyncThunk("auth/registerUser", async (usuario) => {
-    const { data } = await axios.post(`${URL}/register`, usuario);
+    const { data, status } = await axios.post(`${URL}/register`, usuario, {
+        validateStatus: () => true,
+    });
+    if (status !== 200) {
+        throw new Error(data || "No se pudo crear la cuenta");
+    }
     data.access_token && guardarSesion(data);
     return data;
 });
@@ -50,6 +57,7 @@ const authSlice = createSlice({
         error: null,
         registerStatus: "idle",
         registerRol: null,
+        registerError: null,
     },
     reducers: {
         // El localStorage lo limpia cerrarSesion() (utils/sesion.js) antes de despachar esta acción
@@ -61,6 +69,11 @@ const authSlice = createSlice({
         resetRegisterStatus: (state) => {
             state.registerStatus = "idle";
             state.registerRol = null;
+            state.registerError = null;
+        },
+        // Borra el error del login (se usa al salir de la pantalla de login)
+        clearError: (state) => {
+            state.error = null;
         },
     },
     extraReducers: (builder) => {
@@ -79,17 +92,19 @@ const authSlice = createSlice({
             })
             .addCase(registerUser.pending, (state) => {
                 state.registerStatus = "pending";
+                state.registerError = null;
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.registerStatus = "succeeded";
                 state.registerRol = action.payload.role;
                 action.payload.access_token && cargarSesion(state, action.payload);
             })
-            .addCase(registerUser.rejected, (state) => {
+            .addCase(registerUser.rejected, (state, action) => {
                 state.registerStatus = "failed";
+                state.registerError = action.error.message;
             });
     },
 });
 
-export const { logout, resetRegisterStatus } = authSlice.actions;
+export const { logout, resetRegisterStatus, clearError } = authSlice.actions;
 export default authSlice.reducer;
