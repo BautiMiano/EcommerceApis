@@ -49,6 +49,15 @@ export const fetchTalles = createAsyncThunk(
   }
 )
 
+// Detalle de un producto (GET /productos/{id}). Se pide una sola vez por producto.
+export const fetchProductoPorId = createAsyncThunk(
+  'productos/fetchProductoPorId',
+  async (id) => {
+    const { data } = await axios.get(`${URL}/${id}`)
+    return data
+  }
+)
+
 export const aplicarFiltros = () => (dispatch, getState) => {
   const { filtros, estados } = getState().productos
 
@@ -130,6 +139,11 @@ const initialStateProductos = {
 
   talles: [],
   statusTalles: 'idle',
+
+  // Detalle de cada producto que se abrió: { 7: {...producto} } y su estado: { 7: 'succeeded' }
+  detalles: {},
+  estadosDetalle: {},
+  errorDetalle: null,
 
   filtros: {
     categorias: [],
@@ -275,6 +289,20 @@ const productosSlice = createSlice({
       })
       .addCase(buscarProductos.rejected, (state, action) => {
         alFallar(state, 'busqueda', action.meta.arg, action.error.message)
+      })
+
+      // ----- Detalle de un producto -----
+      .addCase(fetchProductoPorId.pending, (state, action) => {
+        state.estadosDetalle[action.meta.arg] = 'loading'
+        state.errorDetalle = null
+      })
+      .addCase(fetchProductoPorId.fulfilled, (state, action) => {
+        state.estadosDetalle[action.meta.arg] = 'succeeded'
+        state.detalles[action.meta.arg] = action.payload
+      })
+      .addCase(fetchProductoPorId.rejected, (state, action) => {
+        state.estadosDetalle[action.meta.arg] = 'failed'
+        state.errorDetalle = action.error.message
       })
   },
 })

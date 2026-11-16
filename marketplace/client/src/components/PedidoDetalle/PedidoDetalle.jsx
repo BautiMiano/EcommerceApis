@@ -97,6 +97,34 @@ const PedidoDetalle = ({ ordenId, imagenes, onCerrar, onActualizado }) => {
         )}
       </section>
 
+      {/* A dónde enviar el pedido (las órdenes viejas no lo tienen) */}
+      {venta.datosEnvio && (
+        <section className="pedido-detalle-seccion">
+          <h3 className="pedido-detalle-subtitulo">
+            <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+            Datos de envío
+          </h3>
+          <p className="pedido-detalle-dato">
+            <span className="material-symbols-outlined" aria-hidden="true">person</span>
+            {venta.datosEnvio.nombreReceptor}
+          </p>
+          <p className="pedido-detalle-dato">
+            <span className="material-symbols-outlined" aria-hidden="true">call</span>
+            <a href={`tel:${venta.datosEnvio.telefono}`}>{venta.datosEnvio.telefono}</a>
+          </p>
+          <p className="pedido-detalle-dato">
+            <span className="material-symbols-outlined" aria-hidden="true">location_on</span>
+            {venta.datosEnvio.direccion}, {venta.datosEnvio.ciudad}, {venta.datosEnvio.provincia} (CP {venta.datosEnvio.codigoPostal})
+          </p>
+          {venta.datosEnvio.indicaciones && (
+            <p className="pedido-detalle-dato">
+              <span className="material-symbols-outlined" aria-hidden="true">info</span>
+              {venta.datosEnvio.indicaciones}
+            </p>
+          )}
+        </section>
+      )}
+
       <section className="pedido-detalle-seccion">
         <h3 className="pedido-detalle-subtitulo">
           <span className="material-symbols-outlined" aria-hidden="true">inventory_2</span>

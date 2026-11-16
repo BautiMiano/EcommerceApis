@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.uade.EcommerceUniformes.marketplace.entity.Carrito;
+import com.uade.EcommerceUniformes.marketplace.entity.DatosEnvio;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoCarrito;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 import com.uade.EcommerceUniformes.marketplace.entity.ItemCarrito;
@@ -32,6 +33,9 @@ import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.CarritoResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ItemCarritoResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.CompraConfirmadaResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.OrdenConfirmadaResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.VendedorContactoResponse;
 import com.uade.EcommerceUniformes.marketplace.repository.CarritoRepository;
 import com.uade.EcommerceUniformes.marketplace.repository.OrdenDeCompraRepository;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.MetodoDePagoDto;
@@ -136,6 +140,22 @@ public class CarritoServiceImpl implements CarritoService {
         if (cantidadTotal > stockTalle.getStockDisponible()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "No hay stock suficiente para el producto: " + producto.getNombre() + " en talle " + talle);
+        }
+    }
+
+    private boolean estaVacio(String valor) {
+        return valor == null || valor.isBlank();
+    }
+
+    /** Al confirmar la compra son obligatorios todos los datos de envío menos las indicaciones. */
+    private void exigirDatosEnvio(DatosEnvio datos) {
+        if (datos == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicar los datos de envio");
+        }
+        if (estaVacio(datos.getNombreReceptor()) || estaVacio(datos.getTelefono())
+                || estaVacio(datos.getDireccion()) || estaVacio(datos.getCiudad())
+                || estaVacio(datos.getProvincia()) || estaVacio(datos.getCodigoPostal())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Completa todos los datos de envio");
         }
     }
 
@@ -307,7 +327,7 @@ public class CarritoServiceImpl implements CarritoService {
 
     @Override
     @Transactional
-    public CarritoResponse confirmarPago(Long carritoId, CarritoRequest request) {
+    public CompraConfirmadaResponse confirmarPago(Long carritoId, CarritoRequest request) {
         Carrito carrito = obtenerCarritoPropio(carritoId);
 
         if (carrito.getEstado() != EstadoCarrito.PENDIENTE_PAGO) {
@@ -316,6 +336,7 @@ public class CarritoServiceImpl implements CarritoService {
         if (request.getMetodoDePago() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicar el metodo de pago");
         }
+        exigirDatosEnvio(request.getDatosEnvio());
 
         // Una orden por vendedor: así cada vendedor maneja el estado de su pedido sin
         // afectar a los demás
@@ -323,8 +344,10 @@ public class CarritoServiceImpl implements CarritoService {
                 .collect(Collectors.groupingBy(
                         item -> item.getProducto().getVendedor().getId(), LinkedHashMap::new, Collectors.toList()));
 
+        List<OrdenConfirmadaResponse> ordenes = new ArrayList<>();
         for (List<ItemCarrito> itemsDelVendedor : itemsPorVendedor.values()) {
-            crearOrden(carrito.getUsuario(), itemsDelVendedor, request.getMetodoDePago());
+            OrdenDeCompra orden = crearOrden(carrito.getUsuario(), itemsDelVendedor, request.getMetodoDePago(), request.getDatosEnvio());
+            ordenes.add(aOrdenConfirmada(orden, itemsDelVendedor.get(0).getProducto().getVendedor()));
         }
 
         // La compra queda en la orden: el mismo carrito se vacía para seguir comprando
@@ -332,22 +355,34 @@ public class CarritoServiceImpl implements CarritoService {
         carrito.setEstado(EstadoCarrito.ARMADO);
         carrito.setFechaInicioPago(null);
 
-        return convertirACarritoResponse(carritoRepository.save(carrito));
+        return new CompraConfirmadaResponse(convertirACarritoResponse(carritoRepository.save(carrito)), ordenes);
+    }
+
+    private OrdenConfirmadaResponse aOrdenConfirmada(OrdenDeCompra orden, Usuario vendedor) {
+        String nombre = vendedor.getApellido() == null
+                ? vendedor.getNombre()
+                : vendedor.getNombre() + " " + vendedor.getApellido();
+        int cantidad = orden.getItems().stream().mapToInt(ItemDeOrdenDeCompra::getCantidad).sum();
+        VendedorContactoResponse contacto = new VendedorContactoResponse(
+                vendedor.getId(), nombre, vendedor.getNombreUsuario(), vendedor.getMail(), vendedor.getTelefono());
+        return new OrdenConfirmadaResponse(orden.getId(), cantidad, orden.getTotal(), contacto);
     }
 
     // Crea la orden confirmada con los ítems de un mismo vendedor y descuenta su
     // stock
     
-private void crearOrden(
+private OrdenDeCompra crearOrden(
         Usuario comprador,
         List<ItemCarrito> items,
-        MetodoDePago metodoDePago) {
+        MetodoDePago metodoDePago,
+        DatosEnvio datosEnvio) {
 
     OrdenDeCompra orden = new OrdenDeCompra();
     orden.setUsuario(comprador);
     orden.setFechaCompra(new Date(System.currentTimeMillis()));
     orden.setEstado(EstadoOrden.CONFIRMADA);
     orden.setMetodoDePago(metodoDePago);
+    orden.setDatosEnvio(datosEnvio.copiar());
     orden.setItems(new ArrayList<>());
 
     double total = 0;
@@ -385,7 +420,8 @@ private void crearOrden(
         emailService.enviarOrdenCompra(
                 comprador.getMail(),
                 ordenGuardada.getId(),
-                pdf
+                pdf,
+                items.get(0).getProducto().getVendedor()
         );
 
     } catch (Exception e) {
@@ -396,6 +432,7 @@ private void crearOrden(
                 + e.getMessage()
         );
     }
+    return ordenGuardada;
 }
 
 

@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { agregarAlCarrito } from "../../redux/slice/CarritoSlice"
 import SearchBar from "../SearchBar/SearchBar"
 import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
 import { obtenerMisFavoritos, eliminarFavorito } from "../../utils/api"
-import { armarFavorito, moverAlCarrito } from "../../utils/favoritos"
+import { armarFavorito } from "../../utils/favoritos"
 import './FavoritesCatalog.css'
 
 const FavoritesCatalog = () => {
+
+    const dispatch = useDispatch()
+    const statusAgregar = useSelector((state) => state.carrito.statusAgregar)
+
+    // Agrega 1 unidad con Redux: el carrito del store queda actualizado y el aviso lo muestra el layout
+    const moverAlCarrito = (productoId, talle) => {
+        statusAgregar !== 'loading' && dispatch(agregarAlCarrito({ productoId, talle, cantidad: 1 }))
+    }
 
     const [favoritos, setFavoritos] = useState([])
     const [busqueda, setBusqueda] = useState('')

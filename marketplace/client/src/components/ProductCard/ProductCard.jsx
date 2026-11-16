@@ -19,10 +19,6 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
           {categoryName && <span className="product-category">{categoryName}</span>}
           <h3 className="product-title">{product.nombre}</h3>
           <p className="product-desc">{product.descripcion}</p>
-          <div className="product-chips">
-            <StockStatus nivelStock={product.nivelStock} mensajeStock={product.mensajeStock} />
-            <span className="stock-info">Talle {product.tallesTexto}</span>
-          </div>
         </div>
 
         <div className="product-action-box">

@@ -196,6 +196,7 @@ public class OrdenDeCompraServiceImpl implements OrdenDeCompraService {
                 cantidadProductos,
                 total,
                 itemsVenta,
-                estadosSiguientes(orden.getEstado()));
+                estadosSiguientes(orden.getEstado()),
+                orden.getDatosEnvio());
     }
 }

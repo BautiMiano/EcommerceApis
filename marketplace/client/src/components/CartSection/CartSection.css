@@ -1,22 +1,237 @@
-.cart-section {
-  padding: 48px 0 96px 0;
+/* Carrito + checkout. Piezas compartidas por CartList, CheckoutForm, CartSummary y CompraConfirmada.
+   Todas las medidas en rem (1rem = 16px). */
+
+@keyframes carrito-aparecer {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.cart-section-grilla {
+@keyframes carrito-brillo {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.carrito-grilla {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 1fr) 22.5rem;
   align-items: start;
-  gap: 24px;
+  gap: 1.5rem;
+  max-width: 76rem;
+  margin: 2rem auto 4rem auto;
+  transition: opacity 0.2s ease;
 }
 
-@media screen and (max-width: 1024px) {
-  .cart-section-grilla {
-    grid-template-columns: 1fr;
+/* Mientras se confirma la compra no se puede tocar nada */
+.carrito-procesando .carrito-columna {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.carrito-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* ---------- Tarjeta de cada paso ---------- */
+
+.carrito-tarjeta {
+  padding: 1.75rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 1rem;
+  background-color: var(--uf-blanco);
+  box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.04);
+  animation: carrito-aparecer 0.4s ease both;
+}
+
+.carrito-columna > :nth-child(2) .carrito-tarjeta:first-child { animation-delay: 0.08s; }
+.carrito-columna > :nth-child(2) .carrito-tarjeta:last-child { animation-delay: 0.16s; }
+
+.carrito-tarjeta-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.carrito-tarjeta-encabezado > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.carrito-paso {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.carrito-tarjeta-titulo {
+  font-size: 1.625rem;
+  letter-spacing: 0.03rem;
+}
+
+.carrito-tarjeta-subtitulo {
+  margin-top: 0.125rem;
+  color: var(--uf-texto-suave);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Botones y enlaces ---------- */
+
+.carrito-boton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 62.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.carrito-boton:hover {
+  transform: translateY(-0.0625rem);
+}
+
+.carrito-boton-oscuro {
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+}
+
+.carrito-boton-oscuro:hover {
+  background-color: #262626;
+}
+
+.carrito-boton .material-symbols-outlined {
+  font-size: 1.125rem;
+  transition: transform 0.2s ease;
+}
+
+.carrito-boton:hover .material-symbols-outlined {
+  transform: translateX(0.1875rem);
+}
+
+.carrito-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--uf-negro);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.carrito-enlace:hover {
+  color: var(--uf-naranja);
+}
+
+.carrito-enlace .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+/* ---------- Avisos y estados ---------- */
+
+.carrito-alerta {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.625rem;
+  background-color: var(--uf-naranja-suave);
+  color: #8a3d0f;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.carrito-esqueleto {
+  display: block;
+  min-height: 16rem;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #f1f1f1 25%, #e6e6e6 50%, #f1f1f1 75%);
+  background-size: 200% 100%;
+  animation: carrito-brillo 1.4s linear infinite;
+}
+
+.carrito-esqueleto-alto {
+  min-height: 26rem;
+}
+
+.carrito-estado,
+.carrito-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+}
+
+.carrito-estado {
+  max-width: 32rem;
+  margin: 3rem auto;
+}
+
+.carrito-estado > .material-symbols-outlined {
+  color: var(--uf-rojo);
+  font-size: 3rem;
+}
+
+.carrito-estado h2,
+.carrito-vacio h2 {
+  font-size: 2rem;
+}
+
+.carrito-estado p,
+.carrito-vacio p {
+  margin-bottom: 0.75rem;
+  color: var(--uf-texto-suave);
+  font-size: 0.875rem;
+}
+
+.carrito-vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: var(--uf-fondo);
+  color: var(--uf-texto-suave);
+  font-size: 2.25rem;
+}
+
+/* ---------- Responsive ---------- */
+
+@media screen and (max-width: 68rem) {
+  .carrito-grilla {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@media screen and (max-width: 768px) {
-  .cart-section {
-    padding: 32px 0 64px 0;
+@media screen and (max-width: 36rem) {
+  .carrito-grilla {
+    margin-top: 1.25rem;
+  }
+
+  .carrito-tarjeta {
+    padding: 1.25rem;
+  }
+
+  .carrito-tarjeta-encabezado {
+    flex-wrap: wrap;
   }
 }

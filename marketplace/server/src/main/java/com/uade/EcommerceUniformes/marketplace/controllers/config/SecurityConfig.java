@@ -104,7 +104,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/tickets/**").hasRole("ADMIN")
 
                         // Comentarios y favoritos
+                        // Saber si puede reseñar (ANTES del permitAll de GET /comentarios/**)
+                        .requestMatchers(HttpMethod.GET, "/comentarios/producto/*/puedo-comentar").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.GET, "/comentarios/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/comentarios").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.GET, "/favoritos/mis-favoritos").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.POST, "/favoritos/*").hasRole("COMPRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/favoritos/*").hasRole("COMPRADOR")

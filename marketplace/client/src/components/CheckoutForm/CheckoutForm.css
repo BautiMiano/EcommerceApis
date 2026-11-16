@@ -1,0 +1,187 @@
+.checkout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---------- Contacto (sale del perfil) ---------- */
+
+.checkout-contacto {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background-color: var(--uf-fondo);
+}
+
+.checkout-contacto > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkout-contacto-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--uf-blanco);
+  font-size: 1.25rem;
+}
+
+.checkout-contacto-nombre {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.checkout-contacto-mail {
+  overflow: hidden;
+  color: var(--uf-texto-suave);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Campos ---------- */
+
+.checkout-campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.125rem;
+}
+
+.checkout-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.checkout .panel-campo label {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.checkout .panel-campo input,
+.checkout .panel-campo textarea {
+  padding: 0.75rem 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkout .panel-campo textarea {
+  resize: vertical;
+}
+
+.checkout .panel-campo input:focus,
+.checkout .panel-campo textarea:focus {
+  border-color: var(--uf-negro);
+  box-shadow: 0 0 0 0.1875rem rgba(0, 0, 0, 0.06);
+  outline: none;
+}
+
+.checkout .panel-campo input[aria-invalid='true'] {
+  border-color: var(--uf-rojo);
+}
+
+.checkout .panel-campo-error {
+  font-size: 0.75rem;
+}
+
+/* ---------- Métodos de pago ---------- */
+
+.checkout-metodos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.checkout-metodo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.checkout-metodo:hover {
+  border-color: #bdbdbd;
+  transform: translateY(-0.0625rem);
+}
+
+.checkout-metodo input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkout-metodo:has(input:focus-visible) {
+  outline: 0.125rem solid var(--uf-naranja);
+  outline-offset: 0.125rem;
+}
+
+.checkout-metodo-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background-color: var(--uf-fondo);
+  font-size: 1.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.checkout-metodo-nombre {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.checkout-metodo-check {
+  color: var(--uf-naranja);
+  font-size: 1.25rem;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.checkout-metodo-activo {
+  border-color: var(--uf-negro);
+  background-color: #fafafa;
+  box-shadow: inset 0 0 0 0.0625rem var(--uf-negro);
+}
+
+.checkout-metodo-activo .checkout-metodo-icono {
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+}
+
+.checkout-metodo-activo .checkout-metodo-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.checkout-metodo-esqueleto {
+  min-height: 4.5rem;
+  border-radius: 0.75rem;
+}
+
+.checkout-error-metodo {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
+@media screen and (max-width: 36rem) {
+  .checkout-campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.checkout-3d-esqueleto {
+  min-height: 18rem;
+  margin-top: 1.25rem;
+}

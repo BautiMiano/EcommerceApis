@@ -3,6 +3,7 @@ package com.uade.EcommerceUniformes.marketplace.service;
 import com.uade.EcommerceUniformes.marketplace.entity.Comentario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioRequest;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PermisoComentarioResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,7 @@ public interface ComentarioService {
     List<ComentarioResponse> getComentariosByProductoId(Long productoId);
 
 ComentarioResponse createComentario(ComentarioRequest request);
+
+    PermisoComentarioResponse puedeComentar(Long productoId);
 
 }

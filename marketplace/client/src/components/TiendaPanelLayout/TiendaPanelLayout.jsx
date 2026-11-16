@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 import TiendaSidebar from '../TiendaSidebar/TiendaSidebar'
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu'
 import { Search } from '../Search/Search'
 import { fetchCategorias } from '../../redux/slice/ProductSlice'
+import { limpiarAvisoCarrito } from '../../redux/slice/CarritoSlice'
 import '../SellerLayout/SellerLayout.css'
 import '../SellerHeader/SellerHeader.css'
 import './TiendaPanelLayout.css'
@@ -15,6 +17,7 @@ const TiendaPanelLayout = ({ logueado, perfil, onLogout, contexto }) => {
   const dispatch = useDispatch()
   const location = useLocation()
   const statusCategorias = useSelector((state) => state.categorias.status)
+  const avisoCarrito = useSelector((state) => state.carrito.aviso)
   const [menuAbierto, setMenuAbierto] = useState(false)
 
   // Las categorías las usan los filtros del catálogo y el buscador del Home.
@@ -22,6 +25,13 @@ const TiendaPanelLayout = ({ logueado, perfil, onLogout, contexto }) => {
   useEffect(() => {
     statusCategorias === 'idle' && dispatch(fetchCategorias())
   }, [dispatch, statusCategorias])
+
+  // El carrito se modifica desde varias pantallas (detalle, favoritos, carrito):
+  // sus avisos se muestran acá, una sola vez, y se limpian
+  useEffect(() => {
+    avisoCarrito && toast[avisoCarrito.tipo](avisoCarrito.texto)
+    avisoCarrito && dispatch(limpiarAvisoCarrito())
+  }, [dispatch, avisoCarrito])
 
   return (
     <div className={`seller-layout tienda-panel ${menuAbierto ? 'seller-layout-menu-abierto' : ''}`}>

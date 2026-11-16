@@ -37,9 +37,29 @@
 
 /* ---------- Variante 'seccion' (antes PageHeader) ---------- */
 .page-header {
-  padding: 4.5rem 0 3.5rem;
+  position: relative;
+  padding: 4.5rem 1.5rem 3.5rem;
+  overflow: hidden;
   background-color: #000000;
   color: #ffffff;
+}
+
+/* Los hilos ocupan toda la banda y se desvanecen hacia la izquierda, donde está el texto */
+.page-header-fondo {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 35%, #000000 65%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 35%, #000000 65%);
+}
+
+.page-header-contenido {
+  position: relative;
+  pointer-events: none;
+}
+
+.page-header-contenido a,
+.page-header-contenido button {
+  pointer-events: auto;
 }
 
 .page-header-titulo {
@@ -56,7 +76,11 @@
 
 @media screen and (max-width: 48rem) {
   .page-header {
-    padding: 3.5rem 0 2.5rem;
+    padding: 3.5rem 1.25rem 2.5rem;
+  }
+
+  .page-header-fondo {
+    opacity: 0.5;
   }
 
   .page-header-titulo {
