@@ -10,7 +10,7 @@ import './MiPerfilVendedor.css'
 // las mismas tarjetas que el perfil del comprador (datos personales y cambio de contraseña).
 // Datos de la tienda y notificaciones no existen en el backend, por eso no se muestran.
 const MiPerfilVendedor = () => {
-  const { perfil, cargandoPerfil, errorPerfil, recargarPerfil } = useOutletContext()
+  const { perfil, cargandoPerfil, errorPerfil } = useOutletContext()
 
   if (cargandoPerfil) {
     return <PanelEstado tipo="cargando" titulo="Cargando tu perfil..." />
@@ -25,13 +25,12 @@ const MiPerfilVendedor = () => {
     <PerfilVendedor
       key={`${perfil.nombre}-${perfil.apellido}-${perfil.telefono}-${perfil.nombreUsuario}`}
       perfil={perfil}
-      recargarPerfil={recargarPerfil}
     />
   )
 }
 
-const PerfilVendedor = ({ perfil, recargarPerfil }) => {
-  const cuenta = usePerfilCuenta(perfil, recargarPerfil)
+const PerfilVendedor = ({ perfil }) => {
+  const cuenta = usePerfilCuenta(perfil)
 
   // Lleva al primer campo de los datos personales
   const handleEditar = () => document.getElementById('nombre')?.focus()

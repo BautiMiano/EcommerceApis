@@ -58,23 +58,6 @@ export const CategoryPage = () => {
   const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
   const visible = products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleSelectCategory = (catId) => {
-    setSelectedCategory(catId);
-    setPage(1);
-    catId && navigate(`/categorias/${catId}`);
-    !catId && navigate('/categorias');
-  };
-
-  const handleReset = () => {
-    setSelectedCategory('');
-    setSelectedSize('');
-    setMaxPrice(null);
-    setPage(1);
-    setLoading(true); 
-
-    navigate('/categorias');
-  };
-
   const handleNextPage = () => {
     page < pageCount && setPage(page + 1);
   };

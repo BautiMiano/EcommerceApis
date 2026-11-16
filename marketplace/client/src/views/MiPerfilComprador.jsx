@@ -8,7 +8,7 @@ import './MiPerfilComprador.css'
 // Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.
 // El perfil lo carga TiendaLayout; las tarjetas y la lógica son las mismas que las del vendedor.
 const MiPerfilComprador = () => {
-  const { perfil, cargandoPerfil, errorPerfil, recargarPerfil } = useOutletContext()
+  const { perfil, cargandoPerfil, errorPerfil } = useOutletContext()
 
   return (
     <div className="mi-perfil-comprador">
@@ -28,7 +28,6 @@ const MiPerfilComprador = () => {
           <PerfilComprador
             key={`${perfil.nombre}-${perfil.apellido}-${perfil.telefono}-${perfil.nombreUsuario}`}
             perfil={perfil}
-            recargarPerfil={recargarPerfil}
           />
         )}
       </div>
@@ -36,8 +35,8 @@ const MiPerfilComprador = () => {
   )
 }
 
-const PerfilComprador = ({ perfil, recargarPerfil }) => {
-  const cuenta = usePerfilCuenta(perfil, recargarPerfil)
+const PerfilComprador = ({ perfil }) => {
+  const cuenta = usePerfilCuenta(perfil)
 
   return (
     <div className="mi-perfil-comprador-grilla">

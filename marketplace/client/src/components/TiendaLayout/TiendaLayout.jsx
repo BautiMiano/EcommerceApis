@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../Navbar/Navbar'
 import TiendaPanelLayout from '../TiendaPanelLayout/TiendaPanelLayout'
+import AvisosPanel from '../AvisosPanel/AvisosPanel'
 import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 
 // Tienda: el visitante y el comprador la ven con el diseño del panel (sidebar a la izquierda).
@@ -12,23 +13,18 @@ const TiendaLayout = ({ onLogout }) => {
 
   // La sesión sale del AuthSlice y el perfil del UsuarioSlice
   const { token, rol } = useSelector((state) => state.auth)
-  const perfil = useSelector((state) => state.usuario.perfil)
-  const loading = useSelector((state) => state.usuario.loading)
-  const error = useSelector((state) => state.usuario.error)
-  const status = useSelector((state) => state.usuario.status)
+  const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
 
   // El perfil se pide una sola vez por sesión: solo si hay token y nunca se pidió ('idle')
   useEffect(() => {
-    token && status === 'idle' && dispatch(fetchPerfil())
-  }, [dispatch, token, status])
+    token && statusPerfil === 'idle' && dispatch(fetchPerfil())
+  }, [dispatch, token, statusPerfil])
 
-  // Lo mismo que antes recibían las pantallas por el Outlet (por ejemplo, Mi perfil)
+  // Lo que reciben las pantallas por el Outlet (por ejemplo, Mi perfil)
   const contexto = {
     perfil,
-    cargandoPerfil: Boolean(token) && (status === 'idle' || loading),
-    errorPerfil: error || '',
-    // Después de guardar el perfil se vuelve a pedir para mostrar los datos nuevos
-    recargarPerfil: () => dispatch(fetchPerfil()),
+    cargandoPerfil: Boolean(token) && (statusPerfil === 'idle' || loadingPerfil),
+    errorPerfil: errorPerfil || '',
   }
 
   if (!token || rol === 'COMPRADOR') {
@@ -44,6 +40,8 @@ const TiendaLayout = ({ onLogout }) => {
 
   return (
     <div className="app-container">
+      {/* El admin gestiona productos y categorías desde acá */}
+      <AvisosPanel />
       <Navbar perfil={perfil} onLogout={onLogout} />
       <main className="main-content">
         <Outlet context={contexto} />

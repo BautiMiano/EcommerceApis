@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { actualizarMiPerfil, cambiarMiContrasena } from '../utils/api'
+import { actualizarPerfil, cambiarContrasena, limpiarAvisoPerfil } from '../redux/slice/UsuarioSlice'
 
 const LARGO_MINIMO_CONTRASENA = 8
 const contrasenasVacias = { actual: '', nueva: '', confirmar: '' }
@@ -9,8 +10,13 @@ const FORMATO_MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const FORMATO_TELEFONO = /^[0-9 +()-]{6,20}$/
 
 // Datos de la cuenta y cambio de contraseña, compartidos por el perfil del vendedor y el del comprador.
+// Lo que se escribe es estado local; guardar se hace con dispatch y el resultado llega por Redux.
 // Todos los datos son obligatorios menos el teléfono, igual para los dos perfiles.
-const usePerfilCuenta = (perfil, recargarPerfil) => {
+const usePerfilCuenta = (perfil) => {
+  const dispatch = useDispatch()
+  const { statusGuardarPerfil, avisoPerfil } = useSelector((state) => state.usuarios)
+  const guardando = statusGuardarPerfil === 'loading'
+
   const [datos, setDatos] = useState({
     nombre: perfil.nombre,
     apellido: perfil.apellido || '',
@@ -21,7 +27,14 @@ const usePerfilCuenta = (perfil, recargarPerfil) => {
   const [contrasenas, setContrasenas] = useState(contrasenasVacias)
   const [erroresDatos, setErroresDatos] = useState({})
   const [erroresContrasena, setErroresContrasena] = useState({})
-  const [guardando, setGuardando] = useState(false)
+
+  // Cuando termina un guardado, el slice deja un aviso: se muestra, se limpia
+  // y si se cambió la contraseña se vacían sus campos
+  useEffect(() => {
+    avisoPerfil && toast[avisoPerfil.tipo](avisoPerfil.texto)
+    avisoPerfil?.accion === 'contrasena' && setContrasenas(contrasenasVacias)
+    avisoPerfil && dispatch(limpiarAvisoPerfil())
+  }, [dispatch, avisoPerfil])
 
   const handleDatos = (event) => setDatos({ ...datos, [event.target.name]: event.target.value })
   const handleContrasenas = (event) => setContrasenas({ ...contrasenas, [event.target.name]: event.target.value })
@@ -52,37 +65,24 @@ const usePerfilCuenta = (perfil, recargarPerfil) => {
     return errores
   }
 
-  const guardarDatos = async (event) => {
+  const guardarDatos = (event) => {
     event.preventDefault()
     const errores = validarDatos()
     setErroresDatos(errores)
-    if (Object.keys(errores).length > 0) {
+    if (Object.keys(errores).length > 0 || guardando) {
       return
     }
 
-    const cambios = {
+    dispatch(actualizarPerfil({
       nombre: datos.nombre.trim(),
       apellido: datos.apellido.trim(),
       mail: datos.mail.trim(),
       telefono: datos.telefono.trim(),
       nombreUsuario: datos.nombreUsuario.trim(),
-    }
-
-    setGuardando(true)
-    try {
-      const respuesta = await actualizarMiPerfil(cambios)
-      // El email es el usuario del login: el backend devuelve un token nuevo y el viejo deja de servir
-      localStorage.setItem('token', respuesta.access_token)
-      toast.success('Tus datos se guardaron.')
-      await recargarPerfil()
-    } catch (error) {
-      toast.error(error.message)
-    } finally {
-      setGuardando(false)
-    }
+    }))
   }
 
-  const guardarContrasena = async (event) => {
+  const guardarContrasena = (event) => {
     event.preventDefault()
     const errores = {}
     if (!contrasenas.actual) {
@@ -97,20 +97,11 @@ const usePerfilCuenta = (perfil, recargarPerfil) => {
       errores.confirmar = 'Las contraseñas no coinciden.'
     }
     setErroresContrasena(errores)
-    if (Object.keys(errores).length > 0) {
+    if (Object.keys(errores).length > 0 || guardando) {
       return
     }
 
-    setGuardando(true)
-    try {
-      await cambiarMiContrasena(contrasenas.actual, contrasenas.nueva)
-      setContrasenas(contrasenasVacias)
-      toast.success('Tu contraseña se cambió.')
-    } catch (error) {
-      toast.error(error.message)
-    } finally {
-      setGuardando(false)
-    }
+    dispatch(cambiarContrasena({ contrasenaActual: contrasenas.actual, contrasenaNueva: contrasenas.nueva }))
   }
 
   return {

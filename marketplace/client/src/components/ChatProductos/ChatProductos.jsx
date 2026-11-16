@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatoPrecio } from '../../utils/formato'
-import { urlImagen } from '../../utils/api'
+import { urlImagen } from '../../utils/http'
 import './ChatProductos.css'
 
 // Tarjetas de los productos que encontró Uni. El bot solo los muestra: comprar lo decide la persona.

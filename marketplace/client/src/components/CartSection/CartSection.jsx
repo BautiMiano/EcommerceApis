@@ -13,7 +13,7 @@ const CartSection = () => {
   const dispatch = useDispatch()
   const { usuarioId } = useSelector((state) => state.auth)
   const { carrito, status, error, statusCompra, compraConfirmada } = useSelector((state) => state.carrito)
-  const perfilId = useSelector((state) => state.usuario.perfil?.id)
+  const perfilId = useSelector((state) => state.usuarios.perfil?.id)
 
   useEffect(() => {
     status === 'idle' && usuarioId && dispatch(fetchCarrito(usuarioId))

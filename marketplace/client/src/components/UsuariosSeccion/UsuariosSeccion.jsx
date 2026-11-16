@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import PanelEstado from '../PanelEstado/PanelEstado'
 import Paginacion from '../Paginacion/Paginacion'
 import UsuariosFiltro from '../UsuariosFiltro/UsuariosFiltro'
@@ -7,8 +8,10 @@ import UsuarioFila from '../UsuarioFila/UsuarioFila'
 const POR_PAGINA = 10
 const FILTROS_INICIALES = { busqueda: '', rol: 'TODOS', estado: 'TODOS' }
 
-// Tabla de usuarios con filtros y paginación. Filtra y pagina en el front, sobre la lista que recibe.
-const UsuariosSeccion = ({ usuarios, ocupadoId, onCambiarActivo }) => {
+// Tabla de usuarios con filtros y paginación. Filtra y pagina en el front, sobre la lista de la store.
+// Los filtros y la página son estado local: solo le importan a esta pantalla.
+const UsuariosSeccion = () => {
+  const usuarios = useSelector((state) => state.usuarios.items)
   const [filtros, setFiltros] = useState(FILTROS_INICIALES)
   const [pagina, setPagina] = useState(1)
 
@@ -56,12 +59,7 @@ const UsuariosSeccion = ({ usuarios, ocupadoId, onCambiarActivo }) => {
               </thead>
               <tbody>
                 {usuariosPagina.map((usuario) => (
-                  <UsuarioFila
-                    key={usuario.id}
-                    usuario={usuario}
-                    ocupado={ocupadoId === usuario.id}
-                    onCambiarActivo={() => onCambiarActivo(usuario)}
-                  />
+                  <UsuarioFila key={usuario.id} usuario={usuario} />
                 ))}
               </tbody>
             </table>

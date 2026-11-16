@@ -39,7 +39,7 @@ const validar = (datos, metodo) => {
 // El botón "Confirmar compra" está en el resumen y envía este formulario (form="checkout-form").
 const CheckoutForm = () => {
   const dispatch = useDispatch()
-  const perfil = useSelector((state) => state.usuario.perfil)
+  const perfil = useSelector((state) => state.usuarios.perfil)
   const { metodos, statusMetodos, statusCompra } = useSelector((state) => state.carrito)
   const total = useSelector((state) => state.carrito.carrito.total)
 

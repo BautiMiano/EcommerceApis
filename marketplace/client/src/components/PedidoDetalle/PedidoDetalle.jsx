@@ -1,46 +1,32 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
 import EstadoBadge from '../EstadoBadge/EstadoBadge'
-import { cambiarEstadoVenta, obtenerMiVenta } from '../../utils/api'
+import { cambiarEstadoVenta, fetchMiVenta } from '../../redux/slice/OrdenSlice'
 import { ACCION_ESTADO, estadoPedido, formatoFecha, formatoPrecio } from '../../utils/formato'
 import { etiquetaTalle } from '../../utils/talles'
 import './PedidoDetalle.css'
 
 // Panel lateral con el detalle de un pedido: solo los productos del vendedor, con el talle y el precio
 // que quedaron guardados en la orden. El cambio de estado lo valida el backend.
-const PedidoDetalle = ({ ordenId, imagenes, onCerrar, onActualizado }) => {
-  const [venta, setVenta] = useState(null)
-  const [nuevoEstado, setNuevoEstado] = useState('')
-  const [error, setError] = useState('')
-  const [guardando, setGuardando] = useState(false)
+// La venta sale de Redux (OrdenSlice) y se pide una sola vez; al cambiar el estado, el slice
+// actualiza el detalle y la lista sin volver a pedirlos.
+const PedidoDetalle = ({ ordenId, imagenes, onCerrar }) => {
+  const dispatch = useDispatch()
+  const venta = useSelector((state) => state.ordenes.detalles[ordenId])
+  const estado = useSelector((state) => state.ordenes.estadosDetalle[ordenId])
+  const error = useSelector((state) => state.ordenes.erroresDetalle[ordenId])
+  const guardando = useSelector((state) => state.ordenes.statusCambio === 'loading')
+  // El estado elegido en el select es local; si no eligió nada, se usa el primero posible
+  const [elegido, setElegido] = useState('')
+  const nuevoEstado = venta && venta.estadosSiguientes.includes(elegido) ? elegido : venta?.estadosSiguientes[0] || ''
 
   useEffect(() => {
-    obtenerMiVenta(ordenId)
-      .then((ventaObtenida) => {
-        setVenta(ventaObtenida)
-        setNuevoEstado(ventaObtenida.estadosSiguientes[0] || '')
-        setError('')
-      })
-      .catch((errorObteniendo) => {
-        const mensajes = { 404: 'El pedido no existe.', 403: 'Este pedido no incluye productos tuyos.' }
-        setError(mensajes[errorObteniendo.status] || errorObteniendo.message)
-      })
-  }, [ordenId])
+    !estado && dispatch(fetchMiVenta(ordenId))
+  }, [dispatch, ordenId, estado])
 
-  const handleActualizar = async () => {
-    setGuardando(true)
-    try {
-      const actualizada = await cambiarEstadoVenta(venta.ordenId, nuevoEstado)
-      setVenta(actualizada)
-      setNuevoEstado(actualizada.estadosSiguientes[0] || '')
-      onActualizado(actualizada)
-      toast.success(`Pedido #${actualizada.ordenId}: ${estadoPedido(actualizada.estado).texto}.`)
-    } catch (errorCambio) {
-      toast.error(errorCambio.message)
-    } finally {
-      setGuardando(false)
-    }
+  const handleActualizar = () => {
+    !guardando && dispatch(cambiarEstadoVenta({ ordenId: venta.ordenId, estado: nuevoEstado }))
   }
 
   const cerrar = (
@@ -49,7 +35,7 @@ const PedidoDetalle = ({ ordenId, imagenes, onCerrar, onActualizado }) => {
     </button>
   )
 
-  if (error) {
+  if (estado === 'failed') {
     return (
       <aside className="panel-tarjeta pedido-detalle" aria-label="Detalle del pedido">
         {cerrar}
@@ -169,7 +155,7 @@ const PedidoDetalle = ({ ordenId, imagenes, onCerrar, onActualizado }) => {
             <div className="pedido-detalle-estado">
               <label className="panel-campo">
                 <span className="visually-hidden">Nuevo estado</span>
-                <select value={nuevoEstado} onChange={(event) => setNuevoEstado(event.target.value)}>
+                <select value={nuevoEstado} onChange={(event) => setElegido(event.target.value)}>
                   {venta.estadosSiguientes.map((estado) => (
                     <option key={estado} value={estado}>{ACCION_ESTADO[estado]}</option>
                   ))}

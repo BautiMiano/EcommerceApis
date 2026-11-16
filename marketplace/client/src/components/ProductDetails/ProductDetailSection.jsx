@@ -12,7 +12,6 @@ import { CartButton } from './CartButton';
 import {
   agregarFavorito,
   fetchFavoritos,
-  limpiarAvisoFavoritos,
   quitarFavorito,
   selectEsFavorito,
 } from '../../redux/slice/FavoritoSlice.js';
@@ -39,7 +38,6 @@ export const ProductDetailSection = ({ product }) => {
   const isFavorite = useSelector(selectEsFavorito(product.id));
   const statusFavoritos = useSelector((state) => state.favoritos.status);
   const favoritoEnAccion = useSelector((state) => state.favoritos.idEnAccion);
-  const avisoFavoritos = useSelector((state) => state.favoritos.aviso);
   const statusAgregar = useSelector((state) => state.carrito.statusAgregar);
 
   const estaAutenticado = Boolean(token);
@@ -51,11 +49,6 @@ export const ProductDetailSection = ({ product }) => {
     esComprador && statusFavoritos === 'idle' && dispatch(fetchFavoritos());
   }, [dispatch, esComprador, statusFavoritos]);
 
-  // Cuando un llamado termina, el slice deja un aviso: se muestra y se limpia
-  useEffect(() => {
-    avisoFavoritos && toast[avisoFavoritos.tipo](avisoFavoritos.texto);
-    avisoFavoritos && dispatch(limpiarAvisoFavoritos());
-  }, [dispatch, avisoFavoritos]);
 
 
   const handleAddToCart = () => {

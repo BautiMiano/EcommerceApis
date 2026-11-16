@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../redux/slice/AuthSlice';
+import { loginUser, clearError } from '../../redux/slice/AuthSlice';
 import { rutaInicioPorRol } from '../../utils/sesion';
 import CampoFormulario from '../CampoFormulario/CampoFormulario';
 import Button from '../Button/Button';
@@ -21,8 +21,17 @@ useEffect(() => {
     token && navigate(rutaInicioPorRol(rol));
   }, [token, rol, navigate]);
 
+// Al salir de la pantalla se borra el error, así el formulario arranca limpio cuando el usuario vuelve
+useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
 const handleSubmit = (e) => {
     e.preventDefault();
+    // Evita mandar dos logins si el usuario hace doble clic mientras se procesa el primero
+    if (loading) return;
     dispatch(loginUser({ mail, contrasena }));
   };
 

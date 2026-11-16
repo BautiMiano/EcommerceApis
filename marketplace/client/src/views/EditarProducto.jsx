@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
@@ -7,48 +8,54 @@ import ProductoForm from '../components/ProductoForm/ProductoForm'
 import ImageUploader from '../components/ImageUploader/ImageUploader'
 import ProductoPreview from '../components/ProductoPreview/ProductoPreview'
 import useProductoFormulario from '../hooks/useProductoFormulario'
-import { actualizarProducto, desactivarImagen, getCategories, getProductoById, subirImagen } from '../utils/api'
-import { armarProductoRequest, formularioDesdeProducto, guardarDescuentoYEstado } from '../utils/productoFormulario'
-import { useSelector } from 'react-redux'
+import { fetchProductoPorId, guardarPublicacion, reiniciarGuardado } from '../redux/slice/ProductSlice'
+import { armarPublicacion, formularioDesdeProducto } from '../utils/productoFormulario'
 
 // Editar producto: mismo formulario que Publicar, precargado. Actualiza el producto existente (PUT).
 // La usan el vendedor (sus productos) y el admin (productos de cualquier vendedor).
+// El producto sale de Redux (el mismo detalle que usa la tienda) y se pide una sola vez.
 const EditarProducto = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const form = useProductoFormulario()
   const { setFormulario } = form
-  const [producto, setProducto] = useState(null)
-  const [categorias, setCategorias] = useState([])
-  const [imagenesQuitadas, setImagenesQuitadas] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [errorCarga, setErrorCarga] = useState('')
-  const [guardando, setGuardando] = useState(false)
 
-  const { rol } = useSelector((state) => state.auth)
+  const { rol, usuarioId } = useSelector((state) => state.auth)
+  const producto = useSelector((state) => state.productos.detalles[id])
+  const estado = useSelector((state) => state.productos.estadosDetalle[id])
+  const errorDetalle = useSelector((state) => state.productos.errorDetalle)
+  const { statusGuardar } = useSelector((state) => state.productos)
+  const categorias = useSelector((state) => state.categorias.items)
+
+  // Estado local: qué fotos actuales se quitaron y si el formulario ya se completó con el producto
+  const [imagenesQuitadas, setImagenesQuitadas] = useState([])
+  const [precargadoId, setPrecargadoId] = useState(null)
+  const precargado = precargadoId === id
+  // Al guardar se borra el detalle del store: esto evita volver a pedirlo justo antes de salir
+  const saliendo = useRef(false)
+
   const esAdmin = rol === 'ADMIN'
   const rutaListado = esAdmin ? '/admin/productos' : '/vendedor/productos'
+  const guardando = statusGuardar === 'loading'
 
   useEffect(() => {
-    Promise.all([getProductoById(id), getCategories()])
-      .then(([productoObtenido, categoriasObtenidas]) => {
-        // El backend también rechaza el PUT si no es el dueño (o admin): esto evita mostrar un formulario ajeno
-        const esPropio = String(productoObtenido.vendedorId) === localStorage.getItem('usuarioId')
-        if (!esPropio && !esAdmin) {
-          setErrorCarga('Este producto pertenece a otro vendedor.')
-          return
-        }
-        setProducto(productoObtenido)
-        setCategorias(categoriasObtenidas)
-        setFormulario(formularioDesdeProducto(productoObtenido))
-      })
-      .catch((error) => {
-        setErrorCarga(error.status === 404 ? 'El producto no existe.' : error.message)
-      })
-      .finally(() => setCargando(false))
-  }, [id, setFormulario, esAdmin])
+    !estado && !saliendo.current && dispatch(fetchProductoPorId(id))
+  }, [dispatch, id, estado])
 
-  const handleSubmit = async (event) => {
+  // Cuando llega el producto, se completa el formulario una sola vez
+  useEffect(() => {
+    producto && !precargado && setFormulario(formularioDesdeProducto(producto))
+    producto && !precargado && setPrecargadoId(id)
+  }, [producto, precargado, id, setFormulario])
+
+  useEffect(() => {
+    statusGuardar === 'succeeded' && (saliendo.current = true)
+    statusGuardar === 'succeeded' && navigate(rutaListado)
+    statusGuardar === 'succeeded' && dispatch(reiniciarGuardado())
+  }, [dispatch, navigate, statusGuardar, rutaListado])
+
+  const handleSubmit = (event) => {
     event.preventDefault()
 
     if (!form.validar()) {
@@ -56,32 +63,23 @@ const EditarProducto = () => {
       return
     }
 
-    setGuardando(true)
-    try {
-      await actualizarProducto(producto.id, armarProductoRequest(form.formulario))
-    } catch (error) {
-      // No se guardó nada: el vendedor puede corregir y reintentar
-      toast.error(error.message)
-      setGuardando(false)
-      return
-    }
-
-    try {
-      await guardarDescuentoYEstado(producto.id, form.formulario, producto, esAdmin)
-      await Promise.all([
-        ...imagenesQuitadas.map((imagenId) => desactivarImagen(imagenId)),
-        ...form.archivos.map((archivo) => subirImagen(archivo, producto.id)),
-      ])
-      toast.success('Cambios guardados.')
-    } catch (error) {
-      toast.warning(`Los datos se guardaron, pero hubo un problema: ${error.message}`)
-    }
-    navigate(rutaListado)
+    !guardando && dispatch(guardarPublicacion({
+      productoId: producto.id,
+      ...armarPublicacion(form.formulario, producto, esAdmin),
+      archivos: form.archivos,
+      imagenesQuitadas,
+    }))
   }
 
-  if (cargando) {
+  if (!estado || estado === 'loading' || (producto && !precargado)) {
     return <PanelEstado tipo="cargando" titulo="Cargando el producto..." />
   }
+
+  // El backend también rechaza el PUT si no es el dueño (o admin): esto evita mostrar un formulario ajeno
+  const esPropio = producto && String(producto.vendedorId) === String(usuarioId)
+  const errorCarga = estado === 'failed'
+    ? errorDetalle
+    : (!esPropio && !esAdmin && 'Este producto pertenece a otro vendedor.')
 
   if (errorCarga) {
     return (
@@ -110,7 +108,7 @@ const EditarProducto = () => {
       <ProductoForm
         formulario={form.formulario}
         categorias={categorias}
-        cargandoCategorias={false}
+        cargandoCategorias={categorias.length === 0}
         errores={form.errores}
         reservados={reservados}
         descuentoBloqueado={!esAdmin && Boolean(producto.descuentoAplicadoPorAdmin)}

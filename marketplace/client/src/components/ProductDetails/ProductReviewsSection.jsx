@@ -26,7 +26,7 @@ export const ProductReviewsSection = ({ productoId }) => {
   const statusCrear = useSelector((state) => state.comentarios.statusCrear);
   const aviso = useSelector((state) => state.comentarios.aviso);
   const { token, rol } = useSelector((state) => state.auth);
-  const perfil = useSelector((state) => state.usuario.perfil);
+  const perfil = useSelector((state) => state.usuarios.perfil);
   const esComprador = Boolean(token) && rol === 'COMPRADOR';
 
   // Las reseñas se piden una sola vez por producto
