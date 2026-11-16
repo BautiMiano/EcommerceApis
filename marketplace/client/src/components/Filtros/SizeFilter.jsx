@@ -1,20 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTalles, seleccionarTalle } from '../../redux/slice/ProductSlice';
+import { alternarTalle } from '../../redux/slice/ProductSlice';
 import './SizeFilter.css';
 
 export const SizeFilter = () => {
   const dispatch = useDispatch();
   const sizes = useSelector((state) => state.productos.talles);
-  const selected = useSelector((state) => state.productos.filtros.talle);
-
-  useEffect(() => {
-    dispatch(fetchTalles());
-  }, [dispatch]);
-
-  const handleSelect = (size) => {
-    dispatch(seleccionarTalle(selected === size ? '' : size));
-  };
+  const elegidos = useSelector((state) => state.productos.filtros.talles);
 
   if (sizes.length === 0) return null;
 
@@ -24,17 +16,20 @@ export const SizeFilter = () => {
       <div className="size-filter-group">
         <h3 className="filter-title">Talles</h3>
         <div className="size-chips">
-          {sizes.map((size) => (
-            <button
-              key={size}
-              type="button"
-              className={`size-chip${selected === size ? ' is-selected' : ''}`}
-              aria-pressed={selected === size}
-              onClick={() => handleSelect(size)}
-            >
-              {size}
-            </button>
-          ))}
+          {sizes.map((size) => {
+            const elegido = elegidos.includes(size);
+            return (
+              <button
+                key={size}
+                type="button"
+                className={`size-chip${elegido ? ' is-selected' : ''}`}
+                aria-pressed={elegido}
+                onClick={() => dispatch(alternarTalle(size))}
+              >
+                {size}
+              </button>
+            );
+          })}
         </div>
       </div>
     </>

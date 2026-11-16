@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/slice/AuthSlice';
 import { rutaInicioPorRol } from '../../utils/sesion';
-import FormField from '../FormField/FormField';
-import Button from '../ButtonRL/Button';
+import CampoFormulario from '../CampoFormulario/CampoFormulario';
+import Button from '../Button/Button';
 import './LoginForm.css';
 
 export default function LoginForm() {
@@ -29,7 +29,9 @@ const handleSubmit = (e) => {
 return (
     <form onSubmit={handleSubmit} className="register-form">
 
-    <FormField
+    <CampoFormulario
+        variante="formulario"
+        required
         label="Correo electrónico:"
         name="mail"
         type="email"
@@ -39,7 +41,9 @@ return (
         full={true}
     />
 
-    <FormField
+    <CampoFormulario
+        variante="formulario"
+        required
         label="Contraseña:"
         name="contrasena"
         type="password"

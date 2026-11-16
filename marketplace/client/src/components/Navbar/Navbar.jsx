@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { getCategories } from '../../utils/api.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategorias } from '../../redux/slice/ProductSlice.js';
 import { Search } from '../Search/Search.jsx';
-import { useSelector } from 'react-redux';
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu.jsx';
 import './Navbar.css';
 
 export const Navbar = ({ perfil, onLogout }) => {
-  const [categories, setCategories] = useState([]);
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.categorias.items);
+  const statusCategorias = useSelector((state) => state.categorias.status);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -15,16 +17,13 @@ export const Navbar = ({ perfil, onLogout }) => {
   const { token, rol } = useSelector((state) => state.auth);
   const logueado = Boolean(token);
   const esAdmin = rol === 'ADMIN';
-  // Si un vendedor entra a la tienda (por ejemplo, al detalle de un producto), su perfil está en el panel
-  // El administrador no tiene pantalla de perfil: su menú queda solo con Cerrar sesión
+
   const rutasPerfil = { COMPRADOR: '/perfil', VENDEDOR: '/vendedor/perfil' };
   const rutaPerfil = rutasPerfil[rol];
 
   useEffect(() => {
-    getCategories()
-      .then((data) => setCategories(data))
-      .catch(() => setCategories([]));
-  }, []);
+    statusCategorias === 'idle' && dispatch(fetchCategorias());
+  }, [dispatch, statusCategorias]);
 
   const handleSelectCategory = (cat) => {
     setIsDropdownOpen(false);
@@ -34,12 +33,6 @@ export const Navbar = ({ perfil, onLogout }) => {
 
   return (
     <>
-      {!logueado && (
-        <div className="topbar">
-          Navegando como visitante. Registrate como Comprador para cotizaciones o como Vendedor para publicar productos.{' '}
-          <Link to="/registro">Acceder ahora</Link>
-        </div>
-      )}
       <header className="navbar">
         <Link to="/" className="navbar-logo">
           <img src="/icons/Uniforma.jpg" alt="UNIFORMA" className="navbar-logo-img" />        
@@ -128,12 +121,6 @@ export const Navbar = ({ perfil, onLogout }) => {
             </button>
           )}
 
-          {!logueado && (
-            <>
-              <Link to="/login" className="btn-pill btn-pill-outline">Iniciar sesión</Link>
-              <Link to="/registro" className="btn-pill btn-pill-solid">Registrarse</Link>
-            </>
-          )}
         </div>
       </header>
     </>
