@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from "../components/PageTitle/PageTitle";
 import LoginForm from "../components/LoginForm/LoginForm";
 import EnlaceCuenta from "../components/EnlaceCuenta/EnlaceCuenta";
+import "./Register.css";
 
 const Login = () => {
   const navigate = useNavigate();

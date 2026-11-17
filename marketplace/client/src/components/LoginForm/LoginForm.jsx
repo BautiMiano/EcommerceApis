@@ -62,7 +62,7 @@ return (
         full={true}
     />
 
-    {/* El botón va siempre primero: el error aparece a su derecha sin moverlo */}
+    {/* El botón ocupa todo el ancho y el error aparece debajo */}
     <div className="login-acciones">
         <Button
             texto={loading ? "Ingresando..." : "Ingresar"}
