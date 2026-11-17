@@ -12,14 +12,15 @@
   padding: 1.75rem 1.5rem 3.5rem;
 }
 
+/* Menú de opciones a la izquierda y la tarjeta elegida a la derecha (como en el perfil del vendedor) */
 .mi-perfil-comprador-grilla {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-columns: 16.25rem minmax(0, 1fr);
   align-items: start;
   gap: 1.5rem;
 }
 
-/* Tablet y celular: una tarjeta debajo de la otra */
+/* Tablet y celular: el menú queda arriba de la tarjeta */
 @media (max-width: 62.5em) {
   .mi-perfil-comprador-grilla {
     grid-template-columns: minmax(0, 1fr);

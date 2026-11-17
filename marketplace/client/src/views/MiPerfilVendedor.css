@@ -5,6 +5,13 @@
   gap: 1rem;
 }
 
+/* Columna izquierda: resumen de la cuenta y, debajo, el menú de opciones */
+.mi-perfil-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .mi-perfil-cuenta {
   display: flex;
   flex-direction: column;
@@ -59,12 +66,6 @@
 .mi-perfil-editar {
   padding: 0.8125rem;
   font-size: 0.9375rem;
-}
-
-.mi-perfil-formularios {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 @media (max-width: 62.5em) {

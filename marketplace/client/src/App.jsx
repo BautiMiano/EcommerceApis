@@ -28,7 +28,6 @@ import TicketsAdmin from './views/TicketsAdmin.jsx';
 import TicketDetalleAdmin from './views/TicketDetalleAdmin.jsx';
 
 import AdminLayout from './components/AdminLayout/AdminLayout.jsx';
-import AdminPanel from './components/AdminPanel/AdminPanel.jsx';
 import AdminProductos from './views/AdminProductos.jsx';
 import AdminCategorias from './views/AdminCategorias.jsx';
 import GestionUsuarios from './views/GestionUsuarios.jsx';
@@ -68,26 +67,17 @@ function App() {
             <Route path="/perfil" element={<MiPerfilComprador />} />
           </Route>
 
-          {/* EXCLUSIVAS DEL ADMINISTRADOR */}
-          <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
-            <Route path="/admin/tickets" element={<TicketsAdmin />} />
-            <Route path="/admin/tickets/:id" element={<TicketDetalleAdmin />} />
-          
-            {/* Gestión de productos: reutiliza las piezas del panel del vendedor */}
-            <Route element={<AdminPanel />}>
-              <Route path="/admin/productos" element={<AdminProductos />} />
-              <Route path="/admin/productos/:id/editar" element={<EditarProducto />} />
-              <Route path="/admin/categorias" element={<AdminCategorias />} />
-              <Route path="/admin/usuarios" element={<GestionUsuarios />} />
-              <Route path="/admin/vendedores" element={<AdminVendedores />} />
-            </Route>
-          </Route>
         </Route>
 
-              {/* PANEL DEL ADMIN: layout propio, sin navbar ni footer de la tienda */}
+        {/* PANEL DEL ADMIN: mismo layout que el del vendedor (sidebar negro y header) */}
         <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
           <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
             <Route index element={<Navigate to="tickets" replace />} />
+            <Route path="usuarios" element={<GestionUsuarios />} />
+            <Route path="vendedores" element={<AdminVendedores />} />
+            <Route path="productos" element={<AdminProductos />} />
+            <Route path="productos/:id/editar" element={<EditarProducto />} />
+            <Route path="categorias" element={<AdminCategorias />} />
             <Route path="tickets" element={<TicketsAdmin />} />
             <Route path="tickets/:id" element={<TicketDetalleAdmin />} />
           </Route>

@@ -3,7 +3,7 @@ import { MODO_SELECCIONABLES, MODO_UNICO } from '../../utils/productoFormulario'
 import './SizeSelector.css'
 
 // Rango S a XXL (uno o varios talles, cada uno con su stock) o talle único: son excluyentes.
-// En talle único el stock se carga en "Precio y stock". "reservados" (al editar) avisa lo reservado.
+// En los dos casos el stock se carga acá, debajo de los modos. "reservados" (al editar) avisa lo reservado.
 const SizeSelector = ({ formulario, reservados = {}, error, onChange }) => {
   const esUnico = formulario.modoTalle === MODO_UNICO
 
@@ -73,6 +73,30 @@ const SizeSelector = ({ formulario, reservados = {}, error, onChange }) => {
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {esUnico && (
+        <div className="size-selector-elegir">
+          <p className="size-selector-etiqueta">Stock disponible <span>*</span></p>
+          <div className="size-selector-talles">
+            <div className="size-selector-talle">
+              <span className="size-selector-check size-selector-check-fijo">Único</span>
+              <label className="size-selector-stock">
+                <span className="visually-hidden">Stock del talle único</span>
+                <input
+                  type="number"
+                  name="stockUnico"
+                  min={reservados.UNICO || 0}
+                  step="1"
+                  placeholder="Stock"
+                  value={formulario.stockUnico}
+                  onChange={(event) => onChange({ stockUnico: event.target.value })}
+                />
+                {reservados.UNICO > 0 && <small>{reservados.UNICO} reservado</small>}
+              </label>
+            </div>
           </div>
         </div>
       )}
