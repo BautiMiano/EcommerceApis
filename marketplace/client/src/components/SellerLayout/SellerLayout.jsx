@@ -11,7 +11,7 @@ import './SellerLayout.css'
 // Estructura de todas las pantallas del vendedor: sidebar fijo, header arriba y la pantalla en el Outlet
 const SellerLayout = ({ onLogout }) => {
   const dispatch = useDispatch()
-  const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
+  const statusPerfil = useSelector((state) => state.usuarios.statusPerfil)
   const statusCategorias = useSelector((state) => state.categorias.status)
   const [menuAbierto, setMenuAbierto] = useState(false)
 
@@ -24,12 +24,6 @@ const SellerLayout = ({ onLogout }) => {
   useEffect(() => {
     statusCategorias === 'idle' && dispatch(fetchCategorias())
   }, [dispatch, statusCategorias])
-
-  const contexto = {
-    perfil,
-    cargandoPerfil: statusPerfil === 'idle' || loadingPerfil,
-    errorPerfil: errorPerfil || '',
-  }
 
   return (
     <div className={`seller-layout ${menuAbierto ? 'seller-layout-menu-abierto' : ''}`}>
@@ -47,14 +41,13 @@ const SellerLayout = ({ onLogout }) => {
 
       <div className="seller-layout-principal">
         <SellerHeader
-          perfil={perfil}
           menuAbierto={menuAbierto}
           onAbrirMenu={() => setMenuAbierto(true)}
           onLogout={onLogout}
         />
         <main className="seller-layout-contenido">
-          {/* Las pantallas hijas reciben el perfil sin volver a pedirlo */}
-          <Outlet context={contexto} />
+          {/* Las pantallas hijas leen el perfil de la store, sin volver a pedirlo */}
+          <Outlet />
         </main>
       </div>
     </div>

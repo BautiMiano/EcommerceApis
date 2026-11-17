@@ -1,4 +1,4 @@
-import { useOutletContext } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
@@ -9,8 +9,10 @@ import './MiPerfilVendedor.css'
 // Datos del vendedor (GET /usuarios/me): a la izquierda el resumen de la cuenta y a la derecha
 // las mismas tarjetas que el perfil del comprador (datos personales y cambio de contraseña).
 // Datos de la tienda y notificaciones no existen en el backend, por eso no se muestran.
+// El perfil lo pide SellerLayout una vez por sesión; acá se lee de la store.
 const MiPerfilVendedor = () => {
-  const { perfil, cargandoPerfil, errorPerfil } = useOutletContext()
+  const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
+  const cargandoPerfil = statusPerfil === 'idle' || loadingPerfil
 
   if (cargandoPerfil) {
     return <PanelEstado tipo="cargando" titulo="Cargando tu perfil..." />

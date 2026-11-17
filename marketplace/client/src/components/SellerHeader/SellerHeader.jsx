@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu'
 import './SellerHeader.css'
 

@@ -6,8 +6,9 @@ import { Search } from '../Search/Search.jsx';
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu.jsx';
 import './Navbar.css';
 
-export const Navbar = ({ perfil, onLogout }) => {
+export const Navbar = ({ onLogout }) => {
   const dispatch = useDispatch();
+  const perfil = useSelector((state) => state.usuarios.perfil);
   const categories = useSelector((state) => state.categorias.items);
   const statusCategorias = useSelector((state) => state.categorias.status);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -111,7 +112,7 @@ export const Navbar = ({ perfil, onLogout }) => {
         <div className="navbar-actions">
           {/* Con sesión: nombre y menú, como en el panel del vendedor */}
           {logueado && perfil && (
-            <UsuarioMenu perfil={perfil} rutaPerfil={rutaPerfil} textoEnlace="Mi perfil" onLogout={onLogout} />
+            <UsuarioMenu rutaPerfil={rutaPerfil} textoEnlace="Mi perfil" onLogout={onLogout} />
           )}
 
           {/* Mientras carga el perfil (o si falló), igual se puede cerrar sesión */}
