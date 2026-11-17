@@ -2,10 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { pedir } from "../../utils/http";
 import { loginUser, logout } from "./AuthSlice";
 
-// Slice del objeto Usuario del back. Tiene dos partes:
-// - La lista de usuarios que gestiona el admin (items, status, error, accion...).
-// - El perfil del usuario logueado (perfil, statusPerfil...), que usan la tienda, el panel y Mi perfil.
-
 // ---------- Thunks del admin ----------
 
 // Todos los usuarios (GET /usuarios). Solo el admin.
@@ -14,8 +10,6 @@ export const fetchUsuarios = createAsyncThunk("usuarios/fetchUsuarios", async ()
 );
 
 // Activa o desactiva según el estado actual del usuario (PATCH /usuarios/activar|desactivar/{id}).
-// El backend solo responde un texto, así que devolvemos el cambio y el reducer actualiza ese usuario
-// en la lista: no hace falta volver a pedirla.
 export const cambiarActivoUsuario = createAsyncThunk("usuarios/cambiarActivo", async (usuario) => {
     const accion = usuario.activo ? "desactivar" : "activar";
     await pedir("patch", `/usuarios/${accion}/${usuario.id}`);
@@ -30,8 +24,6 @@ export const fetchPerfil = createAsyncThunk("usuarios/fetchPerfil", async () =>
 );
 
 // Guarda los datos de la cuenta (PUT /usuarios/me). El mail es el usuario del login:
-// el back devuelve un token nuevo y el viejo deja de servir, por eso se guarda acá (efecto secundario).
-// Se devuelven los datos enviados para actualizar el perfil sin volver a pedirlo.
 export const actualizarPerfil = createAsyncThunk("usuarios/actualizarPerfil", async (cambios) => {
     const respuesta = await pedir("put", "/usuarios/me", cambios);
     localStorage.setItem("token", respuesta.access_token);
@@ -49,20 +41,20 @@ const initialState = {
     // Lista del admin
     items: [],
     loading: false,
-    status: "idle", // idle = todavía no se pidió la lista
+    status: "idle", 
     error: null,
-    accionId: null, // usuario que se está activando o desactivando
+    accionId: null, 
     accionStatus: "idle",
     accionError: null,
-    ultimaAccion: null, // { nombreUsuario, activo } del último cambio, para el texto del toast
+    ultimaAccion: null, 
 
     // Perfil propio
     perfil: null,
     loadingPerfil: false,
     statusPerfil: "idle",
     errorPerfil: null,
-    statusGuardarPerfil: "idle", // para no guardar dos veces con un doble clic
-    avisoPerfil: null, // { tipo, texto, accion } para mostrar con toast
+    statusGuardarPerfil: "idle", 
+    avisoPerfil: null, 
 };
 
 // ---------- Slice ----------
