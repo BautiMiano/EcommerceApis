@@ -37,6 +37,15 @@ import lombok.RequiredArgsConstructor;
 public class ProductoServiceImpl implements ProductoService {
 
     private static final int STOCK_BAJO = 5;
+    // Debe coincidir con el largo de la columna en Producto y con MAX_DESCRIPCION del frontend
+    private static final int MAX_DESCRIPCION = 1000;
+
+    private void validarDescripcion(String descripcion) {
+        if (descripcion != null && descripcion.length() > MAX_DESCRIPCION) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La descripción no puede superar los " + MAX_DESCRIPCION + " caracteres");
+        }
+    }
 
     private final ProductoRepository productoRepository;
     private final CategoryRepository categoryRepository;
@@ -55,7 +64,6 @@ public class ProductoServiceImpl implements ProductoService {
 
         response.setNombre(producto.getNombre());
         response.setDescripcion(producto.getDescripcion());
-        response.setSku(producto.getSku());
         response.setMarca(producto.getMarca());
         response.setPrecio(producto.getPrecio());
         response.setTalles(producto.getTalles().stream()
@@ -236,7 +244,6 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = new Producto();
         producto.setNombre(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
-        producto.setSku(textoOpcional(request.getSku()));
         producto.setMarca(textoOpcional(request.getMarca()));
         producto.setPrecio(request.getPrecio());
         producto.setEstado(request.getEstado());
@@ -265,6 +272,8 @@ public class ProductoServiceImpl implements ProductoService {
         if (producto.getNombre() == null || producto.getNombre().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre del producto no puede estar vacío");
         }
+
+        validarDescripcion(producto.getDescripcion());
 
         productoRepository.save(producto);
 
@@ -374,6 +383,7 @@ public class ProductoServiceImpl implements ProductoService {
                     HttpStatus.BAD_REQUEST,
                     "El nombre del producto no puede estar vacío");
         }
+        validarDescripcion(request.getDescripcion());
         if (request.getPrecio() == null || request.getPrecio() < 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -392,7 +402,6 @@ public class ProductoServiceImpl implements ProductoService {
 
         producto.setNombre(request.getNombre().trim());
         producto.setDescripcion(request.getDescripcion());
-        producto.setSku(textoOpcional(request.getSku()));
         producto.setMarca(textoOpcional(request.getMarca()));
         producto.setPrecio(request.getPrecio());
         producto.setCategoria(categoria);

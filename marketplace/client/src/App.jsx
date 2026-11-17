@@ -67,29 +67,23 @@ function App() {
             <Route path="/checkout" element={<Navigate to="/carrito" replace />} />
             <Route path="/perfil" element={<MiPerfilComprador />} />
           </Route>
-
-          {/* EXCLUSIVAS DEL ADMINISTRADOR */}
-          <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
-            <Route path="/admin/tickets" element={<TicketsAdmin />} />
-            <Route path="/admin/tickets/:id" element={<TicketDetalleAdmin />} />
-          
-            {/* Gestión de productos: reutiliza las piezas del panel del vendedor */}
-            <Route element={<AdminPanel />}>
-              <Route path="/admin/productos" element={<AdminProductos />} />
-              <Route path="/admin/productos/:id/editar" element={<EditarProducto />} />
-              <Route path="/admin/categorias" element={<AdminCategorias />} />
-              <Route path="/admin/usuarios" element={<GestionUsuarios />} />
-              <Route path="/admin/vendedores" element={<AdminVendedores />} />
-            </Route>
-          </Route>
         </Route>
 
-              {/* PANEL DEL ADMIN: layout propio, sin navbar ni footer de la tienda */}
+        {/* PANEL DEL ADMIN: layout propio con sidebar, sin navbar ni footer de la tienda */}
         <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
           <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
             <Route index element={<Navigate to="tickets" replace />} />
             <Route path="tickets" element={<TicketsAdmin />} />
             <Route path="tickets/:id" element={<TicketDetalleAdmin />} />
+
+            {/* Gestión: reutiliza las piezas del panel del vendedor */}
+            <Route element={<AdminPanel />}>
+              <Route path="productos" element={<AdminProductos />} />
+              <Route path="productos/:id/editar" element={<EditarProducto />} />
+              <Route path="categorias" element={<AdminCategorias />} />
+              <Route path="usuarios" element={<GestionUsuarios />} />
+              <Route path="vendedores" element={<AdminVendedores />} />
+            </Route>
           </Route>
         </Route>
 

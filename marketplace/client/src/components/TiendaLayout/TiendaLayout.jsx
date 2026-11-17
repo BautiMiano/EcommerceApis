@@ -1,13 +1,11 @@
 import { useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import Navbar from '../Navbar/Navbar'
 import TiendaPanelLayout from '../TiendaPanelLayout/TiendaPanelLayout'
-import AvisosPanel from '../AvisosPanel/AvisosPanel'
+import AdminLayout from '../AdminLayout/AdminLayout'
 import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 
 // Tienda: el visitante y el comprador la ven con el diseño del panel (sidebar a la izquierda).
-// El admin la sigue viendo con el Navbar arriba.
+// El admin la ve dentro de su propio layout (AdminLayout), con el sidebar del administrador.
 const TiendaLayout = ({ onLogout }) => {
   const dispatch = useDispatch()
 
@@ -30,16 +28,9 @@ const TiendaLayout = ({ onLogout }) => {
     )
   }
 
-  return (
-    <div className="app-container">
-      {/* El admin gestiona productos y categorías desde acá */}
-      <AvisosPanel />
-      <Navbar onLogout={onLogout} />
-      <main className="main-content">
-        <Outlet />
-      </main>
-    </div>
-  )
+  // El admin no tiene la tienda en su menú, pero si entra a una ruta de la tienda la ve con su propio sidebar
+  return <AdminLayout onLogout={onLogout} />
+
 }
 
 export default TiendaLayout

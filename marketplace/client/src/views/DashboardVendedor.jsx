@@ -193,7 +193,6 @@ const DashboardVendedor = () => {
                     </div>
                     <div className="dashboard-alerta-datos">
                       <strong>{producto.nombre}</strong>
-                      {producto.sku && <span className="panel-texto-suave">SKU: {producto.sku}</span>}
                       <span className="dashboard-alerta-stock">Stock: {stockDisponibleTotal(producto.talles)} u.</span>
                     </div>
                     <Link className="panel-boton panel-boton-secundario panel-boton-chico" to={`/vendedor/productos/${producto.id}/editar`}>
