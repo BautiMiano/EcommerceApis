@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { rutaInicioPorRol } from '../../utils/sesion.js';
 
@@ -8,16 +8,14 @@ import { rutaInicioPorRol } from '../../utils/sesion.js';
 export const ProtectedRoute = ({ rolesPermitidos, permitirVisitantes = false }) => {
   const { token, rol } = useSelector((state) => state.auth);
   const logueado = Boolean(token);
-  // Reenvía el contexto del layout de arriba (por ejemplo, el perfil que carga TiendaLayout)
-  const contexto = useOutletContext();
 
   if (!logueado) {
-    return permitirVisitantes ? <Outlet context={contexto} /> : <Navigate to="/login" replace />;
+    return permitirVisitantes ? <Outlet /> : <Navigate to="/login" replace />;
   }
 
   if (!rolesPermitidos.includes(rol)) {
     return <Navigate to={rutaInicioPorRol(rol)} replace />;
   }
 
-  return <Outlet context={contexto} />;
+  return <Outlet />;
 };
