@@ -32,6 +32,11 @@
   text-align: right;
 }
 
+.cart-summary-ahorro {
+  color: #7ee2a8;
+  font-weight: 700;
+}
+
 .cart-summary-suave {
   color: #a3a3a3;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { SidebarFilters } from '../../components/SideBar/SidebarFilters';
 import { ProductGridSection } from '../../components/ProductGridSection/ProductGridSection';
@@ -9,6 +9,7 @@ import {
   setBusqueda,
   setCategorias,
 } from '../../redux/slice/ProductSlice.js';
+import PageTitle from '../../components/PageTitle/PageTitle';
 import './CategoryPage.css';
 
 
@@ -69,24 +70,13 @@ export const CategoryPage = () => {
 
   return (
     <div className="category-page-wrapper">
-      <section className="catalog-hero-banner">
-        <div className="hero-content">
-          <nav className="breadcrumb" aria-label="Ubicación">
-            <Link to="/">Inicio</Link>
-            <span className="material-symbols-outlined">chevron_right</span>
-            <span>Catálogo general multirubro</span>
-          </nav>
-
-          <p className="hero-pill">
-            Precios mayoristas y minoristas oficiales. Registrate gratis para cotizaciones al granel
-          </p>
-
-          <h1 className="hero-title">Catálogo oficial de uniformes y equipamiento de trabajo</h1>
-          <p className="hero-subtitle">
-            La plataforma líder que nuclea a los principales fabricantes e importadores industriales certificados.
-          </p>
-        </div>
-      </section>
+      {/* Mismo encabezado que Mis favoritos y el carrito */}
+      <PageTitle
+        variante="seccion"
+        etiqueta="CATÁLOGO"
+        titulo="CATÁLOGO DE UNIFORMES"
+        descripcion="Uniformes y ropa de trabajo de fabricantes verificados. Filtrá por categoría, talle o precio para encontrar lo que necesitás."
+      />
 
       <main className="catalog-main-layout">
         <SidebarFilters/>

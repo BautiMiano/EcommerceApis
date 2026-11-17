@@ -1,0 +1,63 @@
+@keyframes tarjeta-form-aparecer {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tarjeta-form {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 0.0625rem solid var(--uf-borde);
+  border-radius: 0.875rem;
+  background-color: #fafafa;
+  animation: tarjeta-form-aparecer 0.35s ease both;
+}
+
+.tarjeta-form-aviso {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--uf-texto-suave);
+  font-size: 0.75rem;
+}
+
+.tarjeta-form-aviso .material-symbols-outlined {
+  color: var(--uf-verde);
+  font-size: 1.125rem;
+}
+
+.tarjeta-form-campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.125rem;
+}
+
+.tarjeta-form-ancho {
+  grid-column: 1 / -1;
+}
+
+/* El número va con letra monoespaciada, como en la tarjeta */
+.tarjeta-form input[name='tarjeta-numero'],
+.tarjeta-form input[name='tarjeta-vencimiento'],
+.tarjeta-form input[name='tarjeta-cvv'] {
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.06rem;
+}
+
+.tarjeta-form-marca {
+  align-self: flex-start;
+  padding: 0.125rem 0.5rem;
+  border-radius: 62.5rem;
+  background-color: var(--uf-negro);
+  color: var(--uf-blanco);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04rem;
+}
+
+@media screen and (max-width: 36rem) {
+  .tarjeta-form-campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

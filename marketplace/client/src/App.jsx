@@ -22,6 +22,7 @@ import MiPerfilComprador from './views/MiPerfilComprador.jsx';
 import { cerrarSesion } from './utils/sesion.js';
 import { logout } from './redux/slice/AuthSlice';
 import ChatFlotante from './components/ChatFlotante/ChatFlotante';
+import ScrollArriba from './components/ScrollArriba/ScrollArriba';
 import MisTickets from './views/MisTickets.jsx';
 import NuevoTicket from './views/NuevoTicket.jsx';
 import TicketsAdmin from './views/TicketsAdmin.jsx';
@@ -46,6 +47,8 @@ function App() {
 
   return (
     <>
+      {/* Al cambiar de página, la vista vuelve arriba */}
+      <ScrollArriba />
       <Routes>
         <Route element={<TiendaLayout onLogout={handleLogout} />}>
           {/* RUTAS PÚBLICAS */}

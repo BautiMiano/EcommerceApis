@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { formatoPrecio } from '../../utils/formato'
+import { METODO_TARJETA, marcaTarjeta, soloDigitos } from '../../utils/tarjeta'
 import '../MetodoPago3D/MetodoPago3D.css'
 
 // Colores e ícono de cada método (solo visual: el nombre del método sale del back).
@@ -32,23 +33,28 @@ const trazarRedondeado = (ctx, x, y, ancho, alto, radio) => {
   ctx.closePath()
 }
 
-// Dibuja el frente de la tarjeta con los datos que vienen del back (método, titular y total)
-const dibujarFrente = (canvas, { tema, nombreMetodo, titular, total, valor }) => {
-  const ctx = canvas.getContext('2d')
-  const { width: w, height: h } = canvas
-  ctx.clearRect(0, 0, w, h)
+// Número con los dígitos escritos y puntos en los que faltan: "4111 11•• •••• ••••"
+const numeroEnTarjeta = (numero) => {
+  const digitos = soloDigitos(numero)
+  const molde = marcaTarjeta(numero) === 'AMEX' ? '#### ###### #####' : '#### #### #### ####'
+  let indice = 0
+  return molde.replace(/#/g, () => {
+    const caracter = digitos[indice] || '•'
+    indice += 1
+    return caracter
+  })
+}
 
-  ctx.save()
+const pintarFondo = (ctx, w, h, tema, invertido = false) => {
   trazarRedondeado(ctx, 0, 0, w, h, 56)
   ctx.clip()
-
-  const fondo = ctx.createLinearGradient(0, 0, w, h)
+  const fondo = invertido ? ctx.createLinearGradient(w, 0, 0, h) : ctx.createLinearGradient(0, 0, w, h)
   fondo.addColorStop(0, tema.desde)
   fondo.addColorStop(1, tema.hasta)
   ctx.fillStyle = fondo
   ctx.fillRect(0, 0, w, h)
 
-  // Brillo diagonal y círculos decorativos
+  // Brillo y círculos decorativos
   ctx.globalAlpha = 0.12
   ctx.fillStyle = '#ffffff'
   ctx.beginPath()
@@ -58,11 +64,75 @@ const dibujarFrente = (canvas, { tema, nombreMetodo, titular, total, valor }) =>
   ctx.arc(w * 0.05, h * 1.05, h * 0.45, 0, Math.PI * 2)
   ctx.fill()
   ctx.globalAlpha = 1
+}
 
-  // Marca
+const dibujarChip = (ctx) => {
+  const chip = ctx.createLinearGradient(70, 200, 200, 300)
+  chip.addColorStop(0, '#f5d27a')
+  chip.addColorStop(1, '#b8892d')
+  ctx.fillStyle = chip
+  trazarRedondeado(ctx, 70, 190, 130, 96, 16)
+  ctx.fill()
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)'
+  ctx.lineWidth = 3
+  ctx.strokeRect(100, 208, 70, 60)
+}
+
+const dibujarEtiqueta = (ctx, texto, x, y, alineacion = 'left') => {
+  ctx.globalAlpha = 0.7
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '600 24px Inter, system-ui, sans-serif'
+  ctx.textAlign = alineacion
+  ctx.fillText(texto, x, y)
+  ctx.globalAlpha = 1
+}
+
+// Frente de la tarjeta de crédito/débito: se va completando con lo que escribe el comprador
+const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
+  const marca = marcaTarjeta(tarjeta.numero)
+
   ctx.fillStyle = '#ffffff'
   ctx.font = '700 64px "Bebas Neue", Impact, sans-serif'
-  ctx.textBaseline = 'top'
+  ctx.fillText('UNIFORMA', 70, 60)
+
+  // Marca de la tarjeta, arriba a la derecha (aparece cuando se reconoce por los primeros números)
+  ctx.textAlign = 'right'
+  ctx.font = marca === 'VISA' ? 'italic 800 70px Inter, system-ui, sans-serif' : '800 52px Inter, system-ui, sans-serif'
+  ctx.fillStyle = marca ? '#ffffff' : 'rgba(255,255,255,0.35)'
+  ctx.fillText(marca || 'TARJETA', w - 70, 58)
+  ctx.textAlign = 'left'
+
+  dibujarChip(ctx)
+
+  // Total a pagar, al lado del chip
+  dibujarEtiqueta(ctx, 'TOTAL A PAGAR', w - 70, 205, 'right')
+  ctx.textAlign = 'right'
+  ctx.fillStyle = tema.acento
+  ctx.font = '700 40px Inter, system-ui, sans-serif'
+  ctx.fillText(total, w - 70, 240)
+  ctx.textAlign = 'left'
+
+  // Número
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '600 62px "Courier New", ui-monospace, monospace'
+  ctx.fillText(numeroEnTarjeta(tarjeta.numero), 70, 340, w - 140)
+
+  // Titular y vencimiento
+  dibujarEtiqueta(ctx, 'TITULAR', 70, h - 150)
+  dibujarEtiqueta(ctx, 'VENCE', w - 70, h - 150, 'right')
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '700 38px Inter, system-ui, sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText(tarjeta.titular || 'NOMBRE Y APELLIDO', 70, h - 110, w * 0.6)
+  ctx.textAlign = 'right'
+  ctx.fillText(tarjeta.vencimiento || 'MM/AA', w - 70, h - 110)
+  ctx.textAlign = 'left'
+}
+
+// Frente para los demás métodos: nombre del método (del back), titular y total
+const dibujarFrenteMetodo = (ctx, w, h, { tema, nombreMetodo, titular, total }) => {
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '700 64px "Bebas Neue", Impact, sans-serif'
   ctx.fillText('UNIFORMA', 70, 60)
 
   // Ícono del método (fuente de íconos de la app; si todavía no cargó, se omite)
@@ -74,64 +144,70 @@ const dibujarFrente = (canvas, { tema, nombreMetodo, titular, total, valor }) =>
     ctx.textAlign = 'left'
   }
 
-  // Chip (solo tarjeta)
-  if (valor === 'TARJETA') {
-    const chip = ctx.createLinearGradient(70, 200, 200, 300)
-    chip.addColorStop(0, '#f5d27a')
-    chip.addColorStop(1, '#b8892d')
-    ctx.fillStyle = chip
-    trazarRedondeado(ctx, 70, 210, 130, 96, 16)
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(0,0,0,0.25)'
-    ctx.lineWidth = 3
-    ctx.strokeRect(100, 228, 70, 60)
-  }
-
-  // Método de pago (nombre que manda el back)
   ctx.fillStyle = '#ffffff'
   ctx.font = '700 46px Inter, system-ui, sans-serif'
-  ctx.fillText(nombreMetodo, 70, valor === 'TARJETA' ? 340 : 250, w - 140)
+  ctx.fillText(nombreMetodo, 70, 250, w - 140)
 
-  // Titular y total
-  ctx.globalAlpha = 0.7
-  ctx.font = '600 26px Inter, system-ui, sans-serif'
-  ctx.fillText('TITULAR', 70, h - 150)
-  ctx.textAlign = 'right'
-  ctx.fillText('TOTAL A PAGAR', w - 70, h - 150)
-  ctx.globalAlpha = 1
+  dibujarEtiqueta(ctx, 'TITULAR', 70, h - 150)
+  dibujarEtiqueta(ctx, 'TOTAL A PAGAR', w - 70, h - 150, 'right')
   ctx.font = '700 38px Inter, system-ui, sans-serif'
   ctx.textAlign = 'left'
+  ctx.fillStyle = '#ffffff'
   ctx.fillText((titular || '').toUpperCase(), 70, h - 110, w * 0.5)
   ctx.textAlign = 'right'
   ctx.fillStyle = tema.acento
   ctx.fillText(total, w - 70, h - 110)
   ctx.textAlign = 'left'
-  ctx.restore()
 }
 
-const dibujarDorso = (canvas, tema) => {
+const dibujarFrente = (canvas, datos) => {
   const ctx = canvas.getContext('2d')
   const { width: w, height: h } = canvas
   ctx.clearRect(0, 0, w, h)
   ctx.save()
-  trazarRedondeado(ctx, 0, 0, w, h, 56)
-  ctx.clip()
-  const fondo = ctx.createLinearGradient(w, 0, 0, h)
-  fondo.addColorStop(0, tema.desde)
-  fondo.addColorStop(1, tema.hasta)
-  ctx.fillStyle = fondo
-  ctx.fillRect(0, 0, w, h)
-  ctx.fillStyle = 'rgba(0,0,0,0.75)'
+  pintarFondo(ctx, w, h, datos.tema)
+  ctx.textBaseline = 'top'
+  datos.tarjeta ? dibujarFrenteTarjeta(ctx, w, h, datos) : dibujarFrenteMetodo(ctx, w, h, datos)
+  ctx.restore()
+}
+
+// Dorso: banda magnética y, si es tarjeta, el código de seguridad en la franja de firma
+const dibujarDorso = (canvas, { tema, tarjeta }) => {
+  const ctx = canvas.getContext('2d')
+  const { width: w, height: h } = canvas
+  ctx.clearRect(0, 0, w, h)
+  ctx.save()
+  pintarFondo(ctx, w, h, tema, true)
+  ctx.textBaseline = 'top'
+  ctx.fillStyle = 'rgba(0,0,0,0.8)'
   ctx.fillRect(0, 90, w, 110)
+
+  if (tarjeta) {
+    ctx.fillStyle = '#f3f3f3'
+    ctx.fillRect(70, 260, w - 300, 80)
+    ctx.fillStyle = '#ffffff'
+    trazarRedondeado(ctx, w - 210, 260, 140, 80, 10)
+    ctx.fill()
+    ctx.fillStyle = '#111111'
+    ctx.font = 'italic 700 40px "Courier New", ui-monospace, monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(tarjeta.cvv || '•••', w - 140, 280)
+    ctx.textAlign = 'left'
+    dibujarEtiqueta(ctx, 'CÓDIGO DE SEGURIDAD', w - 70, 355, 'right')
+  }
+
   ctx.fillStyle = 'rgba(255,255,255,0.85)'
   ctx.font = '600 28px Inter, system-ui, sans-serif'
+  ctx.textAlign = 'left'
   ctx.fillText('Pago protegido por UNIFORMA', 70, h - 90)
   ctx.restore()
 }
 
 // Tarjeta 3D que aparece al elegir un medio de pago: gira al cambiar de método,
 // flota, sigue al mouse y tiene un anillo de partículas alrededor.
-const MetodoPago3D = ({ metodo, titular, total }) => {
+// Con tarjeta de crédito/débito se completa con los datos que se escriben, y se da vuelta
+// para mostrar el código de seguridad cuando se está escribiendo (mostrarDorso).
+const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = false }) => {
   const contenedorRef = useRef(null)
   const escenaRef = useRef(null)
   const [soportado] = useState(hayWebGL)
@@ -248,6 +324,8 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
 
     // Giro al cambiar de método: la cara se redibuja cuando la tarjeta está de espaldas
     const giro = { inicio: 0, activo: false, termino: false, redibujado: true, datos: null }
+    // Si está de espaldas (código de seguridad), la tarjeta apunta media vuelta
+    const vista = { dorso: false }
     const reloj = new THREE.Clock()
     let cuadro = 0
 
@@ -261,7 +339,7 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
         vuelta = suave * Math.PI * 2
         if (progreso >= 0.4 && !giro.redibujado) {
           dibujarFrente(canvasFrente, giro.datos)
-          dibujarDorso(canvasDorso, giro.datos.tema)
+          dibujarDorso(canvasDorso, giro.datos)
           texFrente.needsUpdate = true
           texDorso.needsUpdate = true
           giro.redibujado = true
@@ -269,7 +347,9 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
         giro.termino = progreso >= 1
       }
       const movimiento = reducirMovimiento ? 0 : 1
-      tarjeta.rotation.y += ((mouse.x * 0.45 + Math.sin(t * 0.6) * 0.18 * movimiento + vuelta) - tarjeta.rotation.y) * (giro.activo ? 1 : 0.08)
+      const mediaVuelta = vista.dorso ? Math.PI : 0
+      const balanceo = vista.dorso ? 0 : Math.sin(t * 0.6) * 0.18 * movimiento
+      tarjeta.rotation.y += ((mouse.x * 0.45 + balanceo + vuelta + mediaVuelta) - tarjeta.rotation.y) * (giro.activo ? 1 : 0.08)
       // Al terminar la vuelta completa se descuenta, así no vuelve a girar para atrás
       if (giro.activo && giro.termino) {
         giro.activo = false
@@ -283,6 +363,7 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
     animar()
 
     escenaRef.current = {
+      darVuelta: (dorso) => { vista.dorso = dorso },
       // Si cambió el método, la tarjeta gira y cambia de colores.
       // Si solo cambió un texto (por ejemplo el titular), se redibuja sin girar.
       actualizar: (datos) => {
@@ -291,7 +372,7 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
         luzNaranja.color.setHex(datos.tema.particulas)
         if (!giro.datos || reducirMovimiento || giro.datos.valor === datos.valor) {
           dibujarFrente(canvasFrente, datos)
-          dibujarDorso(canvasDorso, datos.tema)
+          dibujarDorso(canvasDorso, datos)
           texFrente.needsUpdate = true
           texDorso.needsUpdate = true
           giro.datos = datos
@@ -325,12 +406,17 @@ const MetodoPago3D = ({ metodo, titular, total }) => {
       nombreMetodo: metodo.nombre,
       titular,
       total: formatoPrecio(total),
+      tarjeta: metodo.valor === METODO_TARJETA ? datosTarjeta : null,
     }
     // Espera a que carguen las fuentes para que los textos del canvas salgan bien
     let vigente = true
     document.fonts.ready.then(() => { vigente && escenaRef.current && escenaRef.current.actualizar(datos) })
     return () => { vigente = false }
-  }, [metodo, titular, total])
+  }, [metodo, titular, total, datosTarjeta])
+
+  useEffect(() => {
+    escenaRef.current && escenaRef.current.darVuelta(mostrarDorso)
+  }, [mostrarDorso])
 
   if (!soportado) {
     return null

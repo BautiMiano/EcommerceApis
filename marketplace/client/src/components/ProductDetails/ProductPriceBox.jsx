@@ -1,12 +1,11 @@
 import React from 'react';
+import Precio from '../Precio/Precio';
 
-export const ProductPriceBox = ({ precio }) => {
+// Precio del detalle: con descuento muestra el final, el de lista tachado y el porcentaje
+export const ProductPriceBox = ({ precio, precioFinal, descuento }) => {
   return (
     <div className="price-box">
-      <div className="price-row">
-        <span className="price-amount">${precio}</span>
-        <span className="price-currency">ARS / UNIDAD</span>
-      </div>
+      <Precio precio={precio} precioFinal={precioFinal} descuento={descuento} unidad="ARS / UNIDAD" tamano="grande" />
     </div>
   );
 };

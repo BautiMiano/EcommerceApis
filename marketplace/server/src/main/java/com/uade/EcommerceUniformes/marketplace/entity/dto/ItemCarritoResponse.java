@@ -16,4 +16,7 @@ public class ItemCarritoResponse {
     private String categoria;
     private String vendedor;
     private String imagen;
+    // Precio de lista (sin descuento) y porcentaje aplicado; si no hay descuento, porcentaje es 0
+    private double precioOriginal;
+    private double descuentoPorcentaje;
 }

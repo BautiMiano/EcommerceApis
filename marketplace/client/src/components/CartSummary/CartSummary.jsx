@@ -8,6 +8,9 @@ const CartSummary = () => {
   const { carrito, statusCompra } = useSelector((state) => state.carrito)
   const unidades = useSelector(selectUnidadesCarrito)
   const vendedores = new Set(carrito.items.map((item) => item.vendedor)).size
+  // Lo que se ahorra con los descuentos: precio de lista menos precio final (los dos vienen del back)
+  const subtotalLista = carrito.items.reduce((suma, item) => suma + (item.precioOriginal || item.precioUnitario) * item.cantidad, 0)
+  const ahorro = subtotalLista - carrito.total
   const vacio = carrito.items.length === 0
   const procesando = statusCompra === 'loading'
 
@@ -17,8 +20,14 @@ const CartSummary = () => {
 
       <div className="cart-summary-fila">
         <span>Productos ({unidades} u.)</span>
-        <span>{formatoPrecio(carrito.total)}</span>
+        <span>{formatoPrecio(ahorro > 0 ? subtotalLista : carrito.total)}</span>
       </div>
+      {ahorro > 0 && (
+        <div className="cart-summary-fila cart-summary-ahorro">
+          <span>Descuentos</span>
+          <span>-{formatoPrecio(ahorro)}</span>
+        </div>
+      )}
       <div className="cart-summary-fila">
         <span>Envío</span>
         <span className="cart-summary-suave">A coordinar con el vendedor</span>

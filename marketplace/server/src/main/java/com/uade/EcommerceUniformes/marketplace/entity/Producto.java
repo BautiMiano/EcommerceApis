@@ -74,6 +74,17 @@ public class Producto {
     @JoinColumn(name = "vendedor_id", nullable = false)
     private Usuario vendedor;
 
+    /** Porcentaje de descuento vigente (0 si no tiene). */
+    public double porcentajeDescuento() {
+        return descuento != null && descuento.getPorcentaje() > 0 ? descuento.getPorcentaje() : 0;
+    }
+
+    /** Precio que paga el comprador: con el descuento aplicado y redondeado a pesos. */
+    public double precioFinal() {
+        double porcentaje = porcentajeDescuento();
+        return porcentaje > 0 ? Math.round(precio * (1 - porcentaje / 100)) : precio;
+    }
+
     public Optional<StockTalle> buscarTalle(Talle talle) {
         return talles.stream().filter(t -> t.getTalle() == talle).findFirst();
     }

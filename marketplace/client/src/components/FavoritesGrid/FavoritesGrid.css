@@ -1,7 +1,8 @@
 .favorites-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  align-items: stretch;
+  gap: 1.5rem;
 }
 
 .favorites-grid-vacio {
@@ -22,20 +23,3 @@
   font-size: 15px;
 }
 
-@media screen and (max-width: 1024px) {
-  .favorites-grid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .favorites-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media screen and (max-width: 560px) {
-  .favorites-grid {
-    grid-template-columns: 1fr;
-  }
-}

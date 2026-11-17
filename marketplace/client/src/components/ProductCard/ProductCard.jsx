@@ -1,4 +1,5 @@
 import StockStatus from '../StockStatus/StockStatus';
+import Precio from '../Precio/Precio';
 import './ProductCard.css';
 
 export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
@@ -23,7 +24,7 @@ export const ProductCard = ({ product, categoryName, onSelectProduct }) => {
 
         <div className="product-action-box">
           <div className="product-price-tag">
-            ${Number(product.precio).toLocaleString('es-AR')} ARS
+            <Precio precio={product.precio} precioFinal={product.precioFinal} descuento={product.descuentoPorcentaje} />
           </div>
           <button onClick={() => onSelectProduct(product.id)} className="btn-buy-kinetic">
             <span className="material-symbols-outlined">shopping_bag</span>

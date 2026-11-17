@@ -129,7 +129,7 @@ export const ProductDetailSection = ({ product }) => {
         <span className="product-sku">LÍNEA OFICIAL • CÓDIGO PRODUCCIÓN #{product.id}</span>
         <h1 className="product-title">{product.nombre}</h1>
 
-        <ProductPriceBox precio={product.precio} />
+        <ProductPriceBox precio={product.precio} precioFinal={product.precioFinal} descuento={product.descuentoPorcentaje} />
 
         <ProductSizeSelector
           talles={product.talles}

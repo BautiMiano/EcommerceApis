@@ -70,6 +70,10 @@ public class ProductoRequest {
     @JsonProperty("descuentoPorcentaje")
     private Double descuentoPorcentaje;
 
+    // Solo en las respuestas: precio que paga el comprador (con el descuento aplicado)
+    @JsonProperty("precioFinal")
+    private Double precioFinal;
+
     // Si lo aplicó un admin, el vendedor no lo puede cambiar
     @JsonProperty("descuentoAplicadoPorAdmin")
     private Boolean descuentoAplicadoPorAdmin;

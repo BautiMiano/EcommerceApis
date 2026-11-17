@@ -4,70 +4,6 @@
   font-family: 'Inter', sans-serif; 
 }
 
-.catalog-hero-banner { 
-  padding: 1.75rem 2rem 1rem; 
-}
-
-.hero-content { 
-  max-width: 100rem; 
-  margin: 0 auto; 
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #5e5e60;
-}
-
-.breadcrumb a { 
-  color: #5e5e60; 
-  text-decoration: none; 
-}
-
-.breadcrumb a:hover { 
-  color: #000; 
-  text-decoration: underline; 
-}
-
-.breadcrumb .material-symbols-outlined { 
-  font-size: 1rem; 
-}
-
-.hero-pill {
-  display: inline-block;
-  margin: 1.25rem 0 1rem;
-  padding: 0.4rem 0.9rem;
-  border: 0.0625rem solid #000;
-  border-radius: 62.4375rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.hero-title {
-  font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: clamp(2.6rem, 6vw, 4.5rem);
-  letter-spacing: 0.01em;
-  line-height: 0.95;
-  text-transform: uppercase;
-  color: #000;
-  max-width: 14em;
-}
-
-.hero-subtitle {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #4b6377;
-  max-width: 44rem;
-  margin-top: 1.25rem;
-}
-
 .catalog-main-layout {
   max-width: 100rem;
   margin: 0 auto;
@@ -99,9 +35,6 @@
 
 /* MEDIA QUERIES EN REM */
 @media (max-width: 64rem) {
-  .catalog-hero-banner { 
-    padding: 1.25rem 1.25rem 0.5rem; 
-  }
   .catalog-main-layout { 
     flex-direction: column; 
     padding: 1.25rem 1.25rem 3rem; 

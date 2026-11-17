@@ -74,13 +74,15 @@ public class CarritoServiceImpl implements CarritoService {
                             item.getProducto().getId(),
                             item.getProducto().getNombre(),
                             item.getCantidad(),
-                            item.getPrecioUnitario(),
-                            item.getPrecioUnitario() * item.getCantidad(),
+                            item.getProducto().precioFinal(),
+                            item.getProducto().precioFinal() * item.getCantidad(),
                             item.getTalle() != null ? item.getTalle().name() : null,
                             item.getProducto().getCategoria() != null ? item.getProducto().getCategoria().getNombre()
                                     : null,
                             item.getProducto().getVendedor().getNombreUsuario(),
-                            productoService.getImagenPrincipal(item.getProducto())))
+                            productoService.getImagenPrincipal(item.getProducto()),
+                            item.getProducto().getPrecio(),
+                            item.getProducto().porcentajeDescuento()))
                     .toList();
         }
 
@@ -241,6 +243,7 @@ public class CarritoServiceImpl implements CarritoService {
             int nuevaCantidad = item.getCantidad() + request.getCantidad();
             exigirStockDisponible(producto, request.getTalle(), nuevaCantidad);
             item.setCantidad(nuevaCantidad);
+            item.setPrecioUnitario(producto.precioFinal());
         } else {
             exigirStockDisponible(producto, request.getTalle(), request.getCantidad());
 
@@ -249,7 +252,7 @@ public class CarritoServiceImpl implements CarritoService {
             nuevoItem.setProducto(producto);
             nuevoItem.setTalle(request.getTalle());
             nuevoItem.setCantidad(request.getCantidad());
-            nuevoItem.setPrecioUnitario(producto.getPrecio());
+            nuevoItem.setPrecioUnitario(producto.precioFinal());
             carrito.getItems().add(nuevoItem);
         }
 
@@ -271,6 +274,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         exigirStockDisponible(item.getProducto(), item.getTalle(), request.getCantidad());
         item.setCantidad(request.getCantidad());
+        item.setPrecioUnitario(item.getProducto().precioFinal());
 
         return convertirACarritoResponse(carritoRepository.save(carrito));
     }
@@ -400,11 +404,11 @@ private OrdenDeCompra crearOrden(
         itemOrden.setProducto(itemCarrito.getProducto());
         itemOrden.setTalle(itemCarrito.getTalle());
         itemOrden.setCantidad(itemCarrito.getCantidad());
-        itemOrden.setPrecioUnitario(itemCarrito.getPrecioUnitario());
+        itemOrden.setPrecioUnitario(itemCarrito.getProducto().precioFinal());
 
         orden.getItems().add(itemOrden);
 
-        total += itemCarrito.getPrecioUnitario()
+        total += itemCarrito.getProducto().precioFinal()
                 * itemCarrito.getCantidad();
     }
 

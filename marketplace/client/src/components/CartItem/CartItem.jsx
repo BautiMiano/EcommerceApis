@@ -38,7 +38,14 @@ const CartItem = ({ item, indice, bloqueado }) => {
         <div className="cart-item-etiquetas">
           {item.categoria && <span className="cart-item-etiqueta">{item.categoria}</span>}
           <span className="cart-item-etiqueta">Talle {etiquetaTalle(talle)}</span>
-          <span className="cart-item-unitario">{formatoPrecio(item.precioUnitario)} c/u</span>
+          {/* Con descuento: porcentaje y precio de lista tachado (los manda el back) */}
+          {item.descuentoPorcentaje > 0 && (
+            <span className="cart-item-descuento">-{item.descuentoPorcentaje}%</span>
+          )}
+          <span className="cart-item-unitario">
+            {item.descuentoPorcentaje > 0 && <s>{formatoPrecio(item.precioOriginal)}</s>}
+            {formatoPrecio(item.precioUnitario)} c/u
+          </span>
         </div>
       </div>
 

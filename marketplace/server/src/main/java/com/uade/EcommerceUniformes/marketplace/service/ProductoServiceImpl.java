@@ -58,6 +58,7 @@ public class ProductoServiceImpl implements ProductoService {
         response.setSku(producto.getSku());
         response.setMarca(producto.getMarca());
         response.setPrecio(producto.getPrecio());
+        response.setPrecioFinal(producto.precioFinal());
         response.setTalles(producto.getTalles().stream()
                 .sorted(Comparator.comparing(StockTalle::getTalle))
                 .map(t -> new TalleStockDto(t.getTalle(), t.getStock(), t.getStockReservado(), t.getStockDisponible()))

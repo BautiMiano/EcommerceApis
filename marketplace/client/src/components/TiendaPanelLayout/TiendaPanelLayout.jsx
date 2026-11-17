@@ -6,8 +6,8 @@ import TiendaSidebar from '../TiendaSidebar/TiendaSidebar'
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu'
 import { Search } from '../Search/Search'
 import { fetchCategorias } from '../../redux/slice/ProductSlice'
-import { limpiarAvisoCarrito } from '../../redux/slice/CarritoSlice'
-import { limpiarAvisoFavoritos } from '../../redux/slice/FavoritoSlice'
+import { fetchCarrito, limpiarAvisoCarrito } from '../../redux/slice/CarritoSlice'
+import { fetchFavoritos, limpiarAvisoFavoritos } from '../../redux/slice/FavoritoSlice'
 import '../SellerLayout/SellerLayout.css'
 import '../SellerHeader/SellerHeader.css'
 import './TiendaPanelLayout.css'
@@ -21,6 +21,9 @@ const TiendaPanelLayout = ({ logueado, onLogout }) => {
   const statusCategorias = useSelector((state) => state.categorias.status)
   const avisoCarrito = useSelector((state) => state.carrito.aviso)
   const avisoFavoritos = useSelector((state) => state.favoritos.aviso)
+  const statusFavoritos = useSelector((state) => state.favoritos.status)
+  const statusCarrito = useSelector((state) => state.carrito.status)
+  const usuarioId = useSelector((state) => state.auth.usuarioId)
   const [menuAbierto, setMenuAbierto] = useState(false)
 
   // Las categorías las usan los filtros del catálogo y el buscador del Home.
@@ -28,6 +31,16 @@ const TiendaPanelLayout = ({ logueado, onLogout }) => {
   useEffect(() => {
     statusCategorias === 'idle' && dispatch(fetchCategorias())
   }, [dispatch, statusCategorias])
+
+  // El sidebar marca Favoritos y Carrito cuando tienen productos: el comprador los necesita desde
+  // que entra. Se piden una sola vez; las pantallas de favoritos y carrito usan los mismos datos.
+  useEffect(() => {
+    logueado && statusFavoritos === 'idle' && dispatch(fetchFavoritos())
+  }, [dispatch, logueado, statusFavoritos])
+
+  useEffect(() => {
+    logueado && usuarioId && statusCarrito === 'idle' && dispatch(fetchCarrito(usuarioId))
+  }, [dispatch, logueado, usuarioId, statusCarrito])
 
   // El carrito y los favoritos se modifican desde varias pantallas (detalle, favoritos, carrito):
   // sus avisos se muestran acá, una sola vez, y se limpian
