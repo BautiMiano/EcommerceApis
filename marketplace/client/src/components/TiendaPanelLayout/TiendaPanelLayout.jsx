@@ -14,8 +14,9 @@ import './TiendaPanelLayout.css'
 
 // Estructura de la tienda para el visitante y el comprador:
 // sidebar negro a la izquierda, header arriba y la pantalla en el Outlet (como el panel del vendedor)
-const TiendaPanelLayout = ({ logueado, perfil, onLogout, contexto }) => {
+const TiendaPanelLayout = ({ logueado, onLogout }) => {
   const dispatch = useDispatch()
+  const perfil = useSelector((state) => state.usuarios.perfil)
   const location = useLocation()
   const statusCategorias = useSelector((state) => state.categorias.status)
   const avisoCarrito = useSelector((state) => state.carrito.aviso)
@@ -69,7 +70,7 @@ const TiendaPanelLayout = ({ logueado, perfil, onLogout, contexto }) => {
 
           {/* Comprador: avatar con su nombre (sale del perfil que manda el back) */}
           {logueado && perfil && (
-            <UsuarioMenu perfil={perfil} rutaPerfil="/perfil" textoEnlace="Mi perfil" onLogout={onLogout} />
+            <UsuarioMenu rutaPerfil="/perfil" textoEnlace="Mi perfil" onLogout={onLogout} />
           )}
 
           {/* Mientras llega el perfil se muestra un bloque que "brilla" */}
@@ -79,7 +80,7 @@ const TiendaPanelLayout = ({ logueado, perfil, onLogout, contexto }) => {
         <main className="seller-layout-contenido">
           {/* La key cambia con la ruta: cada pantalla nueva entra con la animación de aparecer */}
           <div key={location.pathname} className="tienda-panel-pagina">
-            <Outlet context={contexto} />
+            <Outlet />
           </div>
         </main>
       </div>

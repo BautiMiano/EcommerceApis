@@ -11,27 +11,19 @@ const TiendaLayout = ({ onLogout }) => {
 
   // La sesión sale del AuthSlice y el perfil del UsuarioSlice
   const { token, rol } = useSelector((state) => state.auth)
-  const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
+  const statusPerfil = useSelector((state) => state.usuarios.statusPerfil)
 
-  // El perfil se pide una sola vez por sesión: solo si hay token y nunca se pidió ('idle')
+  // El perfil se pide una sola vez por sesión: solo si hay token y nunca se pidió ('idle').
+  // El menú de usuario y las pantallas (por ejemplo, Mi perfil) lo leen de la store.
   useEffect(() => {
     token && statusPerfil === 'idle' && dispatch(fetchPerfil())
   }, [dispatch, token, statusPerfil])
-
-  // Lo que reciben las pantallas por el Outlet (por ejemplo, Mi perfil)
-  const contexto = {
-    perfil,
-    cargandoPerfil: Boolean(token) && (statusPerfil === 'idle' || loadingPerfil),
-    errorPerfil: errorPerfil || '',
-  }
 
   if (!token || rol === 'COMPRADOR') {
     return (
       <TiendaPanelLayout
         logueado={Boolean(token)}
-        perfil={perfil}
         onLogout={onLogout}
-        contexto={contexto}
       />
     )
   }
