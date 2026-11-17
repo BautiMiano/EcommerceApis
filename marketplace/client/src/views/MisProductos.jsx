@@ -49,7 +49,7 @@ const MisProductos = () => {
   }
 
   const productosFiltrados = productos.filter((producto) => {
-    const texto = `${producto.nombre} ${producto.descripcion || ''} ${producto.sku || ''}`.toLowerCase()
+    const texto = `${producto.nombre} ${producto.descripcion || ''}`.toLowerCase()
     const nivel = nivelStock(producto.talles)
 
     const coincideBusqueda = texto.includes(filtros.busqueda.trim().toLowerCase())
@@ -75,7 +75,6 @@ const MisProductos = () => {
   const handleExportar = () => {
     exportarCsv('mis-productos.csv', [
       { titulo: 'Producto', valor: (p) => p.nombre },
-      { titulo: 'SKU', valor: (p) => p.sku },
       { titulo: 'Marca', valor: (p) => p.marca },
       { titulo: 'Categoría', valor: (p) => p.categoria },
       { titulo: 'Talles', valor: (p) => rangoTalles(p.talles) },
@@ -147,7 +146,6 @@ const MisProductos = () => {
                     <thead>
                       <tr>
                         <th scope="col">Producto</th>
-                        <th scope="col">SKU</th>
                         <th scope="col">Categoría</th>
                         <th scope="col">Talles</th>
                         <th scope="col">Precio</th>

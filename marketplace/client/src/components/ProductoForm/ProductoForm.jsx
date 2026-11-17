@@ -1,7 +1,7 @@
 import CampoFormulario from '../CampoFormulario/CampoFormulario'
 import CategoriaSelect from '../CategoriaSelect/CategoriaSelect'
 import SizeSelector from '../SizeSelector/SizeSelector'
-import { MODO_UNICO, stockTotalFormulario } from '../../utils/productoFormulario'
+import { MAX_DESCRIPCION } from '../../utils/productoFormulario'
 import './ProductoForm.css'
 
 const RECOMENDACIONES = [
@@ -30,8 +30,6 @@ const ProductoForm = ({
   imagenes,
   vistaPrevia,
 }) => {
-  const esUnico = formulario.modoTalle === MODO_UNICO
-
   return (
     <form className="producto-form" onSubmit={onSubmit} noValidate>
       <div className="producto-form-principal">
@@ -63,10 +61,15 @@ const ProductoForm = ({
                 name="descripcion"
                 type="textarea"
                 rows="6"
+                maxLength={MAX_DESCRIPCION}
                 value={formulario.descripcion}
                 onChange={onChange}
                 error={errores.descripcion}
-              />
+              >
+                <small className="producto-form-contador">
+                  {formulario.descripcion.length} / {MAX_DESCRIPCION}
+                </small>
+              </CampoFormulario>
             </div>
 
             <div className="producto-form-columna">
@@ -75,13 +78,6 @@ const ProductoForm = ({
                 name="marca"
                 value={formulario.marca}
                 onChange={onChange}
-              />
-              <CampoFormulario
-                label={<>SKU <span className="producto-form-requerido">*</span></>}
-                name="sku"
-                value={formulario.sku}
-                onChange={onChange}
-                error={errores.sku}
               />
               <CampoFormulario
                 label={<>Condición <span className="producto-form-requerido">*</span></>}
@@ -131,18 +127,6 @@ const ProductoForm = ({
               onChange={onChange}
               error={errores.descuento || (descuentoBloqueado ? 'Lo aplicó un administrador.' : '')}
               disabled={descuentoBloqueado}
-            />
-            {/* Con talle único el stock se carga acá; con rango es la suma de los talles */}
-            <CampoFormulario
-              label={<>Stock <span className="producto-form-requerido">*</span></>}
-              name="stockUnico"
-              type="number"
-              min={reservados?.UNICO || 0}
-              step="1"
-              value={esUnico ? formulario.stockUnico : stockTotalFormulario(formulario)}
-              onChange={onChange}
-              disabled={!esUnico}
-              title={esUnico ? undefined : 'Es la suma del stock de cada talle'}
             />
             <CampoFormulario
               label={<>Estado <span className="producto-form-requerido">*</span></>}

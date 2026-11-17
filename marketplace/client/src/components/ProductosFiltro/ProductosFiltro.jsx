@@ -58,7 +58,7 @@ const ProductosFiltro = ({ filtros, categorias, vendedores, onChange }) => {
           name="busqueda"
           value={filtros.busqueda}
           onChange={handleChange}
-          placeholder="Buscar productos por nombre, SKU..."
+          placeholder="Buscar productos por nombre o descripción..."
         />
       </label>
     </div>

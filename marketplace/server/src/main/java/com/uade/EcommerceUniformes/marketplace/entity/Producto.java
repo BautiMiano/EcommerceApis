@@ -38,9 +38,9 @@ public class Producto {
 
     @Column(nullable=false)
     private String nombre;
+    @Column(length = 1000)
     private String descripcion;
     private double precio;
-    private String sku;
     private String marca;
 
     // Stock propio de cada talle que ofrece el producto

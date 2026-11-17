@@ -20,8 +20,6 @@ public class ProductoRequest {
     @JsonProperty("descripcion")
     private String descripcion;
 
-    @JsonProperty("sku")
-    private String sku;
 
     @JsonProperty("marca")
     private String marca;

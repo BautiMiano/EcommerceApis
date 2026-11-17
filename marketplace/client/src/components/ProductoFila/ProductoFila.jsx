@@ -24,7 +24,6 @@ const ProductoFila = ({ producto, mostrarVendedor, ocupado, onEditar, onCambiarA
         </div>
       </td>
       {mostrarVendedor && <td>{producto.vendedor}</td>}
-      <td>{producto.sku || '—'}</td>
       <td>{producto.categoria || 'Sin categoría'}</td>
       <td>{rangoTalles(producto.talles)}</td>
       <td>{formatoPrecio(producto.precio)}</td>
