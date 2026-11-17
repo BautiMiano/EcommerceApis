@@ -5,7 +5,6 @@ import { API_URL } from "../../utils/api";
 const URL = `${API_URL}/auth`;
 
 // Guarda la sesión en localStorage para no perderla al recargar la página.
-// Va en los thunks (no en los reducers) porque es un efecto secundario y los reducers son funciones puras.
 const guardarSesion = (data) => {
     localStorage.setItem("token", data.access_token);
     localStorage.setItem("userRole", data.role);
@@ -13,8 +12,6 @@ const guardarSesion = (data) => {
 };
 
 // validateStatus: () => true hace que axios no rechace la promesa ante un error HTTP.
-// Así leemos el texto que manda el backend (por ejemplo, "Tu cuenta de vendedor todavía no está habilitada")
-// y lo lanzamos con throw: llega intacto a action.error.message.
 export const loginUser = createAsyncThunk("auth/loginUser", async (credenciales) => {
     const { data, status } = await axios.post(`${URL}/authenticate`, credenciales, {
         validateStatus: () => true,
@@ -27,8 +24,6 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (credenciales)
 });
 
 // El comprador recibe su token al registrarse. El vendedor no: queda pendiente de aprobación.
-// Igual que en loginUser, validateStatus permite leer el motivo del error que manda el backend
-// (por ejemplo, "El mail que se intenta agregar ya esta creado").
 export const registerUser = createAsyncThunk("auth/registerUser", async (usuario) => {
     const { data, status } = await axios.post(`${URL}/register`, usuario, {
         validateStatus: () => true,
