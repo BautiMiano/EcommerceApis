@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, clearError } from '../../redux/slice/AuthSlice';
+import { loginUser, clearError } from '../../redux/slice/UsuarioSlice';
 import { rutaInicioPorRol } from '../../utils/sesion';
 import CampoFormulario from '../CampoFormulario/CampoFormulario';
 import Button from '../Button/Button';

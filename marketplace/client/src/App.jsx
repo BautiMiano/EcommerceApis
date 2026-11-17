@@ -20,7 +20,7 @@ import PedidosRecibidos from './views/PedidosRecibidos.jsx';
 import MiPerfilVendedor from './views/MiPerfilVendedor.jsx';
 import MiPerfilComprador from './views/MiPerfilComprador.jsx';
 import { cerrarSesion } from './utils/sesion.js';
-import { logout } from './redux/slice/AuthSlice';
+import { logout } from './redux/slice/UsuarioSlice';
 import ChatFlotante from './components/ChatFlotante/ChatFlotante';
 import ScrollArriba from './components/ScrollArriba/ScrollArriba';
 import MisTickets from './views/MisTickets.jsx';

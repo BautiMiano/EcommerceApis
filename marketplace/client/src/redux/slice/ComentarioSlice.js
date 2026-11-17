@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { pedir } from '../../utils/http'
-import { loginUser, logout } from './AuthSlice'
+import { loginUser, logout } from './UsuarioSlice'
 
 // ---------- Thunks ----------
 

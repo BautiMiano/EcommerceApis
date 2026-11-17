@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { limpiarAvisoProductos, limpiarAvisoCategorias } from '../../redux/slice/ProductSlice'
-import { limpiarAvisoOrdenes } from '../../redux/slice/OrdenSlice'
+import { limpiarAvisoOrdenes } from '../../redux/slice/CarritoSlice'
 
 // Muestra los avisos que dejan los slices del panel (productos, categorías y ventas) cuando
 // termina un llamado, y los limpia. No dibuja nada: va una sola vez en el layout del panel.

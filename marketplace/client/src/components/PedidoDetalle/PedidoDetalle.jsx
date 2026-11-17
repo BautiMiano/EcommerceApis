@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import EstadoBadge from '../EstadoBadge/EstadoBadge'
-import { cambiarEstadoVenta, fetchMiVenta } from '../../redux/slice/OrdenSlice'
+import { cambiarEstadoVenta, fetchMiVenta } from '../../redux/slice/CarritoSlice'
 import { ACCION_ESTADO, estadoPedido, formatoFecha, formatoPrecio } from '../../utils/formato'
 import { etiquetaTalle } from '../../utils/talles'
 import './PedidoDetalle.css'
 
 // Panel lateral con el detalle de un pedido: solo los productos del vendedor, con el talle y el precio
 // que quedaron guardados en la orden. El cambio de estado lo valida el backend.
-// La venta sale de Redux (OrdenSlice) y se pide una sola vez; al cambiar el estado, el slice
+// La venta sale de Redux (órdenes en CarritoSlice) y se pide una sola vez; al cambiar el estado, el slice
 // actualiza el detalle y la lista sin volver a pedirlos.
 const PedidoDetalle = ({ ordenId, imagenes, onCerrar }) => {
   const dispatch = useDispatch()

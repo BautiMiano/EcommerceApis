@@ -8,7 +8,7 @@ import HomeComprador from "../HomeComprador"
 
 const Home = () => {
 
-    // La sesión sale de Redux (AuthSlice)
+    // La sesión sale de Redux (slice auth)
     const { token, rol } = useSelector((state) => state.auth)
 
     if(token && rol === 'COMPRADOR'){

@@ -2,12 +2,140 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { API_URL } from '../../utils/api'
 import { pedir } from '../../utils/http'
-import { loginUser, logout } from './AuthSlice'
-import { cambiarDescuentoProducto } from './DescuentoSlice'
-import { subirImagen, desactivarImagen } from './ImagenSlice'
+import { loginUser, logout } from './UsuarioSlice'
 
 const URL = `${API_URL}/productos`
 const URLCategories = `${API_URL}/categories`
+
+// Este archivo tiene los slices de Producto y de los objetos que se relacionan con él:
+// Categoría, Descuento e Imagen (un descuento y una imagen solo existen para un producto,
+// y al publicar un producto se guardan juntos). Cada uno tiene su propio reducer en el Store.
+
+// ==================== DESCUENTOS ====================
+// Slice del objeto Descuento del back.
+// Un descuento se crea con su porcentaje y después se asigna a un producto.
+
+// ---------- Thunks ----------
+
+// Cambia el descuento de un producto: quita el anterior (si había) y asigna el nuevo (si hay).
+// POST /descuentos, POST /descuentos/asignar-descuento/{id} y DELETE /descuentos/eliminar-descuento/producto/
+// El back recibe el id del producto como JSON en el cuerpo.
+export const cambiarDescuentoProducto = createAsyncThunk(
+  'descuentos/cambiarDescuentoProducto',
+  async ({ productoId, anterior, nuevo }) => {
+    anterior && await pedir('delete', '/descuentos/eliminar-descuento/producto/', JSON.stringify(productoId), { json: true })
+    const descuento = nuevo ? await pedir('post', '/descuentos', { porcentaje: nuevo }) : null
+    descuento && await pedir('post', `/descuentos/asignar-descuento/${descuento.idDescuento}`, JSON.stringify(productoId), { json: true })
+    return descuento
+  }
+)
+
+// ---------- Slice ----------
+
+const initialStateDescuentos = {
+  items: [],     // descuentos creados en esta sesión
+  loading: false,
+  error: null,
+}
+
+const descuentosSlice = createSlice({
+  name: 'descuentos',
+  initialState: initialStateDescuentos,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(cambiarDescuentoProducto.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(cambiarDescuentoProducto.fulfilled, (state, action) => {
+        state.loading = false
+        action.payload && state.items.push(action.payload)
+      })
+      .addCase(cambiarDescuentoProducto.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+  },
+})
+
+export const descuentosReducer = descuentosSlice.reducer
+
+// ==================== IMÁGENES ====================
+// Slice del objeto Imagen del back (fotos de los productos).
+
+// ---------- Thunks ----------
+
+// Sube una foto de un producto (POST /imagenes, multipart con "file" y "productoId")
+export const subirImagen = createAsyncThunk(
+  'imagenes/subirImagen',
+  async ({ archivo, productoId }) => {
+    const formData = new FormData()
+    formData.append('file', archivo)
+    formData.append('productoId', productoId)
+    return pedir('post', '/imagenes', formData)
+  }
+)
+
+// Quita una foto de un producto (PATCH /imagenes/{id})
+export const desactivarImagen = createAsyncThunk(
+  'imagenes/desactivarImagen',
+  async (imagenId) => {
+    await pedir('patch', `/imagenes/${imagenId}`)
+    return imagenId
+  }
+)
+
+// ---------- Slice ----------
+
+const initialStateImagenes = {
+  items: [],      // ids de las imágenes quitadas en esta sesión
+  loading: false,
+  error: null,
+  pendientes: 0,  // cuántas subidas o bajas están en camino
+}
+
+const imagenesSlice = createSlice({
+  name: 'imagenes',
+  initialState: initialStateImagenes,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(subirImagen.pending, (state) => {
+        state.pendientes += 1
+        state.loading = true
+        state.error = null
+      })
+      .addCase(subirImagen.fulfilled, (state) => {
+        state.pendientes -= 1
+        state.loading = state.pendientes > 0
+      })
+      .addCase(subirImagen.rejected, (state, action) => {
+        state.pendientes -= 1
+        state.loading = state.pendientes > 0
+        state.error = action.error.message
+      })
+      .addCase(desactivarImagen.pending, (state) => {
+        state.pendientes += 1
+        state.loading = true
+        state.error = null
+      })
+      .addCase(desactivarImagen.fulfilled, (state, action) => {
+        state.pendientes -= 1
+        state.loading = state.pendientes > 0
+        state.items.push(action.payload)
+      })
+      .addCase(desactivarImagen.rejected, (state, action) => {
+        state.pendientes -= 1
+        state.loading = state.pendientes > 0
+        state.error = action.error.message
+      })
+  },
+})
+
+export const imagenesReducer = imagenesSlice.reducer
+
+// ==================== PRODUCTOS ====================
 
 
 // ---------- Producto ----------

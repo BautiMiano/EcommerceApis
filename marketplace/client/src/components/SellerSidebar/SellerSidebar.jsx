@@ -22,13 +22,14 @@ const SellerSidebar = ({ onLogout, onCerrarMenu, opciones = OPCIONES_VENDEDOR, r
       </div>
 
       <nav className="seller-sidebar-nav">
-        {opciones.map((opcion) => (
+        {opciones.map((opcion, i) => (
           <NavLink
             key={opcion.ruta}
             to={opcion.ruta}
             end={opcion.exacta}
             onClick={onCerrarMenu}
             className={({ isActive }) => `seller-sidebar-link ${isActive ? 'seller-sidebar-link-activo' : ''}`}
+            style={{ '--i': i }}
           >
             <span className="material-symbols-outlined" aria-hidden="true">{opcion.icono}</span>
             {opcion.texto}

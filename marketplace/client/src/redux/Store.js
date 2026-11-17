@@ -1,18 +1,16 @@
 // Store: el estado global de la aplicación.
 // Se divide por objeto del back: cada slice maneja una parte.
-// Los slices de productos y de categorías están en ProductSlice.js
+// Los objetos que se relacionan mucho comparten archivo (cada uno con su reducer):
+// ProductSlice.js: productos, categorías, descuentos e imágenes
+// CarritoSlice.js: carrito y órdenes · UsuarioSlice.js: auth y usuarios
 import { configureStore } from '@reduxjs/toolkit'
-import productosReducer, { categoriasReducer } from './slice/ProductSlice'
+import productosReducer, { categoriasReducer, descuentosReducer, imagenesReducer } from './slice/ProductSlice'
 import ticketsReducer from './slice/TicketSlice'
 import chatReducer from './slice/ChatSlice'
-import authReducer from './slice/AuthSlice'
-import usuariosReducer from './slice/UsuarioSlice'
+import usuariosReducer, { authReducer } from './slice/UsuarioSlice'
 import comentariosReducer from './slice/ComentarioSlice'
 import favoritosReducer from './slice/FavoritoSlice'
-import carritoReducer from './slice/CarritoSlice'
-import ordenesReducer from './slice/OrdenSlice'
-import descuentosReducer from './slice/DescuentoSlice'
-import imagenesReducer from './slice/ImagenSlice'
+import carritoReducer, { ordenesReducer } from './slice/CarritoSlice'
 
 export const store = configureStore({
   reducer: {

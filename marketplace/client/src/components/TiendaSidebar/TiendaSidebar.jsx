@@ -50,7 +50,7 @@ const TiendaSidebar = ({ logueado, onLogout, onCerrarMenu }) => {
         </button>
       </div>
 
-      <nav className="seller-sidebar-nav tienda-sidebar-nav">
+      <nav className="seller-sidebar-nav">
         {opciones.map((opcion, i) => {
           // Con productos, el ícono se rellena de naranja y aparece la cantidad
           const cantidad = opcion.contador ? contadores[opcion.contador] : 0

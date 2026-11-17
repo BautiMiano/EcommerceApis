@@ -9,11 +9,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes tienda-deslizar {
-  from { opacity: 0; transform: translateX(-0.75rem); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
 @keyframes tienda-brillo {
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
@@ -22,59 +17,6 @@
 /* Cada pantalla entra subiendo un poco y apareciendo */
 .tienda-panel-pagina {
   animation: tienda-aparecer 0.45s ease both;
-}
-
-/* ---------- Sidebar ---------- */
-
-.tienda-panel .seller-sidebar {
-  background: linear-gradient(180deg, #000000 0%, #0f0f0f 100%);
-}
-
-.tienda-panel .seller-sidebar-logo {
-  transition: transform 0.3s ease;
-}
-
-.tienda-panel .seller-sidebar-logo:hover {
-  transform: scale(1.04);
-}
-
-/* Los links entran uno detrás del otro (--i es la posición de cada link) */
-.tienda-panel .seller-sidebar-link {
-  position: relative;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  animation: tienda-deslizar 0.4s ease both;
-  animation-delay: calc(var(--i, 0) * 0.04s);
-}
-
-.tienda-panel .seller-sidebar-link:hover {
-  transform: translateX(0.25rem);
-}
-
-/* Barrita naranja a la izquierda del link activo */
-.tienda-panel .seller-sidebar-link::before {
-  content: '';
-  position: absolute;
-  top: 0.625rem;
-  bottom: 0.625rem;
-  left: 0;
-  width: 0.1875rem;
-  border-radius: 0.125rem;
-  background-color: var(--uf-naranja);
-  transform: scaleY(0);
-  transition: transform 0.25s ease;
-}
-
-.tienda-panel .seller-sidebar-link-activo::before {
-  transform: scaleY(1);
-}
-
-.tienda-panel .seller-sidebar-link .material-symbols-outlined {
-  transition: color 0.2s ease;
-}
-
-.tienda-panel .seller-sidebar-link-activo .material-symbols-outlined,
-.tienda-panel .seller-sidebar-link:hover .material-symbols-outlined {
-  color: var(--uf-naranja);
 }
 
 /* ---------- Header ---------- */

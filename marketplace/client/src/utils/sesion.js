@@ -1,4 +1,4 @@
-// La sesión vive en el estado global (redux/slice/AuthSlice.js): los componentes la leen con useSelector.
+// La sesión vive en el estado global (slice auth de redux/slice/UsuarioSlice.js): los componentes la leen con useSelector.
 // Acá queda solo borrar la copia guardada en localStorage al cerrar sesión.
 export const cerrarSesion = () => {
   localStorage.removeItem('token')

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { API_URL } from './api'
 
-// Llamada al back que usan los thunks de Redux (igual que en AuthSlice).
+// Llamada al back que usan los thunks de Redux (igual que en el login de UsuarioSlice).
 // validateStatus: () => true hace que axios no rechace ante un error HTTP: así leemos el texto
 // que manda el back ("El producto ya está en favoritos") y lo lanzamos con throw.
 // createAsyncThunk lo deja en action.error.message, sin necesidad de try/catch.

@@ -6,7 +6,7 @@ import CampoFormulario from "../CampoFormulario/CampoFormulario";
 import PasswordStrength from "../PasswordStrength/PasswordStrength";
 import Button from "../Button/Button";
 
-import { registerUser, resetRegisterStatus } from "../../redux/slice/AuthSlice";
+import { registerUser, resetRegisterStatus } from "../../redux/slice/UsuarioSlice";
 import { rutaInicioPorRol } from "../../utils/sesion";
 
 const campos = [

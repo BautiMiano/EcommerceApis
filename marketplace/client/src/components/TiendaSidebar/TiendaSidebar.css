@@ -1,10 +1,5 @@
 /* Agregados al sidebar del vendedor (SellerSidebar.css). Todas las medidas en rem. */
 
-.tienda-sidebar-nav {
-  flex: 1;
-  min-height: 0;
-}
-
 .tienda-sidebar-aviso {
   margin: 0 0.25rem 0.75rem;
   padding: 0.875rem 1rem;

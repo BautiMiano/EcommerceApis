@@ -9,7 +9,7 @@ import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 const TiendaLayout = ({ onLogout }) => {
   const dispatch = useDispatch()
 
-  // La sesión sale del AuthSlice y el perfil del UsuarioSlice
+  // La sesión y el perfil salen de UsuarioSlice (slices auth y usuarios)
   const { token, rol } = useSelector((state) => state.auth)
   const statusPerfil = useSelector((state) => state.usuarios.statusPerfil)
 

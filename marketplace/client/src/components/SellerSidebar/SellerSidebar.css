@@ -51,8 +51,10 @@
 
 .seller-sidebar-nav {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.375rem;
+  min-height: 0;
 }
 
 .seller-sidebar-link {
@@ -96,6 +98,66 @@
   margin: 1.125rem auto;
   border: none;
   border-top: 0.0625rem solid #3a3a3a;
+}
+
+/* ---------- Mismo diseño para el comprador, el vendedor y el admin ----------
+   El nav ocupa todo el alto, así "Cerrar sesión" queda abajo de todo. */
+
+@keyframes seller-sidebar-deslizar {
+  from { opacity: 0; transform: translateX(-0.75rem); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.seller-sidebar {
+  background: linear-gradient(180deg, #000000 0%, #0f0f0f 100%);
+}
+
+.seller-sidebar-logo {
+  transition: transform 0.3s ease;
+}
+
+.seller-sidebar-logo:hover {
+  transform: scale(1.04);
+}
+
+/* Los links entran uno detrás del otro (--i es la posición de cada link) */
+.seller-sidebar-link {
+  position: relative;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  animation: seller-sidebar-deslizar 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 0.04s);
+}
+
+.seller-sidebar-link:hover {
+  transform: translateX(0.25rem);
+}
+
+/* Barrita naranja a la izquierda del link activo */
+.seller-sidebar-link::before {
+  content: '';
+  position: absolute;
+  top: 0.625rem;
+  bottom: 0.625rem;
+  left: 0;
+  width: 0.1875rem;
+  border-radius: 0.125rem;
+  background-color: var(--uf-naranja);
+  transform: scaleY(0);
+  transition: transform 0.25s ease;
+}
+
+.seller-sidebar-link-activo::before {
+  transform: scaleY(1);
+}
+
+.seller-sidebar-link .material-symbols-outlined {
+  transition: color 0.2s ease;
+}
+
+/* Al pasar el mouse (también en "Cerrar sesión") y en el link activo, el ícono se pone naranja */
+.seller-sidebar-link-activo .material-symbols-outlined,
+.seller-sidebar-link:hover .material-symbols-outlined {
+  color: var(--uf-naranja);
 }
 
 @media (max-width: 56.25em) {
