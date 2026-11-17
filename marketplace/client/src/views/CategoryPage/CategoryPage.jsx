@@ -11,6 +11,7 @@ import {
 } from '../../redux/slice/ProductSlice.js';
 import './CategoryPage.css';
 
+
 const PAGE_SIZE = 6;
 
 export const CategoryPage = () => {
@@ -118,6 +119,7 @@ export const CategoryPage = () => {
                 total={products.length}
                 onSelectProduct={(id) => navigate(`/producto/${id}`)}
               />
+              
 
               {pageCount > 1 && (
                 <div className="catalog-pagination-container">

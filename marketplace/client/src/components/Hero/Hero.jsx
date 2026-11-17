@@ -32,9 +32,6 @@ const Hero = () => {
 
                 <div className="hero-visual">
                     <Orb colors={COLORES_ORB} backgroundColor="#000000" glow={1.3} size={0.95} hoverIntensity={1.2} />
-                    <div className="hero-visual-centro">
-                        <CaritaUni tamano="7rem" />
-                    </div>
                 </div>
             </div>
         </section>

@@ -4,6 +4,9 @@ import PanelEstado from '../components/PanelEstado/PanelEstado'
 import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
 import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
+import PageTitle from "../components/PageTitle/PageTitle"
+
+
 
 // Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.
 // El perfil lo carga TiendaLayout; las tarjetas y la lógica son las mismas que las del vendedor.
@@ -13,11 +16,13 @@ const MiPerfilComprador = () => {
   return (
     <div className="mi-perfil-comprador">
       <div className="mi-perfil-comprador-contenido">
-        <SellerPageHeader
-          titulo="MI PERFIL"
-          descripcion="Gestioná tu información personal y tu cuenta."
-          migas={[{ texto: 'Inicio', ruta: '/' }, { texto: 'Mi perfil' }]}
-        />
+
+        <PageTitle
+            variante="seccion"
+            etiqueta="TU CUENTA"
+            titulo="MI PERFIL"
+            descripcion="Gestioná tu información personal y tu cuenta."
+            />
 
         {cargandoPerfil && <PanelEstado tipo="cargando" titulo="Cargando tu perfil..." />}
         {!cargandoPerfil && errorPerfil && (
