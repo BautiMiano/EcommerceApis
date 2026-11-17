@@ -1,8 +1,13 @@
+import { useSelector } from 'react-redux'
 import UsuarioMenu from '../UsuarioMenu/UsuarioMenu'
 import './SellerHeader.css'
 
-// Sin buscador ni notificaciones: todavía no hay datos reales para mostrar ahí
-const SellerHeader = ({ perfil, menuAbierto, onAbrirMenu, onLogout }) => {
+// Sin buscador ni notificaciones: todavía no hay datos reales para mostrar ahí.
+// También lo usa el panel del admin: el menú de usuario ("Mi tienda") es solo para el vendedor.
+const SellerHeader = ({ menuAbierto, onAbrirMenu, onLogout }) => {
+  const perfil = useSelector((state) => state.usuarios.perfil)
+  const { rol } = useSelector((state) => state.auth)
+
   return (
     <header className="seller-header">
       <button
@@ -15,8 +20,8 @@ const SellerHeader = ({ perfil, menuAbierto, onAbrirMenu, onLogout }) => {
         <span className="material-symbols-outlined">menu</span>
       </button>
 
-      {perfil && (
-        <UsuarioMenu perfil={perfil} rutaPerfil="/vendedor/perfil" textoEnlace="Mi tienda" onLogout={onLogout} />
+      {rol === 'VENDEDOR' && perfil && (
+        <UsuarioMenu rutaPerfil="/vendedor/perfil" textoEnlace="Mi tienda" onLogout={onLogout} />
       )}
     </header>
   )

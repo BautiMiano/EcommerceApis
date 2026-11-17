@@ -100,6 +100,8 @@ export const actualizarProducto = createAsyncThunk(
 // el estado y las fotos, que en el back tienen sus propios endpoints.
 // Si el producto no se pudo guardar, falla todo. Si se guardó pero falló algo de lo demás,
 // se devuelve una advertencia para avisarle al vendedor (el producto ya existe y no se vuelve a crear).
+// Al final se pide el producto completo (con fotos, descuento y estado) para ponerlo en las listas
+// sin volver a pedirlas. Si ese pedido falla, producto queda en null y las listas se piden de nuevo.
 export const guardarPublicacion = createAsyncThunk(
   'productos/guardarPublicacion',
   async ({ productoId, producto, descuento, anterior, activo, archivos, imagenesQuitadas }, { dispatch }) => {
@@ -120,7 +122,8 @@ export const guardarPublicacion = createAsyncThunk(
       ]),
     ]
     const fallo = resultados.find((resultado) => resultado && resultado.error)
-    return { id, creado: !productoId, advertencia: fallo ? fallo.error.message : null }
+    const productoCompleto = await pedir('get', `/productos/${id}`).catch(() => null)
+    return { id, creado: !productoId, advertencia: fallo ? fallo.error.message : null, producto: productoCompleto }
   }
 )
 
@@ -473,18 +476,39 @@ const productosSlice = createSlice({
         state.aviso = { tipo: 'error', texto: action.error.message }
       })
 
-      // Publicar o editar. Las listas y el detalle cambiaron: se vuelven a pedir la próxima vez que se muestren.
+      // Publicar o editar: el producto nuevo se agrega a la lista y el editado se reemplaza, sin volver a pedirlas
       .addCase(guardarPublicacion.pending, (state) => {
         state.statusGuardar = 'loading'
       })
       .addCase(guardarPublicacion.fulfilled, (state, action) => {
-        const { id, creado, advertencia } = action.payload
+        const { id, creado, advertencia, producto } = action.payload
         state.statusGuardar = 'succeeded'
         state.publicacionGuardada = action.payload
-        state.statusMisProductos = 'idle'
-        state.statusTodosLosProductos = 'idle'
-        delete state.detalles[id]
-        delete state.estadosDetalle[id]
+
+        if (producto && creado) {
+          state.misProductos = [...state.misProductos, producto]
+        }
+        if (producto && !creado) {
+          // El admin también edita desde EditarProducto: se actualizan las dos listas
+          ;[state.misProductos, state.todosLosProductos].forEach((lista) => {
+            const index = lista.findIndex((p) => p.id === producto.id)
+            if (index !== -1) {
+              lista[index] = producto
+            }
+          })
+        }
+        if (producto) {
+          state.detalles[id] = producto
+          state.estadosDetalle[id] = 'succeeded'
+        }
+        // Si no se pudo traer el producto completo, las listas y el detalle se piden de nuevo
+        if (!producto) {
+          state.statusMisProductos = 'idle'
+          state.statusTodosLosProductos = 'idle'
+          delete state.detalles[id]
+          delete state.estadosDetalle[id]
+        }
+
         state.aviso = advertencia
           ? { tipo: 'warning', texto: `La publicación se guardó, pero hubo un problema: ${advertencia}` }
           : { tipo: 'success', texto: creado ? '¡Publicación creada con éxito!' : 'Cambios guardados.' }
