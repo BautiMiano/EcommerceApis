@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
 import AccionActivo from '../AccionActivo/AccionActivo'
-import ActivoBadge from '../ActivoBadge/ActivoBadge'
 import EstadoBadge from '../EstadoBadge/EstadoBadge'
 import { inicialesDe } from '../../utils/formato'
 import { cambiarActivoUsuario } from '../../redux/slice/UsuarioSlice'
@@ -11,6 +10,9 @@ const ROLES = {
   VENDEDOR: { texto: 'Vendedor', tono: 'naranja' },
   ADMIN: { texto: 'Administrador', tono: 'gris' },
 }
+
+const ESTADO_ACTIVO = { texto: 'Activo', tono: 'verde' }
+const ESTADO_INACTIVO = { texto: 'Inactivo', tono: 'gris' }
 
 // Un usuario en la tabla. Activa o desactiva despachando la acción directamente.
 const UsuarioFila = ({ usuario }) => {
@@ -27,7 +29,7 @@ const UsuarioFila = ({ usuario }) => {
       <td>@{usuario.nombreUsuario}</td>
       <td>{usuario.mail}</td>
       <td><EstadoBadge estado={ROLES[usuario.rolUsuario] || { texto: usuario.rolUsuario, tono: 'gris' }} /></td>
-      <td><ActivoBadge activo={usuario.activo} /></td>
+      <td><EstadoBadge estado={usuario.activo ? ESTADO_ACTIVO : ESTADO_INACTIVO} /></td>
       <td><AccionActivo activo={usuario.activo} ocupado={ocupado} onClick={() => dispatch(cambiarActivoUsuario(usuario))} /></td>
     </tr>
   )

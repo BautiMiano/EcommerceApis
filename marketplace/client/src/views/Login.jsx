@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import PageTitle from "../components/PageTitle/PageTitle";
 import LoginForm from "../components/LoginForm/LoginForm";
-import RegisterLink from "../components/RegisterLink/RegisterLink";
+import EnlaceCuenta from "../components/EnlaceCuenta/EnlaceCuenta";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,9 +17,12 @@ const Login = () => {
 
         <LoginForm />
 
-        <RegisterLink onClick={() => navigate('/registro')} />
+        <EnlaceCuenta
+          pregunta="¿No tenés cuenta?"
+          textoBoton="Creá tu cuenta acá"
+          onClick={() => navigate('/registro')}
+        />
       </main>
-
     </div>
   );
 }

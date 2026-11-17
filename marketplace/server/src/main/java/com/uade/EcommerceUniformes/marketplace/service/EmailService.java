@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
 
+import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
+
 @Service
 public class EmailService {
 
@@ -59,7 +61,8 @@ public class EmailService {
     public void enviarOrdenCompra(
             String destinatario,
             Long numeroOrden,
-            byte[] pdf) {
+            byte[] pdf,
+            Usuario vendedor) {
 
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
@@ -73,6 +76,11 @@ public class EmailService {
                     "Hola,\n\n" +
                     "Gracias por comprar en UNIFORMA.\n\n" +
                     "Adjuntamos el PDF de tu orden de compra #" + numeroOrden + ".\n\n" +
+                    "Para coordinar el envío podés comunicarte con el vendedor:\n" +
+                    "  " + vendedor.getNombre() + (vendedor.getApellido() == null ? "" : " " + vendedor.getApellido()) + "\n" +
+                    "  Mail: " + vendedor.getMail() + "\n" +
+                    (vendedor.getTelefono() == null ? "" : "  Teléfono: " + vendedor.getTelefono() + "\n") +
+                    "\n" +
                     "Saludos,\n" +
                     "Equipo de UNIFORMA"
             );

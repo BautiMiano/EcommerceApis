@@ -1,66 +1,52 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import ProductoForm from '../components/ProductoForm/ProductoForm'
 import ImageUploader from '../components/ImageUploader/ImageUploader'
 import ProductoPreview from '../components/ProductoPreview/ProductoPreview'
 import useProductoFormulario from '../hooks/useProductoFormulario'
-import { crearProducto, getCategories, subirImagen } from '../utils/api'
-import { armarProductoRequest, guardarDescuentoYEstado } from '../utils/productoFormulario'
+import { guardarPublicacion, reiniciarGuardado } from '../redux/slice/ProductSlice'
+import { armarPublicacion } from '../utils/productoFormulario'
 
 // Un producto recién creado no tiene descuento y está activo
 const PRODUCTO_NUEVO = { descuentoPorcentaje: null, descuentoAplicadoPorAdmin: false, activo: true }
 
-// Publicar producto: crea la publicación y después guarda descuento, estado y fotos
+// Publicar producto: crea la publicación y después guarda descuento, estado y fotos (todo con Redux)
 const CrearPublicacion = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const form = useProductoFormulario()
-  const [categorias, setCategorias] = useState([])
-  const [cargandoCategorias, setCargandoCategorias] = useState(true)
-  const [publicando, setPublicando] = useState(false)
-  const [errorGeneral, setErrorGeneral] = useState('')
+  // Las categorías las pide SellerLayout una sola vez
+  const { items: categorias, status: statusCategorias, error: errorCategorias } = useSelector((state) => state.categorias)
+  const { statusGuardar, publicacionGuardada } = useSelector((state) => state.productos)
+  const publicando = statusGuardar === 'loading'
 
+  // Cuando termina de guardar: si todo salió bien va a la lista; si el producto se creó pero falló
+  // algo de lo demás (descuento, estado o fotos), lo lleva a editarlo para corregirlo
   useEffect(() => {
-    getCategories()
-      .then(setCategorias)
-      .catch((error) => setErrorGeneral(error.message))
-      .finally(() => setCargandoCategorias(false))
-  }, [])
+    statusGuardar === 'succeeded' && navigate(publicacionGuardada.advertencia
+      ? `/vendedor/productos/${publicacionGuardada.id}/editar`
+      : '/vendedor/productos')
+    statusGuardar === 'succeeded' && dispatch(reiniciarGuardado())
+  }, [dispatch, navigate, statusGuardar, publicacionGuardada])
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
-    setErrorGeneral('')
 
     if (!form.validar()) {
       toast.error('Revisá los campos marcados.')
       return
     }
 
-    setPublicando(true)
-
-    let productoCreado
-    try {
-      productoCreado = await crearProducto(armarProductoRequest(form.formulario))
-    } catch (error) {
-      // El producto no se creó: se conservan los datos para que el vendedor corrija y reintente
-      setErrorGeneral(error.message)
-      toast.error(error.message)
-      setPublicando(false)
-      return
-    }
-
-    // A partir de acá el producto ya existe: si algo falla no se vuelve a crear,
-    // se avisa y se lleva al vendedor a editarlo
-    try {
-      await guardarDescuentoYEstado(productoCreado.id, form.formulario, PRODUCTO_NUEVO)
-      await Promise.all(form.archivos.map((archivo) => subirImagen(archivo, productoCreado.id)))
-      toast.success('¡Publicación creada con éxito!')
-      navigate('/vendedor/productos')
-    } catch (error) {
-      toast.warning(`La publicación se creó, pero hubo un problema: ${error.message} Podés corregirlo acá.`)
-      navigate(`/vendedor/productos/${productoCreado.id}/editar`)
-    }
+    // Si ya se está publicando, no se manda otra vez
+    !publicando && dispatch(guardarPublicacion({
+      productoId: null,
+      ...armarPublicacion(form.formulario, PRODUCTO_NUEVO),
+      archivos: form.archivos,
+      imagenesQuitadas: [],
+    }))
   }
 
   return (
@@ -70,12 +56,12 @@ const CrearPublicacion = () => {
         descripcion="Completá la información para crear una nueva publicación."
       />
 
-      {errorGeneral && <p className="panel-campo-error" role="alert">{errorGeneral}</p>}
+      {errorCategorias && <p className="panel-campo-error" role="alert">{errorCategorias}</p>}
 
       <ProductoForm
         formulario={form.formulario}
         categorias={categorias}
-        cargandoCategorias={cargandoCategorias}
+        cargandoCategorias={statusCategorias === 'idle' || statusCategorias === 'loading'}
         errores={form.errores}
         onChange={form.handleChange}
         onCambios={form.handleCambios}

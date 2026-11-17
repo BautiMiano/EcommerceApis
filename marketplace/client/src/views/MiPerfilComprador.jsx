@@ -1,4 +1,4 @@
-import { useOutletContext } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
@@ -6,9 +6,10 @@ import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
 
 // Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.
-// El perfil lo carga TiendaLayout; las tarjetas y la lógica son las mismas que las del vendedor.
+// El perfil lo pide TiendaLayout y se lee de la store; las tarjetas y la lógica son las mismas que las del vendedor.
 const MiPerfilComprador = () => {
-  const { perfil, cargandoPerfil, errorPerfil, recargarPerfil } = useOutletContext()
+  const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
+  const cargandoPerfil = statusPerfil === 'idle' || loadingPerfil
 
   return (
     <div className="mi-perfil-comprador">
@@ -28,7 +29,6 @@ const MiPerfilComprador = () => {
           <PerfilComprador
             key={`${perfil.nombre}-${perfil.apellido}-${perfil.telefono}-${perfil.nombreUsuario}`}
             perfil={perfil}
-            recargarPerfil={recargarPerfil}
           />
         )}
       </div>
@@ -36,8 +36,8 @@ const MiPerfilComprador = () => {
   )
 }
 
-const PerfilComprador = ({ perfil, recargarPerfil }) => {
-  const cuenta = usePerfilCuenta(perfil, recargarPerfil)
+const PerfilComprador = ({ perfil }) => {
+  const cuenta = usePerfilCuenta(perfil)
 
   return (
     <div className="mi-perfil-comprador-grilla">

@@ -1,6 +1,5 @@
 // Lógica compartida entre Publicar producto y Editar producto.
 import { TALLES_SELECCIONABLES, TALLE_UNICO } from './talles'
-import { activarProducto, asignarDescuento, crearDescuento, desactivarProducto, quitarDescuento } from './api'
 
 export const MODO_SELECCIONABLES = 'SELECCIONABLES'
 export const MODO_UNICO = 'UNICO'
@@ -110,27 +109,24 @@ export const armarProductoRequest = (formulario) => ({
       .map((talle) => ({ talle, stock: Number(formulario.stocks[talle]) })),
 })
 
-// Descuento y estado de publicación se guardan con sus propios endpoints, después del producto.
+// Lo que necesita el thunk guardarPublicacion (ProductSlice) además del producto:
+// si cambia el descuento y el estado de publicación, que en el back se guardan con sus propios endpoints.
 // "anterior" es el producto antes de guardar (al publicar: sin descuento y activo).
-export const guardarDescuentoYEstado = async (productoId, formulario, anterior, esAdmin = false) => {
+export const armarPublicacion = (formulario, anterior, esAdmin = false) => {
   const descuentoNuevo = Number(formulario.descuento) || null
   const descuentoAnterior = anterior.descuentoPorcentaje || null
-
   // Un descuento que puso un admin no lo puede tocar el vendedor
   const puedeCambiarDescuento = esAdmin || !anterior.descuentoAplicadoPorAdmin
-  if (puedeCambiarDescuento && descuentoNuevo !== descuentoAnterior) {
-    if (descuentoAnterior) {
-      await quitarDescuento(productoId)
-    }
-    if (descuentoNuevo) {
-      const descuento = await crearDescuento(descuentoNuevo)
-      await asignarDescuento(descuento.idDescuento, productoId)
-    }
-  }
 
-  const activoNuevo = formulario.activo === 'ACTIVO'
-  if (activoNuevo !== anterior.activo) {
-    await (activoNuevo ? activarProducto(productoId) : desactivarProducto(productoId))
+  return {
+    producto: armarProductoRequest(formulario),
+    descuento: {
+      cambia: puedeCambiarDescuento && descuentoNuevo !== descuentoAnterior,
+      anterior: descuentoAnterior,
+      nuevo: descuentoNuevo,
+    },
+    anterior: { activo: anterior.activo },
+    activo: formulario.activo === 'ACTIVO',
   }
 }
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import StatCard from '../components/StatCard/StatCard'
 import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
 import AccionesRapidas from '../components/AccionesRapidas/AccionesRapidas'
-import { obtenerMisProductos, obtenerMisVentas } from '../utils/api'
+import { fetchMisProductos } from '../redux/slice/ProductSlice'
+import { fetchMisVentas } from '../redux/slice/OrdenSlice'
 import { estadoPedido, formatoFecha, formatoPrecio } from '../utils/formato'
 import { STOCK_BAJO, nivelStock, stockDisponibleTotal } from '../utils/talles'
 import './DashboardVendedor.css'
@@ -33,21 +35,23 @@ const variacion = (actual, anterior) => {
 
 // Todo lo que muestra sale de mis-productos y mis-ventas: no hay métricas inventadas
 const DashboardVendedor = () => {
-  const [productos, setProductos] = useState([])
-  const [ventas, setVentas] = useState([])
+  const dispatch = useDispatch()
+  // Publicaciones y ventas salen de Redux: si ya se pidieron en otra pantalla, no se vuelven a pedir
+  const { misProductos: productos, statusMisProductos, errorMisProductos } = useSelector((state) => state.productos)
+  const { items: ventas, status: statusVentas, error: errorVentas } = useSelector((state) => state.ordenes)
+  // El período elegido es estado local
   const [dias, setDias] = useState(30)
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
 
   useEffect(() => {
-    Promise.all([obtenerMisProductos(), obtenerMisVentas()])
-      .then(([productosObtenidos, ventasObtenidas]) => {
-        setProductos(productosObtenidos)
-        setVentas(ventasObtenidas)
-      })
-      .catch((errorObteniendo) => setError(errorObteniendo.message))
-      .finally(() => setCargando(false))
-  }, [])
+    statusMisProductos === 'idle' && dispatch(fetchMisProductos())
+  }, [dispatch, statusMisProductos])
+
+  useEffect(() => {
+    statusVentas === 'idle' && dispatch(fetchMisVentas())
+  }, [dispatch, statusVentas])
+
+  const cargando = [statusMisProductos, statusVentas].some((status) => status === 'idle' || status === 'loading')
+  const error = errorMisProductos || errorVentas
 
   if (cargando) {
     return <PanelEstado tipo="cargando" titulo="Cargando tu tienda..." />

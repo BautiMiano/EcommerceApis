@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
 import Paginacion from '../components/Paginacion/Paginacion'
 import PedidoDetalle from '../components/PedidoDetalle/PedidoDetalle'
-import { obtenerMisProductos, obtenerMisVentas } from '../utils/api'
+import { fetchMisProductos } from '../redux/slice/ProductSlice'
+import { fetchMisVentas } from '../redux/slice/OrdenSlice'
 import { ESTADOS_ORDEN, estadoPedido, formatoFecha, formatoPrecio } from '../utils/formato'
 import { exportarCsv } from '../utils/exportarCsv'
 import './PedidosRecibidos.css'
@@ -19,32 +21,28 @@ const DIA = 24 * 60 * 60 * 1000
 const PedidosRecibidos = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [ventas, setVentas] = useState([])
-  const [imagenes, setImagenes] = useState({})
+  const dispatch = useDispatch()
+  // Ventas y publicaciones salen de Redux; cada lista se pide una sola vez
+  const { items: ventas, status: statusVentas, error: errorVentas } = useSelector((state) => state.ordenes)
+  const { misProductos, statusMisProductos } = useSelector((state) => state.productos)
   const [pestana, setPestana] = useState('TODOS')
   const [busqueda, setBusqueda] = useState('')
   const [dias, setDias] = useState(0)
   // Fecha desde la que se muestran pedidos; se calcula al elegir el período, no en cada render
   const [desde, setDesde] = useState(null)
   const [pagina, setPagina] = useState(1)
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-
-  const cargarVentas = () => {
-    setError('')
-    Promise.all([obtenerMisVentas(), obtenerMisProductos()])
-      .then(([ventasObtenidas, productos]) => {
-        setVentas(ventasObtenidas)
-        // Las órdenes no traen imágenes: se toman de los productos del vendedor
-        setImagenes(Object.fromEntries(productos.map((p) => [p.id, p.imagenes && p.imagenes[0]])))
-      })
-      .catch((errorObteniendo) => setError(errorObteniendo.message))
-      .finally(() => setCargando(false))
-  }
+  const cargando = statusVentas === 'idle' || statusVentas === 'loading'
 
   useEffect(() => {
-    Promise.resolve().then(cargarVentas)
-  }, [])
+    statusVentas === 'idle' && dispatch(fetchMisVentas())
+  }, [dispatch, statusVentas])
+
+  useEffect(() => {
+    statusMisProductos === 'idle' && dispatch(fetchMisProductos())
+  }, [dispatch, statusMisProductos])
+
+  // Las órdenes no traen imágenes: se toman de los productos del vendedor
+  const imagenes = Object.fromEntries(misProductos.map((p) => [p.id, p.imagenes && p.imagenes[0]]))
 
   // Primero el período y la búsqueda; las pestañas cuentan sobre ese resultado
   const ventasBuscadas = ventas.filter((venta) => {
@@ -83,11 +81,6 @@ const PedidosRecibidos = () => {
       { titulo: 'Total', valor: (v) => v.total },
       { titulo: 'Estado', valor: (v) => estadoPedido(v.estado).texto },
     ], ventasFiltradas)
-  }
-
-  // Cuando el panel cambia el estado, la lista se actualiza sin volver a pedirla
-  const handleActualizado = (actualizada) => {
-    setVentas((anteriores) => anteriores.map((v) => (v.ordenId === actualizada.ordenId ? actualizada : v)))
   }
 
   return (
@@ -140,13 +133,13 @@ const PedidosRecibidos = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando tus pedidos..." />}
 
-      {!cargando && error && (
-        <PanelEstado tipo="error" titulo="No pudimos cargar tus pedidos" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarVentas}>Reintentar</button>
+      {statusVentas === 'failed' && (
+        <PanelEstado tipo="error" titulo="No pudimos cargar tus pedidos" texto={errorVentas}>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchMisVentas())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {statusVentas === 'succeeded' && (
         <div className={'pedidos-contenido ' + (id ? 'pedidos-contenido-con-detalle' : '')}>
           <div>
             {ventas.length === 0 && (
@@ -232,7 +225,6 @@ const PedidosRecibidos = () => {
               ordenId={id}
               imagenes={imagenes}
               onCerrar={() => navigate('/vendedor/pedidos')}
-              onActualizado={handleActualizado}
             />
           )}
         </div>

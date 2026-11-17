@@ -1,20 +1,15 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { useSelector } from "react-redux"
 import SelectTrigger from "../SelectTrigger/SelectTrigger"
 import CategoryOption from "../CategoryOption/CategoryOption"
-import { getCategories } from "../../utils/api"
 import './CategorySelect.css'
 
+// Las categorías salen de Redux: las pide el layout de la tienda una sola vez
 const CategorySelect = ({seleccionarCategoria}) => {
 
+    const categorias = useSelector((state) => state.categorias.items)
     const [abierto, setAbierto] = useState(false)
     const [categoria, setCategoria] = useState('Seleccioná una categoría...')
-    const [categorias, setCategorias] = useState([])
-
-    useEffect(() => {
-        getCategories()
-            .then((data) => setCategorias(data))
-            .catch(() => setCategorias([]))
-    }, [])
 
     const handleToggle = () => {setAbierto(!abierto)}
 
@@ -30,9 +25,9 @@ const CategorySelect = ({seleccionarCategoria}) => {
                 <SelectTrigger texto={categoria} handleToggle={handleToggle} />
                 <ul className="category-select-lista">
                     {
-                        categorias.map((value, index)=>(
+                        categorias.map((value)=>(
                             <CategoryOption
-                            key={index}
+                            key={value.idCategoria}
                             id={value.idCategoria}
                             nombre={value.nombreCategoria}
                             handleSelect={handleSelect}

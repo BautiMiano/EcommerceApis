@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import FormField from "../FormField/FormField";
+import CampoFormulario from "../CampoFormulario/CampoFormulario";
 import PasswordStrength from "../PasswordStrength/PasswordStrength";
-import Button from "../ButtonRL/Button";
+import Button from "../Button/Button";
 
 import { registerUser, resetRegisterStatus } from "../../redux/slice/AuthSlice";
 import { rutaInicioPorRol } from "../../utils/sesion";
@@ -103,7 +103,9 @@ const RegisterForm = () => {
     <>
       <form className="register-form" onSubmit={handleSubmit}>
         {campos.map((campo) => (
-          <FormField
+          <CampoFormulario
+            variante="formulario"
+            required
             key={campo.name}
             label={campo.label}
             name={campo.name}
@@ -115,7 +117,7 @@ const RegisterForm = () => {
             onChange={handleChange} 
           >
             {campo.name === 'contrasena' && <PasswordStrength contrasena={form.contrasena} />}
-          </FormField>
+          </CampoFormulario>
         ))}
 
         <div className="register-actions">

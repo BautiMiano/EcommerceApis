@@ -36,7 +36,7 @@ export const ProductGallery = ({ product }) => {
         )}
 
         <span className="production-code">
-          SERIE CERTIFICADA #{product?.id || 'SS-400-ARG'}
+          SERIE CERTIFICADA #{product?.id}
         </span>
       </div>
 

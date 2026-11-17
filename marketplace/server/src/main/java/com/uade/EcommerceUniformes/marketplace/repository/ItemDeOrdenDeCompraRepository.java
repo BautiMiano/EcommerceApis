@@ -1,5 +1,6 @@
 package com.uade.EcommerceUniformes.marketplace.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ public interface ItemDeOrdenDeCompraRepository extends JpaRepository<ItemDeOrden
     List<ItemDeOrdenDeCompra> findByOrdenId(Long ordenId);
     Optional<ItemDeOrdenDeCompra> findByOrdenIdAndProductoId(Long ordenId, Long productoId);
     boolean existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(Long usuarioId, Long productoId, EstadoOrden estado);
+    boolean existsByOrden_Usuario_IdAndProducto_IdAndOrden_EstadoIn(Long usuarioId, Long productoId, Collection<EstadoOrden> estados);
     List<ItemDeOrdenDeCompra> findByProductoVendedorIdOrderByOrdenIdDesc(Long vendedorId);
     List<ItemDeOrdenDeCompra> findByOrdenIdAndProductoVendedorId(Long ordenId, Long vendedorId);
 }

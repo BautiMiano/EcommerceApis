@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ProductGallery } from './ProductGallery';
 import { ProductPriceBox } from './ProductPriceBox';
@@ -9,48 +10,46 @@ import { ProductQuantitySelector } from './ProductQuantitySelector';
 import { FavoriteCheckbox } from './FavoriteCheckbox';
 import { CartButton } from './CartButton';
 import {
-  obtenerCarritoDeUsuario,
-  agregarProductoAlCarrito,
   agregarFavorito,
-  eliminarFavorito,
-  obtenerMisFavoritos
-} from '../../utils/api.js';
+  fetchFavoritos,
+  quitarFavorito,
+  selectEsFavorito,
+} from '../../redux/slice/FavoritoSlice.js';
+import { agregarAlCarrito } from '../../redux/slice/CarritoSlice.js';
 import './ProductDetailSection.css';
 
 Modal.setAppElement('#root');
 
 export const ProductDetailSection = ({ product }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Estado local: solo lo usa esta pantalla
   // Si el producto ofrece un solo talle con stock, ya queda elegido
   const [selectedSize, setSelectedSize] = useState(() => {
     const conStock = (product.talles || []).filter((t) => t.stockDisponible > 0);
     return conStock.length === 1 ? conStock[0].talle : null;
   });
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
-  const tokenGuardado = localStorage.getItem('token');
-  const userIdGuardado = localStorage.getItem('usuarioId');
-  const estaAutenticado = Boolean(tokenGuardado);
+  // Estado global: la sesión, los favoritos y el carrito vienen de Redux
+  const { token, rol, usuarioId } = useSelector((state) => state.auth);
+  const isFavorite = useSelector(selectEsFavorito(product.id));
+  const statusFavoritos = useSelector((state) => state.favoritos.status);
+  const favoritoEnAccion = useSelector((state) => state.favoritos.idEnAccion);
+  const statusAgregar = useSelector((state) => state.carrito.statusAgregar);
 
-  const rawRole = String(localStorage.getItem('userRole') || '').toUpperCase();
-  const esVendedor = estaAutenticado && rawRole.includes('VENDEDOR');
+  const estaAutenticado = Boolean(token);
+  const esVendedor = estaAutenticado && rol.includes('VENDEDOR');
   const esComprador = estaAutenticado && !esVendedor;
 
+  // Los favoritos del comprador se piden una sola vez por sesión
   useEffect(() => {
-    const verificarFavorito = esComprador && Boolean(product?.id);
+    esComprador && statusFavoritos === 'idle' && dispatch(fetchFavoritos());
+  }, [dispatch, esComprador, statusFavoritos]);
 
-    verificarFavorito && obtenerMisFavoritos()
-      .then((favoritos) => {
-        const existe = favoritos.some((fav) => {
-          const idFavProducto = fav.producto?.id || fav.productoId || fav.id;
-          return String(idFavProducto) === String(product.id);
-        });
-        setIsFavorite(existe);
-      })
-      .catch(() => setIsFavorite(false));
-  }, [product?.id, esComprador]);
+
 
   const handleAddToCart = () => {
     if (!estaAutenticado) {
@@ -68,30 +67,17 @@ export const ProductDetailSection = ({ product }) => {
       return;
     }
 
-    if (!userIdGuardado || userIdGuardado === 'null') {
+    if (!usuarioId || usuarioId === 'null') {
       toast.error('No se pudo identificar tu usuario. Por favor, volvé a iniciar sesión.');
       return;
     }
 
-    obtenerCarritoDeUsuario(userIdGuardado)
-      .then((carrito) => agregarProductoAlCarrito(carrito.id, product.id, selectedSize, quantity))
-      .then(() => toast.success('¡Producto agregado al carrito exitosamente!'))
-      .catch((error) => toast.error(error.message));
+    // Si ya hay un pedido en camino, no se manda otro
+    statusAgregar !== 'loading' &&
+      dispatch(agregarAlCarrito({ productoId: product.id, talle: selectedSize, cantidad: quantity }));
   };
 
-  const handleGoToCart = () => {
-    if (!estaAutenticado) {
-      setIsModalOpen(true);
-      return;
-    }
 
-    if (esVendedor) {
-      toast.warn('Las cuentas con rol Vendedor no tienen sección de carrito de compras.');
-      return;
-    }
-
-    navigate('/carrito');
-  };
 
   const handleToggleFavorite = () => {
     if (!estaAutenticado) {
@@ -104,29 +90,11 @@ export const ProductDetailSection = ({ product }) => {
       return;
     }
 
-    const debeQuitar = esComprador && isFavorite;
-    const debeAgregar = esComprador && !isFavorite;
+    // Si ya hay un pedido en camino para este producto, no se manda otro
+    if (favoritoEnAccion === product.id) return;
 
-    debeQuitar && eliminarFavorito(product.id)
-      .then(() => {
-        setIsFavorite(false);
-        toast.info('Producto eliminado de tus favoritos');
-      })
-      .catch((error) => toast.error(error.message));
-
-    debeAgregar && agregarFavorito(product.id)
-      .then(() => {
-        setIsFavorite(true);
-        toast.success('¡Producto guardado en tus favoritos!');
-      })
-      .catch((error) => {
-        const yaEsFavorito = error.status === 400 || (error.message && error.message.includes('ya está'));
-
-        yaEsFavorito && setIsFavorite(true);
-        yaEsFavorito && toast.info('El producto ya estaba guardado en tus favoritos.');
-
-        !yaEsFavorito && toast.error(error.message);
-      });
+    isFavorite && dispatch(quitarFavorito(product.id));
+    !isFavorite && dispatch(agregarFavorito(product));
   };
 
   // La cantidad no puede superar el stock disponible del talle elegido
@@ -177,18 +145,11 @@ export const ProductDetailSection = ({ product }) => {
 
         <div className="actions-container">
           <CartButton
-            texto={`AGREGAR AL CARRITO ($${(product?.precio || 0) * quantity})`}
+            texto={`AGREGAR AL CARRITO`}
             onClick={handleAddToCart}
+            disabled={statusAgregar === 'loading'}
           />
 
-          <button
-            type="button"
-            className="btn-go-to-cart"
-            onClick={handleGoToCart}
-          >
-            <span className="material-symbols-outlined">shopping_cart_checkout</span>
-            VER MI CARRITO
-          </button>
 
           <FavoriteCheckbox
             isFavorite={isFavorite}

@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.uade.EcommerceUniformes.marketplace.service.UsuarioLogueadoService;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioResponse;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PermisoComentarioResponse;
 
 @Service
 public class ComentarioServiceImpl implements ComentarioService {
@@ -37,6 +38,30 @@ public class ComentarioServiceImpl implements ComentarioService {
 
     @Autowired
     private UsuarioLogueadoService usuarioLogueadoService;
+
+    // Una compra cuenta desde que se confirma (hasta que se entrega). Las canceladas no.
+    private static final List<EstadoOrden> ESTADOS_COMPRA_VALIDA =
+            List.of(EstadoOrden.CONFIRMADA, EstadoOrden.ENVIADA, EstadoOrden.ENTREGADA);
+
+    private boolean compro(Long usuarioId, Long productoId) {
+        return itemDeOrdenDeCompraRepository
+                .existsByOrden_Usuario_IdAndProducto_IdAndOrden_EstadoIn(usuarioId, productoId, ESTADOS_COMPRA_VALIDA);
+    }
+
+    @Override
+    public PermisoComentarioResponse puedeComentar(Long productoId) {
+        Usuario usuarioLogueado = usuarioLogueadoService.obtenerUsuarioLogueado();
+        if (!productoRepository.existsById(productoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productoId);
+        }
+        if (comentarioRepository.existsByUsuario_IdAndProducto_Id(usuarioLogueado.getId(), productoId)) {
+            return new PermisoComentarioResponse(false, "Ya dejaste tu reseña de este producto. ¡Gracias!");
+        }
+        if (!compro(usuarioLogueado.getId(), productoId)) {
+            return new PermisoComentarioResponse(false, "Podés dejar tu reseña cuando compres este producto.");
+        }
+        return new PermisoComentarioResponse(true, null);
+    }
 
     @Override
     public List<Comentario> getComentarios() {
@@ -88,12 +113,11 @@ public ComentarioResponse createComentario(ComentarioRequest request) {
                     "Producto no encontrado con id: " + request.getProductoId()
             ));
 
-    boolean compro = itemDeOrdenDeCompraRepository
-            .existsByOrden_Usuario_IdAndProducto_IdAndOrden_Estado(
-                    usuarioLogueado.getId(),
-                    producto.getId(),
-                    EstadoOrden.ENVIADA
-            );
+    boolean compro = compro(usuarioLogueado.getId(), producto.getId());
+
+    if (request.getCalificacion() < 1 || request.getCalificacion() > 5) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La calificación debe ser de 1 a 5 estrellas");
+    }
 
     if (request.getComentarioProducto() == null
             || request.getComentarioProducto().isBlank()) {
@@ -125,7 +149,7 @@ public ComentarioResponse createComentario(ComentarioRequest request) {
 
     Comentario comentario = new Comentario();
     comentario.setUsuario(usuarioLogueado);
-    comentario.setComentarioProducto(request.getComentarioProducto());
+    comentario.setComentarioProducto(request.getComentarioProducto().trim());
     comentario.setCalificacion(request.getCalificacion());
     comentario.setProducto(producto);
 

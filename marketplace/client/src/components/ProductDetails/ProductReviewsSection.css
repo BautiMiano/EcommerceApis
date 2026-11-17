@@ -240,3 +240,68 @@
 .btn-publish-review:hover {
   background-color: #222;
 }
+/* ---------- Publicar reseña ---------- */
+
+@keyframes review-brillo {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.rating-texto {
+  margin-left: 0.5rem;
+  color: #555;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.review-form-ayuda {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.375rem;
+  color: #777;
+  font-size: 0.75rem;
+}
+
+.review-form-error {
+  color: var(--uf-rojo, #d32f2f);
+  font-weight: 600;
+}
+
+.review-textarea[aria-invalid='true'] {
+  border-color: var(--uf-rojo, #d32f2f);
+}
+
+.btn-publish-review:disabled {
+  background-color: #777;
+  cursor: wait;
+}
+
+.review-aviso {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  border: 0.0625rem dashed #cfcfcf;
+  border-radius: 0.5rem;
+  background-color: #fafafa;
+  color: #444;
+  font-size: 0.875rem;
+}
+
+.review-aviso .material-symbols-outlined {
+  color: var(--uf-naranja, #e0702c);
+}
+
+.review-aviso a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.review-aviso-esqueleto {
+  display: block;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #f1f1f1 25%, #e6e6e6 50%, #f1f1f1 75%);
+  background-size: 200% 100%;
+  animation: review-brillo 1.4s linear infinite;
+}

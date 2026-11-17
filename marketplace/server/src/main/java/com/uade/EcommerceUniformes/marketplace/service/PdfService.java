@@ -61,6 +61,27 @@ public class PdfService {
                     )
             );
 
+            if (!orden.getItems().isEmpty()) {
+                var vendedor = orden.getItems().get(0).getProducto().getVendedor();
+                documento.add(new Paragraph(" "));
+                documento.add(new Paragraph("VENDEDOR"));
+                documento.add(new Paragraph(vendedor.getNombre()
+                        + (vendedor.getApellido() == null ? "" : " " + vendedor.getApellido())
+                        + " - Mail: " + vendedor.getMail()
+                        + (vendedor.getTelefono() == null ? "" : " - Tel: " + vendedor.getTelefono())));
+            }
+
+            if (orden.getDatosEnvio() != null) {
+                documento.add(new Paragraph(" "));
+                documento.add(new Paragraph("ENVIO"));
+                documento.add(new Paragraph("Recibe: " + orden.getDatosEnvio().getNombreReceptor()
+                        + " - Tel: " + orden.getDatosEnvio().getTelefono()));
+                documento.add(new Paragraph("Direccion: " + orden.getDatosEnvio().getDireccion()
+                        + ", " + orden.getDatosEnvio().getCiudad()
+                        + ", " + orden.getDatosEnvio().getProvincia()
+                        + " (CP " + orden.getDatosEnvio().getCodigoPostal() + ")"));
+            }
+
             documento.add(new Paragraph(" "));
 
             documento.add(new Paragraph("PRODUCTOS"));

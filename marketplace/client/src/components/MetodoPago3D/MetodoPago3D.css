@@ -1,0 +1,56 @@
+@keyframes metodo-3d-aparecer {
+  from { opacity: 0; transform: translateY(0.75rem) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.metodo-3d {
+  position: relative;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(224, 112, 44, 0.18), transparent 60%),
+    linear-gradient(180deg, #121212 0%, #000000 100%);
+  animation: metodo-3d-aparecer 0.45s ease both;
+}
+
+.metodo-3d-lienzo {
+  width: 100%;
+  height: 18rem;
+  cursor: grab;
+}
+
+.metodo-3d-lienzo canvas {
+  display: block;
+}
+
+.metodo-3d-leyenda {
+  position: absolute;
+  bottom: 0.875rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 62.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e5e5e5;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  backdrop-filter: blur(0.375rem);
+}
+
+.metodo-3d-leyenda .material-symbols-outlined {
+  font-size: 0.9375rem;
+}
+
+.metodo-3d-leyenda strong {
+  color: var(--uf-blanco);
+}
+
+@media screen and (max-width: 36rem) {
+  .metodo-3d-lienzo {
+    height: 14rem;
+  }
+}

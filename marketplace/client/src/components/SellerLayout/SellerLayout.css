@@ -31,7 +31,6 @@
 
 .seller-layout-contenido {
   flex: 1;
-  padding: 1.5rem 1.75rem 2.5rem;
 }
 
 .seller-layout-fondo {
@@ -378,7 +377,6 @@
   }
 
   .seller-layout-contenido {
-    padding: 1.25rem 1rem 2rem;
   }
 
   .seller-layout-menu-abierto .seller-layout-fondo {

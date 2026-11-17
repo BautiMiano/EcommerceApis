@@ -3,6 +3,7 @@ package com.uade.EcommerceUniformes.marketplace.controllers;
 import com.uade.EcommerceUniformes.marketplace.entity.Comentario;
 import com.uade.EcommerceUniformes.marketplace.entity.Usuario;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioRequest;
+import com.uade.EcommerceUniformes.marketplace.entity.dto.PermisoComentarioResponse;
 import com.uade.EcommerceUniformes.marketplace.entity.dto.ComentarioResponse;
 import com.uade.EcommerceUniformes.marketplace.service.ComentarioService;
 
@@ -37,6 +38,12 @@ public List<ComentarioResponse> getComentariosByProductoId(
         @PathVariable Long productoId) {
     return comentarioService.getComentariosByProductoId(productoId);
 }
+
+    // GET http://localhost:4002/comentarios/producto/2/puedo-comentar (comprador logueado)
+    @GetMapping("/producto/{productoId}/puedo-comentar")
+    public PermisoComentarioResponse puedeComentar(@PathVariable Long productoId) {
+        return comentarioService.puedeComentar(productoId);
+    }
 
     // GET http://localhost:4002/comentarios/1
     @GetMapping("/{comentarioId}")

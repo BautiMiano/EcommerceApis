@@ -3,6 +3,7 @@ package com.uade.EcommerceUniformes.marketplace.entity.dto;
 import java.sql.Date;
 import java.util.List;
 
+import com.uade.EcommerceUniformes.marketplace.entity.DatosEnvio;
 import com.uade.EcommerceUniformes.marketplace.entity.EstadoOrden;
 
 import lombok.Data;
@@ -28,4 +29,6 @@ public class VentaResponse {
     private List<ItemVentaResponse> items;
     // Estados a los que el vendedor puede pasar el pedido desde el actual
     private List<EstadoOrden> estadosSiguientes;
+    // A dónde enviar el pedido (null en órdenes viejas, anteriores a este dato)
+    private DatosEnvio datosEnvio;
 }

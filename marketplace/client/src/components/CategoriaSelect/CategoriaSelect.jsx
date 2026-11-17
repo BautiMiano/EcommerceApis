@@ -1,5 +1,6 @@
 import CampoFormulario from '../CampoFormulario/CampoFormulario'
 
+// Select de categoría del formulario de productos (crear y editar publicación)
 const CategoriaSelect = ({ categorias, value, onChange, error }) => {
   return (
     <CampoFormulario

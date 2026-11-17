@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
@@ -6,49 +7,48 @@ import PanelEstado from '../components/PanelEstado/PanelEstado'
 import StatCard from '../components/StatCard/StatCard'
 import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
 import {
-  activarCategoria,
+  cambiarActivoCategoria,
   crearCategoria,
-  desactivarCategoria,
-  obtenerTodasLasCategorias,
-  obtenerTodosLosProductos,
-} from '../utils/api'
+  fetchTodasLasCategorias,
+  fetchTodosLosProductos,
+} from '../redux/slice/ProductSlice'
 import './AdminCategorias.css'
 
 // Categorías del admin: crear nuevas y activar o desactivar las existentes
 const AdminCategorias = () => {
-  const [categorias, setCategorias] = useState([])
-  const [productos, setProductos] = useState([])
+  const dispatch = useDispatch()
+  // Categorías (activas e inactivas) y publicaciones salen de Redux; cada lista se pide una sola vez
+  const {
+    todas: categorias,
+    statusTodas,
+    errorTodas,
+    statusCrear,
+    categoriaEnAccion,
+  } = useSelector((state) => state.categorias)
+  const { todosLosProductos: productos, statusTodosLosProductos } = useSelector((state) => state.productos)
+  // Lo que se escribe en el campo es estado local
   const [nombre, setNombre] = useState('')
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-  const [creando, setCreando] = useState(false)
-  const [categoriaEnAccion, setCategoriaEnAccion] = useState(null)
-
-  const cargarDatos = async () => {
-    setError('')
-    try {
-      const [categoriasObtenidas, productosObtenidos] = await Promise.all([
-        obtenerTodasLasCategorias(),
-        obtenerTodosLosProductos(),
-      ])
-      setCategorias(categoriasObtenidas)
-      setProductos(productosObtenidos)
-    } catch (errorObteniendo) {
-      setError(errorObteniendo.message)
-    } finally {
-      setCargando(false)
-    }
-  }
+  const cargando = statusTodas === 'idle' || statusTodas === 'loading'
+  const creando = statusCrear === 'loading'
 
   useEffect(() => {
-    Promise.resolve().then(cargarDatos)
-  }, [])
+    statusTodas === 'idle' && dispatch(fetchTodasLasCategorias())
+  }, [dispatch, statusTodas])
+
+  useEffect(() => {
+    statusTodosLosProductos === 'idle' && dispatch(fetchTodosLosProductos())
+  }, [dispatch, statusTodosLosProductos])
+
+  // Cuando la categoría se creó, se vacía el campo
+  useEffect(() => {
+    statusCrear === 'succeeded' && setNombre('')
+  }, [statusCrear])
 
   // Cuántas publicaciones tiene cada categoría (activas y pausadas)
   const contarProductos = (categoria) =>
     productos.filter((producto) => producto.categoryId === categoria.idCategoria).length
 
-  const handleCrear = async (event) => {
+  const handleCrear = (event) => {
     event.preventDefault()
 
     if (nombre.trim() === '') {
@@ -56,34 +56,12 @@ const AdminCategorias = () => {
       return
     }
 
-    setCreando(true)
-    try {
-      await crearCategoria(nombre.trim())
-      setNombre('')
-      await cargarDatos()
-      toast.success('Categoría creada.')
-    } catch (errorCreando) {
-      toast.error(errorCreando.message)
-    } finally {
-      setCreando(false)
-    }
+    // La categoría nueva se agrega a la lista sin volver a pedirla; el aviso lo muestra el layout
+    !creando && dispatch(crearCategoria(nombre.trim()))
   }
 
-  const handleCambiarActivo = async (categoria) => {
-    setCategoriaEnAccion(categoria.idCategoria)
-    try {
-      await (categoria.activo
-        ? desactivarCategoria(categoria.idCategoria)
-        : activarCategoria(categoria.idCategoria))
-      await cargarDatos()
-      toast.success(categoria.activo
-        ? 'Categoría desactivada. Sus productos quedaron pausados.'
-        : 'Categoría activada. Sus productos volvieron a publicarse.')
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setCategoriaEnAccion(null)
-    }
+  const handleCambiarActivo = (categoria) => {
+    !categoriaEnAccion && dispatch(cambiarActivoCategoria(categoria))
   }
 
   const activas = categorias.filter((categoria) => categoria.activo)
@@ -102,13 +80,13 @@ const AdminCategorias = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando las categorías..." />}
 
-      {!cargando && error && (
-        <PanelEstado tipo="error" titulo="No pudimos cargar las categorías" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarDatos}>Reintentar</button>
+      {statusTodas === 'failed' && (
+        <PanelEstado tipo="error" titulo="No pudimos cargar las categorías" texto={errorTodas}>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchTodasLasCategorias())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {statusTodas === 'succeeded' && (
         <>
           <div className="admin-categorias-stats">
             <StatCard icono="category" etiqueta="Total de categorías" valor={categorias.length} detalle="creadas" />

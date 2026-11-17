@@ -34,7 +34,6 @@ const FavoriteCard = ({id, nombre, descripcion, precio, talle, talleUnico, categ
                 <p className="favorite-card-descripcion">{descripcion}</p>
                 <p className="favorite-card-etiqueta">TALLE:</p>
                 <p className="favorite-card-talle">{talle}</p>
-                <StockStatus nivelStock={nivelStock} mensajeStock={mensajeStock} />
 
                 {talleUnico && (
                     <Button

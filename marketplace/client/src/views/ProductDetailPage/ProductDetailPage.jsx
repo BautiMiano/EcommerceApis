@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getProductoById } from '../../utils/api.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductoPorId } from '../../redux/slice/ProductSlice.js';
 import { ProductDetailSection } from '../../components/ProductDetails/ProductDetailSection.jsx';
 import { ProductReviewsSection } from '../../components/ProductDetails/ProductReviewsSection.jsx';
 import './ProductDetailPage.css';
 
 export const ProductDetailPage = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
 
+  // Estado global: el producto y el estado de su llamado vienen de Redux
+  const product = useSelector((state) => state.productos.detalles[id]);
+  const estado = useSelector((state) => state.productos.estadosDetalle[id]);
+
+  // El producto se pide una sola vez: si ya se abrió antes, se usa el que está en el store
   useEffect(() => {
-    setLoading(true);
-    getProductoById(id)
-      .then((data) => setProduct(data))
-      .catch(() => setProduct(null))
-      .finally(() => setLoading(false));
-  }, [id]);
+    !estado && dispatch(fetchProductoPorId(id));
+  }, [dispatch, id, estado]);
+
+  const loading = !estado || estado === 'loading';
 
   return (
     <div className="product-detail-wrapper">
@@ -43,11 +46,8 @@ export const ProductDetailPage = () => {
 
       {!loading && product && (
         <>
-            <ProductDetailSection key={product.id} product={product} />         
-            <ProductReviewsSection 
-            productoId={product.id} 
-            reviewsIniciales={product.resenas || []} 
-          />
+          <ProductDetailSection key={product.id} product={product} />
+          <ProductReviewsSection productoId={product.id} />
         </>
       )}
     </div>

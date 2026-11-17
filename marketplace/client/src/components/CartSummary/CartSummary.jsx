@@ -1,35 +1,54 @@
-import Button from "../Button/Button"
+import { useSelector } from 'react-redux'
+import { selectUnidadesCarrito } from '../../redux/slice/CarritoSlice'
+import { formatoPrecio } from '../../utils/formato'
 import './CartSummary.css'
 
-const CartSummary = ({total, unidades, onIniciarPago}) => {
+// Resumen de la compra. El botón envía el formulario de checkout (form="checkout-form").
+const CartSummary = () => {
+  const { carrito, statusCompra } = useSelector((state) => state.carrito)
+  const unidades = useSelector(selectUnidadesCarrito)
+  const vendedores = new Set(carrito.items.map((item) => item.vendedor)).size
+  const vacio = carrito.items.length === 0
+  const procesando = statusCompra === 'loading'
 
-    return(
-        <aside className="cart-summary">
-            <h3 className="cart-summary-titulo">RESUMEN</h3>
-            <div className="cart-summary-fila">
-                <p>{'Productos (' + unidades + ' u.)'}</p>
-                <p>{'$' + total.toLocaleString('es-AR')}</p>
-            </div>
-            <div className="cart-summary-fila">
-                <p>Envío</p>
-                <p>A coordinar con cada vendedor</p>
-            </div>
-            <div className="cart-summary-total">
-                <p>TOTAL</p>
-                <p className="cart-summary-total-valor">{'$' + total.toLocaleString('es-AR')} <span>ARS</span></p>
-            </div>
-            <Button
-            texto="Iniciar pago"
-            icono="/icons/flecha-blanca.svg"
-            iconoAlt="Flecha"
-            variante="oscuro"
-            handleClick={onIniciarPago}
-            />
-            <p className="cart-summary-nota">
-                Al iniciar el pago reservamos el stock de tus productos por 15 minutos.
-            </p>
-        </aside>
-    )
+  return (
+    <aside className="cart-summary">
+      <h2 className="cart-summary-titulo">Resumen</h2>
+
+      <div className="cart-summary-fila">
+        <span>Productos ({unidades} u.)</span>
+        <span>{formatoPrecio(carrito.total)}</span>
+      </div>
+      <div className="cart-summary-fila">
+        <span>Envío</span>
+        <span className="cart-summary-suave">A coordinar con el vendedor</span>
+      </div>
+
+      <div className="cart-summary-total">
+        <span>Total</span>
+        <span className="cart-summary-total-valor">{formatoPrecio(carrito.total)} <small>ARS</small></span>
+      </div>
+
+      {vendedores > 1 && (
+        <p className="cart-summary-info">
+          <span className="material-symbols-outlined" aria-hidden="true">call_split</span>
+          Tu compra se divide en {vendedores} órdenes, una por cada vendedor.
+        </p>
+      )}
+
+      <button type="submit" form="checkout-form" className="cart-summary-boton" disabled={vacio || procesando}>
+        {procesando
+          ? <><span className="cart-summary-spinner" aria-hidden="true" /> Procesando…</>
+          : <><span className="material-symbols-outlined" aria-hidden="true">lock</span> Confirmar compra</>}
+      </button>
+
+      <ul className="cart-summary-garantias">
+        <li><span className="material-symbols-outlined" aria-hidden="true">inventory</span>Reservamos tu stock al confirmar</li>
+        <li><span className="material-symbols-outlined" aria-hidden="true">mail</span>Recibís la orden en PDF por mail</li>
+        <li><span className="material-symbols-outlined" aria-hidden="true">local_shipping</span>Cada vendedor coordina su envío</li>
+      </ul>
+    </aside>
+  )
 }
 
 export default CartSummary

@@ -1,72 +1,65 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
-import CartList from "../CartList/CartList"
-import CartSummary from "../CartSummary/CartSummary"
-import { obtenerCarritoDeUsuario, actualizarCantidadCarrito, eliminarProductoDelCarrito, iniciarPagoCarrito } from "../../utils/api"
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchCarrito, cerrarCompraConfirmada } from '../../redux/slice/CarritoSlice'
+import CartList from '../CartList/CartList'
+import CheckoutForm from '../CheckoutForm/CheckoutForm'
+import CartSummary from '../CartSummary/CartSummary'
+import CompraConfirmada from '../CompraConfirmada/CompraConfirmada'
 import './CartSection.css'
 
+// Pantalla del carrito: productos, datos de envío, método de pago y resumen, todo en un solo lugar.
+// Este componente es el ÚNICO que pide el carrito, y solo si nunca se pidió.
 const CartSection = () => {
+  const dispatch = useDispatch()
+  const { usuarioId } = useSelector((state) => state.auth)
+  const { carrito, status, error, statusCompra, compraConfirmada } = useSelector((state) => state.carrito)
+  const perfilId = useSelector((state) => state.usuarios.perfil?.id)
 
-    const [carritoId, setCarritoId] = useState(null)
-    const [items, setItems] = useState([])
-    const [total, setTotal] = useState(0)
+  useEffect(() => {
+    status === 'idle' && usuarioId && dispatch(fetchCarrito(usuarioId))
+  }, [dispatch, status, usuarioId])
 
-    const navigate = useNavigate()
+  // Al salir de la pantalla de compra confirmada se limpia, así al volver se ve el carrito
+  useEffect(() => () => {
+    statusCompra === 'succeeded' && dispatch(cerrarCompraConfirmada())
+  }, [dispatch, statusCompra])
 
-    useEffect(() => {
-        obtenerCarritoDeUsuario(localStorage.getItem('usuarioId'))
-            .then((data) => {
-                setCarritoId(data.id)
-                setItems(data.items)
-                setTotal(data.total)
-            })
-            .catch(() => setItems([]))
-    }, [])
+  if (compraConfirmada) {
+    return <CompraConfirmada compra={compraConfirmada} />
+  }
 
-    const cambiarCantidad = (productoId, talle, cantidad) => {
-        if(cantidad < 1){
-            return
-        }
-        actualizarCantidadCarrito(carritoId, productoId, talle, cantidad)
-            .then((data) => {
-                setItems(data.items)
-                setTotal(data.total)
-            })
-            .catch((error) => alert(error.message))
-    }
-
-    const eliminarProducto = (productoId, talle) => {
-        eliminarProductoDelCarrito(carritoId, productoId, talle)
-            .then((data) => {
-                setItems(data.items)
-                setTotal(data.total)
-            })
-            .catch((error) => alert(error.message))
-    }
-
-    const handleIniciarPago = () => {
-        iniciarPagoCarrito(carritoId)
-            .then(() => navigate('/checkout'))
-            .catch((error) => toast.error(error.message))
-    }
-
-    let unidades = 0
-    items.forEach((value) => {unidades = unidades + value.cantidad})
-
-    return(
-        <section className="cart-section">
-            <div className="contenedor cart-section-grilla">
-                <CartList
-                items={items}
-                unidades={unidades}
-                cambiarCantidad={cambiarCantidad}
-                eliminarProducto={eliminarProducto}
-                />
-                <CartSummary total={total} unidades={unidades} onIniciarPago={handleIniciarPago} />
-            </div>
-        </section>
+  if (status === 'failed') {
+    return (
+      <section className="carrito-estado">
+        <span className="material-symbols-outlined" aria-hidden="true">error</span>
+        <h2>No pudimos cargar tu carrito</h2>
+        <p>{error}</p>
+        <button type="button" className="carrito-boton carrito-boton-oscuro" onClick={() => dispatch(fetchCarrito(usuarioId))}>
+          Reintentar
+        </button>
+      </section>
     )
+  }
+
+  if (!carrito) {
+    return (
+      <section className="carrito-grilla" aria-busy="true" aria-label="Cargando carrito">
+        <div className="carrito-esqueleto carrito-esqueleto-alto" />
+        <div className="carrito-esqueleto" />
+      </section>
+    )
+  }
+
+  return (
+    <section className={`carrito-grilla ${statusCompra === 'loading' ? 'carrito-procesando' : ''}`}>
+      <div className="carrito-columna">
+        <CartList />
+        {/* La key hace que el formulario se arme de nuevo cuando llega el perfil, para completar los datos de contacto */}
+        {carrito.items.length > 0 && <CheckoutForm key={perfilId || 'sin-perfil'} />}
+      </div>
+      <CartSummary />
+    </section>
+  )
 }
 
 export default CartSection

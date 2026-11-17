@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -62,4 +63,8 @@ public class OrdenDeCompra {
 
     @Column
     private String comprobante;
+
+    // A dónde se envía el pedido (lo carga el comprador al confirmar el pago)
+    @Embedded
+    private DatosEnvio datosEnvio;
 }

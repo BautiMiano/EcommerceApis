@@ -33,7 +33,6 @@ import AdminProductos from './views/AdminProductos.jsx';
 import AdminCategorias from './views/AdminCategorias.jsx';
 import GestionUsuarios from './views/GestionUsuarios.jsx';
 import AdminVendedores from './views/AdminVendedores.jsx';
-import { PaymentSection } from './views/PaymentSection/PaymentSection.jsx';
 function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -65,7 +64,7 @@ function App() {
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} />}>
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
-            <Route path="/checkout" element={<PaymentSection />} />
+            <Route path="/checkout" element={<Navigate to="/carrito" replace />} />
             <Route path="/perfil" element={<MiPerfilComprador />} />
           </Route>
 

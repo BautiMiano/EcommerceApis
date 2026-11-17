@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import StatCard from '../components/StatCard/StatCard'
@@ -8,7 +8,7 @@ import ProductosFiltro from '../components/ProductosFiltro/ProductosFiltro'
 import ProductoFila from '../components/ProductoFila/ProductoFila'
 import Paginacion from '../components/Paginacion/Paginacion'
 import AccionesRapidas from '../components/AccionesRapidas/AccionesRapidas'
-import { activarProducto, desactivarProducto, getCategories, obtenerMisProductos } from '../utils/api'
+import { cambiarActivoProducto, fetchMisProductos } from '../redux/slice/ProductSlice'
 import { estadoPublicacion } from '../utils/formato'
 import { nivelStock, rangoTalles, stockDisponibleTotal } from '../utils/talles'
 import { exportarCsv } from '../utils/exportarCsv'
@@ -19,8 +19,15 @@ const POR_PAGINA = 10
 const MisProductos = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [productos, setProductos] = useState([])
-  const [categorias, setCategorias] = useState([])
+  const dispatch = useDispatch()
+  // Las publicaciones y las categorías salen de Redux (las categorías las pide SellerLayout)
+  const {
+    misProductos: productos,
+    statusMisProductos: status,
+    errorMisProductos: error,
+    productoEnAccion,
+  } = useSelector((state) => state.productos)
+  const categorias = useSelector((state) => state.categorias.items)
   // El dashboard puede abrir esta pantalla ya filtrada por stock (?stock=bajo)
   const [filtros, setFiltros] = useState({
     busqueda: '',
@@ -29,29 +36,12 @@ const MisProductos = () => {
     stock: searchParams.get('stock') || 'TODOS',
   })
   const [pagina, setPagina] = useState(1)
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-  const [productoEnAccion, setProductoEnAccion] = useState(null)
+  const cargando = status === 'idle' || status === 'loading'
 
-  const cargarDatos = async () => {
-    setError('')
-    try {
-      const [productosObtenidos, categoriasObtenidas] = await Promise.all([
-        obtenerMisProductos(),
-        getCategories(),
-      ])
-      setProductos(productosObtenidos)
-      setCategorias(categoriasObtenidas)
-    } catch (errorObteniendo) {
-      setError(errorObteniendo.message)
-    } finally {
-      setCargando(false)
-    }
-  }
-
+  // Se piden una sola vez; después de publicar o editar el slice las marca para pedirlas de nuevo
   useEffect(() => {
-    Promise.resolve().then(cargarDatos)
-  }, [])
+    status === 'idle' && dispatch(fetchMisProductos())
+  }, [dispatch, status])
 
   const handleFiltros = (nuevosFiltros) => {
     setFiltros(nuevosFiltros)
@@ -77,17 +67,9 @@ const MisProductos = () => {
 
   const productosPagina = productosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
-  const handleCambiarActivo = async (producto) => {
-    setProductoEnAccion(producto.id)
-    try {
-      await (producto.activo ? desactivarProducto(producto.id) : activarProducto(producto.id))
-      await cargarDatos()
-      toast.success(producto.activo ? 'Publicación desactivada.' : 'Publicación activada.')
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setProductoEnAccion(null)
-    }
+  // El slice actualiza la publicación en la lista sin volver a pedirla; el aviso lo muestra el layout
+  const handleCambiarActivo = (producto) => {
+    !productoEnAccion && dispatch(cambiarActivoProducto(producto))
   }
 
   const handleExportar = () => {
@@ -120,13 +102,13 @@ const MisProductos = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando tus productos..." />}
 
-      {!cargando && error && (
+      {status === 'failed' && (
         <PanelEstado tipo="error" titulo="No pudimos cargar tus productos" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarDatos}>Reintentar</button>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchMisProductos())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {status === 'succeeded' && (
         <>
           <div className="mis-productos-stats">
             <StatCard icono="deployed_code" etiqueta="Total de productos" valor={productos.length} detalle="publicaciones" />

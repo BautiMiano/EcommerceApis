@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
 import StatCard from '../components/StatCard/StatCard'
 import ProductosFiltro from '../components/ProductosFiltro/ProductosFiltro'
 import ProductoFila from '../components/ProductoFila/ProductoFila'
 import Paginacion from '../components/Paginacion/Paginacion'
-import { activarProducto, desactivarProducto, getCategories, obtenerTodosLosProductos } from '../utils/api'
+import { cambiarActivoProducto, fetchTodosLosProductos } from '../redux/slice/ProductSlice'
 import { estadoPublicacion } from '../utils/formato'
 import { nivelStock, rangoTalles, stockDisponibleTotal } from '../utils/talles'
 import { exportarCsv } from '../utils/exportarCsv'
@@ -18,8 +18,15 @@ const POR_PAGINA = 10
 // Productos del admin: igual que Mis productos del vendedor, pero con las publicaciones de todos los vendedores
 const AdminProductos = () => {
   const navigate = useNavigate()
-  const [productos, setProductos] = useState([])
-  const [categorias, setCategorias] = useState([])
+  const dispatch = useDispatch()
+  // Las publicaciones salen de Redux; las categorías las pide el Navbar una sola vez
+  const {
+    todosLosProductos: productos,
+    statusTodosLosProductos: status,
+    errorTodosLosProductos: error,
+    productoEnAccion,
+  } = useSelector((state) => state.productos)
+  const categorias = useSelector((state) => state.categorias.items)
   const [filtros, setFiltros] = useState({
     busqueda: '',
     vendedor: '',
@@ -28,29 +35,12 @@ const AdminProductos = () => {
     stock: 'TODOS',
   })
   const [pagina, setPagina] = useState(1)
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
-  const [productoEnAccion, setProductoEnAccion] = useState(null)
+  const cargando = status === 'idle' || status === 'loading'
 
-  const cargarDatos = async () => {
-    setError('')
-    try {
-      const [productosObtenidos, categoriasObtenidas] = await Promise.all([
-        obtenerTodosLosProductos(),
-        getCategories(),
-      ])
-      setProductos(productosObtenidos)
-      setCategorias(categoriasObtenidas)
-    } catch (errorObteniendo) {
-      setError(errorObteniendo.message)
-    } finally {
-      setCargando(false)
-    }
-  }
-
+  // Se piden una sola vez; después de editar el slice las marca para pedirlas de nuevo
   useEffect(() => {
-    Promise.resolve().then(cargarDatos)
-  }, [])
+    status === 'idle' && dispatch(fetchTodosLosProductos())
+  }, [dispatch, status])
 
   // Vendedores que tienen al menos una publicación, sin repetir, para el filtro
   const vendedores = []
@@ -86,17 +76,9 @@ const AdminProductos = () => {
 
   const productosPagina = productosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
-  const handleCambiarActivo = async (producto) => {
-    setProductoEnAccion(producto.id)
-    try {
-      await (producto.activo ? desactivarProducto(producto.id) : activarProducto(producto.id))
-      await cargarDatos()
-      toast.success(producto.activo ? 'Publicación desactivada.' : 'Publicación activada.')
-    } catch (errorAccion) {
-      toast.error(errorAccion.message)
-    } finally {
-      setProductoEnAccion(null)
-    }
+  // El slice actualiza la publicación en la lista sin volver a pedirla; el aviso lo muestra el layout
+  const handleCambiarActivo = (producto) => {
+    !productoEnAccion && dispatch(cambiarActivoProducto(producto))
   }
 
   const handleExportar = () => {
@@ -130,13 +112,13 @@ const AdminProductos = () => {
 
       {cargando && <PanelEstado tipo="cargando" titulo="Cargando los productos..." />}
 
-      {!cargando && error && (
+      {status === 'failed' && (
         <PanelEstado tipo="error" titulo="No pudimos cargar los productos" texto={error}>
-          <button type="button" className="panel-boton panel-boton-secundario" onClick={cargarDatos}>Reintentar</button>
+          <button type="button" className="panel-boton panel-boton-secundario" onClick={() => dispatch(fetchTodosLosProductos())}>Reintentar</button>
         </PanelEstado>
       )}
 
-      {!cargando && !error && (
+      {status === 'succeeded' && (
         <>
           <div className="admin-productos-stats">
             <StatCard icono="deployed_code" etiqueta="Total de productos" valor={productos.length} detalle="publicaciones" />
