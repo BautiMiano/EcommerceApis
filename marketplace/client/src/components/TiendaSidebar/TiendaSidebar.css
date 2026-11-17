@@ -1,5 +1,3 @@
-/* Agregados al sidebar del vendedor (SellerSidebar.css). Todas las medidas en rem. */
-
 .tienda-sidebar-aviso {
   margin: 0 0.25rem 0.75rem;
   padding: 0.875rem 1rem;
@@ -11,7 +9,6 @@
   line-height: 1.4;
 }
 
-/* Favoritos y Carrito con productos: ícono relleno en naranja y la cantidad a la derecha */
 @keyframes tienda-sidebar-latido {
   0% { transform: scale(1); }
   40% { transform: scale(1.25); }

@@ -7,19 +7,6 @@ import { loginUser, logout } from './UsuarioSlice'
 const URL = `${API_URL}/productos`
 const URLCategories = `${API_URL}/categories`
 
-// Este archivo tiene los slices de Producto y de los objetos que se relacionan con él:
-// Categoría, Descuento e Imagen (un descuento y una imagen solo existen para un producto,
-// y al publicar un producto se guardan juntos). Cada uno tiene su propio reducer en el Store.
-
-// ==================== DESCUENTOS ====================
-// Slice del objeto Descuento del back.
-// Un descuento se crea con su porcentaje y después se asigna a un producto.
-
-// ---------- Thunks ----------
-
-// Cambia el descuento de un producto: quita el anterior (si había) y asigna el nuevo (si hay).
-// POST /descuentos, POST /descuentos/asignar-descuento/{id} y DELETE /descuentos/eliminar-descuento/producto/
-// El back recibe el id del producto como JSON en el cuerpo.
 export const cambiarDescuentoProducto = createAsyncThunk(
   'descuentos/cambiarDescuentoProducto',
   async ({ productoId, anterior, nuevo }) => {
@@ -30,10 +17,8 @@ export const cambiarDescuentoProducto = createAsyncThunk(
   }
 )
 
-// ---------- Slice ----------
-
 const initialStateDescuentos = {
-  items: [],     // descuentos creados en esta sesión
+  items: [],
   loading: false,
   error: null,
 }
@@ -61,12 +46,6 @@ const descuentosSlice = createSlice({
 
 export const descuentosReducer = descuentosSlice.reducer
 
-// ==================== IMÁGENES ====================
-// Slice del objeto Imagen del back (fotos de los productos).
-
-// ---------- Thunks ----------
-
-// Sube una foto de un producto (POST /imagenes, multipart con "file" y "productoId")
 export const subirImagen = createAsyncThunk(
   'imagenes/subirImagen',
   async ({ archivo, productoId }) => {
@@ -77,7 +56,6 @@ export const subirImagen = createAsyncThunk(
   }
 )
 
-// Quita una foto de un producto (PATCH /imagenes/{id})
 export const desactivarImagen = createAsyncThunk(
   'imagenes/desactivarImagen',
   async (imagenId) => {
@@ -86,13 +64,11 @@ export const desactivarImagen = createAsyncThunk(
   }
 )
 
-// ---------- Slice ----------
-
 const initialStateImagenes = {
-  items: [],      // ids de las imágenes quitadas en esta sesión
+  items: [],
   loading: false,
   error: null,
-  pendientes: 0,  // cuántas subidas o bajas están en camino
+  pendientes: 0,
 }
 
 const imagenesSlice = createSlice({
@@ -135,11 +111,6 @@ const imagenesSlice = createSlice({
 
 export const imagenesReducer = imagenesSlice.reducer
 
-// ==================== PRODUCTOS ====================
-
-
-// ---------- Producto ----------
-
 export const fetchProductosPorCategoria = createAsyncThunk(
   'productos/fetchProductosPorCategoria',
   async (idCategoria) => {
@@ -181,29 +152,21 @@ export const fetchTalles = createAsyncThunk(
   }
 )
 
-// Detalle de un producto (GET /productos/{id}). Se pide una sola vez por producto.
-// Con pedir llega el mensaje del back (por ejemplo, cuando el producto no existe).
 export const fetchProductoPorId = createAsyncThunk(
   'productos/fetchProductoPorId',
   async (id) => pedir('get', `/productos/${id}`)
 )
 
-// ---------- Producto: panel del vendedor y del admin ----------
-
-// Publicaciones del vendedor logueado (GET /productos/mis-productos). El back responde 404 si no tiene ninguna.
 export const fetchMisProductos = createAsyncThunk(
   'productos/fetchMisProductos',
   async () => pedir('get', '/productos/mis-productos', undefined, { vacioSi404: true })
 )
 
-// Publicaciones de todos los vendedores, activas y pausadas (GET /productos/todos). Solo el admin.
 export const fetchTodosLosProductos = createAsyncThunk(
   'productos/fetchTodosLosProductos',
   async () => pedir('get', '/productos/todos', undefined, { vacioSi404: true })
 )
 
-// Activa o pausa una publicación según su estado actual (PATCH /productos/activar|desactivar/{id}).
-// El back responde un texto: se devuelve el cambio y los reducers actualizan las listas.
 export const cambiarActivoProducto = createAsyncThunk(
   'productos/cambiarActivoProducto',
   async (producto) => {
@@ -212,24 +175,16 @@ export const cambiarActivoProducto = createAsyncThunk(
   }
 )
 
-// Crea una publicación (POST /productos). Devuelve el producto creado.
 export const crearProducto = createAsyncThunk(
   'productos/crearProducto',
   async (producto) => pedir('post', '/productos', producto)
 )
 
-// Actualiza una publicación (PUT /productos/{id})
 export const actualizarProducto = createAsyncThunk(
   'productos/actualizarProducto',
   async ({ id, producto }) => pedir('put', `/productos/${id}`, producto)
 )
 
-// Guarda una publicación completa: primero el producto (crear o actualizar) y después el descuento,
-// el estado y las fotos, que en el back tienen sus propios endpoints.
-// Si el producto no se pudo guardar, falla todo. Si se guardó pero falló algo de lo demás,
-// se devuelve una advertencia para avisarle al vendedor (el producto ya existe y no se vuelve a crear).
-// Al final se pide el producto completo (con fotos, descuento y estado) para ponerlo en las listas
-// sin volver a pedirlas. Si ese pedido falla, producto queda en null y las listas se piden de nuevo.
 export const guardarPublicacion = createAsyncThunk(
   'productos/guardarPublicacion',
   async ({ productoId, producto, descuento, anterior, activo, archivos, imagenesQuitadas }, { dispatch }) => {
@@ -255,21 +210,16 @@ export const guardarPublicacion = createAsyncThunk(
   }
 )
 
-// ---------- Categorías: panel del admin ----------
-
-// Categorías activas e inactivas (GET /categories/todas). Solo el admin.
 export const fetchTodasLasCategorias = createAsyncThunk(
   'categorias/fetchTodasLasCategorias',
   async () => pedir('get', '/categories/todas')
 )
 
-// Crea una categoría (POST /categories). Devuelve la categoría creada.
 export const crearCategoria = createAsyncThunk(
   'categorias/crearCategoria',
   async (nombre) => pedir('post', '/categories', { nombre })
 )
 
-// Activa o desactiva una categoría según su estado actual (PATCH /categories/activar|desactivar/{id})
 export const cambiarActivoCategoria = createAsyncThunk(
   'categorias/cambiarActivoCategoria',
   async (categoria) => {
@@ -324,8 +274,6 @@ export const selectPrecioMaximo = (state) => {
   return precios.length > 0 ? Math.ceil(Math.max(...precios)) : 0
 }
 
-// ---------- Categorías ----------
-
 export const fetchCategorias = createAsyncThunk(
   'categorias/fetchCategorias',
   async () => {
@@ -334,14 +282,10 @@ export const fetchCategorias = createAsyncThunk(
   }
 )
 
-
-// ---------- Estado inicial de productos ----------
-
 const initialStateProductos = {
   items: [],      
   loading: false,
   error: null,
-
 
   resultados: {
     categoria: {},  
@@ -360,22 +304,20 @@ const initialStateProductos = {
   talles: [],
   statusTalles: 'idle',
 
-  // Detalle de cada producto que se abrió: { 7: {...producto} } y su estado: { 7: 'succeeded' }
   detalles: {},
   estadosDetalle: {},
   errorDetalle: null,
 
-  // Panel del vendedor y del admin
   misProductos: [],
   statusMisProductos: 'idle',
   errorMisProductos: null,
   todosLosProductos: [],
   statusTodosLosProductos: 'idle',
   errorTodosLosProductos: null,
-  productoEnAccion: null,      // publicación que se está activando o pausando
-  statusGuardar: 'idle',       // 'idle' | 'loading' | 'succeeded' | 'failed' al publicar o editar
-  publicacionGuardada: null,   // { id, creado, advertencia } de la última publicación guardada
-  aviso: null,                 // { tipo, texto } para mostrar con toast
+  productoEnAccion: null,
+  statusGuardar: 'idle',
+  publicacionGuardada: null,
+  aviso: null,
 
   filtros: {
     categorias: [],
@@ -384,7 +326,6 @@ const initialStateProductos = {
     busqueda: '',
   },
 }
-
 
 const recalcularItems = (state) => {
   const { categorias, talles, precioMax, busqueda } = state.filtros
@@ -410,7 +351,6 @@ const recalcularItems = (state) => {
 
 const hayAlgoCargando = (state) =>
   Object.values(state.estados).some((porTipo) => Object.values(porTipo).includes('loading'))
-
 
 const alPedir = (state, tipo, valor) => {
   state.estados[tipo][valor] = 'loading'
@@ -445,8 +385,6 @@ const reiniciarPanel = (state) => {
 const alternar = (lista, valor) =>
   lista.includes(valor) ? lista.filter((x) => x !== valor) : [...lista, valor]
 
-
-
 const productosSlice = createSlice({
   name: 'productos',
   initialState: initialStateProductos,
@@ -479,7 +417,6 @@ const productosSlice = createSlice({
     limpiarAvisoProductos: (state) => {
       state.aviso = null
     },
-    // Después de navegar tras guardar una publicación
     reiniciarGuardado: (state) => {
       state.statusGuardar = 'idle'
       state.publicacionGuardada = null
@@ -540,7 +477,6 @@ const productosSlice = createSlice({
         alFallar(state, 'busqueda', action.meta.arg, action.error.message)
       })
 
-      // ----- Detalle de un producto -----
       .addCase(fetchProductoPorId.pending, (state, action) => {
         state.estadosDetalle[action.meta.arg] = 'loading'
         state.errorDetalle = null
@@ -554,7 +490,6 @@ const productosSlice = createSlice({
         state.errorDetalle = action.error.message
       })
 
-      // ----- Panel: las listas son de cada cuenta, al iniciar o cerrar sesión se vacían -----
       .addCase(loginUser.fulfilled, reiniciarPanel)
       .addCase(logout, reiniciarPanel)
 
@@ -584,7 +519,6 @@ const productosSlice = createSlice({
         state.errorTodosLosProductos = action.error.message
       })
 
-      // Activar o pausar: se actualiza en las listas sin volver a pedirlas
       .addCase(cambiarActivoProducto.pending, (state, action) => {
         state.productoEnAccion = action.meta.arg.id
       })
@@ -604,7 +538,6 @@ const productosSlice = createSlice({
         state.aviso = { tipo: 'error', texto: action.error.message }
       })
 
-      // Publicar o editar: el producto nuevo se agrega a la lista y el editado se reemplaza, sin volver a pedirlas
       .addCase(guardarPublicacion.pending, (state) => {
         state.statusGuardar = 'loading'
       })
@@ -617,7 +550,6 @@ const productosSlice = createSlice({
           state.misProductos = [...state.misProductos, producto]
         }
         if (producto && !creado) {
-          // El admin también edita desde EditarProducto: se actualizan las dos listas
           ;[state.misProductos, state.todosLosProductos].forEach((lista) => {
             const index = lista.findIndex((p) => p.id === producto.id)
             if (index !== -1) {
@@ -629,7 +561,6 @@ const productosSlice = createSlice({
           state.detalles[id] = producto
           state.estadosDetalle[id] = 'succeeded'
         }
-        // Si no se pudo traer el producto completo, las listas y el detalle se piden de nuevo
         if (!producto) {
           state.statusMisProductos = 'idle'
           state.statusTodosLosProductos = 'idle'
@@ -646,7 +577,6 @@ const productosSlice = createSlice({
         state.aviso = { tipo: 'error', texto: action.error.message }
       })
 
-      // Al pausar o activar una categoría, el back pausa o activa sus productos
       .addCase(cambiarActivoCategoria.fulfilled, (state) => {
         state.statusMisProductos = 'idle'
         state.statusTodosLosProductos = 'idle'
@@ -654,19 +584,17 @@ const productosSlice = createSlice({
   },
 })
 
-
-
 const initialStateCategorias = {
-  items: [],              // categorías activas (las que ve la tienda)
+  items: [],
   loading: false,
   error: null,
   status: 'idle',
-  todas: [],              // activas e inactivas (panel del admin)
+  todas: [],
   statusTodas: 'idle',
   errorTodas: null,
-  statusCrear: 'idle',    // para no crear dos veces con un doble clic
+  statusCrear: 'idle',
   categoriaEnAccion: null,
-  aviso: null,            // { tipo, texto } para mostrar con toast
+  aviso: null,
 }
 
 const categoriasSlice = createSlice({
@@ -695,7 +623,6 @@ const categoriasSlice = createSlice({
         state.error = action.error.message
       })
 
-      // ----- Panel del admin -----
       .addCase(fetchTodasLasCategorias.pending, (state) => {
         state.statusTodas = 'loading'
         state.errorTodas = null
@@ -709,7 +636,6 @@ const categoriasSlice = createSlice({
         state.errorTodas = action.error.message
       })
 
-      // La categoría creada se agrega a las dos listas sin volver a pedirlas
       .addCase(crearCategoria.pending, (state) => {
         state.statusCrear = 'loading'
       })
@@ -724,7 +650,6 @@ const categoriasSlice = createSlice({
         state.aviso = { tipo: 'error', texto: action.error.message }
       })
 
-      // Activar o desactivar: se actualiza en el panel y en la lista de la tienda
       .addCase(cambiarActivoCategoria.pending, (state, action) => {
         state.categoriaEnAccion = action.meta.arg.idCategoria
       })

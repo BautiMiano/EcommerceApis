@@ -2,9 +2,6 @@ import Badge from '../Badge/Badge'
 import Threads from '../ReactBits/Threads/Threads'
 import './PageTitle.css'
 
-// Título de página.
-// variante 'formulario': login y registro. variante 'seccion': banda negra (favoritos y carrito),
-// con los hilos animados de React Bits (Threads) de fondo, en los colores de UNIFORMA.
 const PageTitle = ({ etiqueta, titulo, descripcion, variante = 'formulario' }) => {
   if (variante === 'seccion') {
     return (

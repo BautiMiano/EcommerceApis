@@ -4,10 +4,6 @@ import { useSelector } from 'react-redux'
 import { inicialesDe } from '../../utils/formato'
 import './UsuarioMenu.css'
 
-// Avatar con iniciales, nombre, enlace al perfil y menú desplegable (Mi perfil · Cerrar sesión).
-// Lo usan el header del vendedor ("Mi tienda") y el navbar de la tienda ("Mi perfil").
-// Sin rutaPerfil (el administrador, que no tiene perfil) no se muestran los enlaces al perfil.
-// El perfil se lee de la store; quien lo muestra solo lo renderiza cuando ya llegó.
 const UsuarioMenu = ({ rutaPerfil, textoEnlace, onLogout }) => {
   const perfil = useSelector((state) => state.usuarios.perfil)
   const [abierto, setAbierto] = useState(false)

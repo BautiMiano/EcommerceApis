@@ -1,4 +1,3 @@
-// Textos del chat según el rol. Las sugerencias usan lo que Uni puede hacer para cada rol.
 const SALUDOS = {
   COMPRADOR: '¡Hola! Soy Uni. Te ayudo a encontrar uniformes, revisar tu carrito o seguir tus pedidos. ¿Qué necesitás?',
   VENDEDOR: '¡Hola! Soy Uni. Te ayudo con tus publicaciones, tus ventas y tus tickets de soporte. ¿En qué te doy una mano?',

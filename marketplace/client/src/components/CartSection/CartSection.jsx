@@ -7,8 +7,6 @@ import CartSummary from '../CartSummary/CartSummary'
 import CompraConfirmada from '../CompraConfirmada/CompraConfirmada'
 import './CartSection.css'
 
-// Pantalla del carrito: productos, datos de envío, método de pago y resumen, todo en un solo lugar.
-// Este componente es el ÚNICO que pide el carrito, y solo si nunca se pidió.
 const CartSection = () => {
   const dispatch = useDispatch()
   const { usuarioId } = useSelector((state) => state.auth)
@@ -19,7 +17,6 @@ const CartSection = () => {
     status === 'idle' && usuarioId && dispatch(fetchCarrito(usuarioId))
   }, [dispatch, status, usuarioId])
 
-  // Al salir de la pantalla de compra confirmada se limpia, así al volver se ve el carrito
   useEffect(() => () => {
     statusCompra === 'succeeded' && dispatch(cerrarCompraConfirmada())
   }, [dispatch, statusCompra])
@@ -54,7 +51,6 @@ const CartSection = () => {
     <section className={`carrito-grilla ${statusCompra === 'loading' ? 'carrito-procesando' : ''}`}>
       <div className="carrito-columna">
         <CartList />
-        {/* La key hace que el formulario se arme de nuevo cuando llega el perfil, para completar los datos de contacto */}
         {carrito.items.length > 0 && <CheckoutForm key={perfilId || 'sin-perfil'} />}
       </div>
       <CartSummary />

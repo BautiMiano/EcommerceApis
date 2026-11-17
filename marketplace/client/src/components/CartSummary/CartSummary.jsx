@@ -3,12 +3,10 @@ import { selectUnidadesCarrito } from '../../redux/slice/CarritoSlice'
 import { formatoPrecio } from '../../utils/formato'
 import './CartSummary.css'
 
-// Resumen de la compra. El botón envía el formulario de checkout (form="checkout-form").
 const CartSummary = () => {
   const { carrito, statusCompra } = useSelector((state) => state.carrito)
   const unidades = useSelector(selectUnidadesCarrito)
   const vendedores = new Set(carrito.items.map((item) => item.vendedor)).size
-  // Lo que se ahorra con los descuentos: precio de lista menos precio final (los dos vienen del back)
   const subtotalLista = carrito.items.reduce((suma, item) => suma + (item.precioOriginal || item.precioUnitario) * item.cantidad, 0)
   const ahorro = subtotalLista - carrito.total
   const vacio = carrito.items.length === 0

@@ -4,8 +4,6 @@ import { formatoPrecio } from '../../utils/formato'
 import { METODO_TARJETA, marcaTarjeta, soloDigitos } from '../../utils/tarjeta'
 import '../MetodoPago3D/MetodoPago3D.css'
 
-// Colores e ícono de cada método (solo visual: el nombre del método sale del back).
-// Si el back agrega un método nuevo, usa el tema por defecto.
 const TEMAS = {
   MERCADOPAGO: { desde: '#00b1ea', hasta: '#0a3d91', acento: '#ffe600', icono: 'account_balance_wallet', particulas: 0x00b1ea },
   TARJETA: { desde: '#2b2b2b', hasta: '#050505', acento: '#e0702c', icono: 'credit_card', particulas: 0xe0702c },
@@ -22,7 +20,6 @@ const hayWebGL = () => {
   return Boolean(window.WebGLRenderingContext && (canvas.getContext('webgl2') || canvas.getContext('webgl')))
 }
 
-// Rectángulo con esquinas redondeadas (para el canvas y para la forma 3D)
 const trazarRedondeado = (ctx, x, y, ancho, alto, radio) => {
   ctx.beginPath()
   ctx.moveTo(x + radio, y)
@@ -33,7 +30,6 @@ const trazarRedondeado = (ctx, x, y, ancho, alto, radio) => {
   ctx.closePath()
 }
 
-// Número con los dígitos escritos y puntos en los que faltan: "4111 11•• •••• ••••"
 const numeroEnTarjeta = (numero) => {
   const digitos = soloDigitos(numero)
   const molde = marcaTarjeta(numero) === 'AMEX' ? '#### ###### #####' : '#### #### #### ####'
@@ -54,7 +50,6 @@ const pintarFondo = (ctx, w, h, tema, invertido = false) => {
   ctx.fillStyle = fondo
   ctx.fillRect(0, 0, w, h)
 
-  // Brillo y círculos decorativos
   ctx.globalAlpha = 0.12
   ctx.fillStyle = '#ffffff'
   ctx.beginPath()
@@ -87,7 +82,6 @@ const dibujarEtiqueta = (ctx, texto, x, y, alineacion = 'left') => {
   ctx.globalAlpha = 1
 }
 
-// Frente de la tarjeta de crédito/débito: se va completando con lo que escribe el comprador
 const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
   const marca = marcaTarjeta(tarjeta.numero)
 
@@ -95,7 +89,6 @@ const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
   ctx.font = '700 64px "Bebas Neue", Impact, sans-serif'
   ctx.fillText('UNIFORMA', 70, 60)
 
-  // Marca de la tarjeta, arriba a la derecha (aparece cuando se reconoce por los primeros números)
   ctx.textAlign = 'right'
   ctx.font = marca === 'VISA' ? 'italic 800 70px Inter, system-ui, sans-serif' : '800 52px Inter, system-ui, sans-serif'
   ctx.fillStyle = marca ? '#ffffff' : 'rgba(255,255,255,0.35)'
@@ -104,7 +97,6 @@ const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
 
   dibujarChip(ctx)
 
-  // Total a pagar, al lado del chip
   dibujarEtiqueta(ctx, 'TOTAL A PAGAR', w - 70, 205, 'right')
   ctx.textAlign = 'right'
   ctx.fillStyle = tema.acento
@@ -112,12 +104,10 @@ const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
   ctx.fillText(total, w - 70, 240)
   ctx.textAlign = 'left'
 
-  // Número
   ctx.fillStyle = '#ffffff'
   ctx.font = '600 62px "Courier New", ui-monospace, monospace'
   ctx.fillText(numeroEnTarjeta(tarjeta.numero), 70, 340, w - 140)
 
-  // Titular y vencimiento
   dibujarEtiqueta(ctx, 'TITULAR', 70, h - 150)
   dibujarEtiqueta(ctx, 'VENCE', w - 70, h - 150, 'right')
   ctx.fillStyle = '#ffffff'
@@ -129,13 +119,11 @@ const dibujarFrenteTarjeta = (ctx, w, h, { tema, tarjeta, total }) => {
   ctx.textAlign = 'left'
 }
 
-// Frente para los demás métodos: nombre del método (del back), titular y total
 const dibujarFrenteMetodo = (ctx, w, h, { tema, nombreMetodo, titular, total }) => {
   ctx.fillStyle = '#ffffff'
   ctx.font = '700 64px "Bebas Neue", Impact, sans-serif'
   ctx.fillText('UNIFORMA', 70, 60)
 
-  // Ícono del método (fuente de íconos de la app; si todavía no cargó, se omite)
   if (document.fonts.check('96px "Material Symbols Outlined"')) {
     ctx.fillStyle = tema.acento
     ctx.font = '110px "Material Symbols Outlined"'
@@ -171,7 +159,6 @@ const dibujarFrente = (canvas, datos) => {
   ctx.restore()
 }
 
-// Dorso: banda magnética y, si es tarjeta, el código de seguridad en la franja de firma
 const dibujarDorso = (canvas, { tema, tarjeta }) => {
   const ctx = canvas.getContext('2d')
   const { width: w, height: h } = canvas
@@ -203,16 +190,11 @@ const dibujarDorso = (canvas, { tema, tarjeta }) => {
   ctx.restore()
 }
 
-// Tarjeta 3D que aparece al elegir un medio de pago: gira al cambiar de método,
-// flota, sigue al mouse y tiene un anillo de partículas alrededor.
-// Con tarjeta de crédito/débito se completa con los datos que se escriben, y se da vuelta
-// para mostrar el código de seguridad cuando se está escribiendo (mostrarDorso).
 const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = false }) => {
   const contenedorRef = useRef(null)
   const escenaRef = useRef(null)
   const [soportado] = useState(hayWebGL)
 
-  // Se arma la escena una sola vez
   useEffect(() => {
     const contenedor = contenedorRef.current
     if (!soportado || !contenedor) {
@@ -237,7 +219,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     luzNaranja.position.set(-3, -2, 3)
     scene.add(luzNaranja)
 
-    // Cuerpo de la tarjeta: forma redondeada con volumen
     const forma = new THREE.Shape()
     const r = 0.16
     const x = -ANCHO / 2
@@ -256,7 +237,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     const cuerpoMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.6, roughness: 0.35 })
     const cuerpo = new THREE.Mesh(cuerpoGeo, cuerpoMat)
 
-    // Caras con la textura dibujada en canvas
     const canvasFrente = document.createElement('canvas')
     canvasFrente.width = 1024
     canvasFrente.height = 644
@@ -282,7 +262,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     tarjeta.add(cuerpo, frente, dorso)
     scene.add(tarjeta)
 
-    // Anillo de partículas
     const cantidad = 260
     const posiciones = new Float32Array(cantidad * 3)
     for (let i = 0; i < cantidad; i += 1) {
@@ -299,7 +278,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     particulas.rotation.x = 0.35
     scene.add(particulas)
 
-    // Tamaño según el contenedor
     const ajustar = () => {
       const { clientWidth, clientHeight } = contenedor
       renderer.setSize(clientWidth, clientHeight)
@@ -311,7 +289,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     const observador = new ResizeObserver(ajustar)
     observador.observe(contenedor)
 
-    // Inclinación con el mouse
     const mouse = { x: 0, y: 0 }
     const alMover = (evento) => {
       const caja = contenedor.getBoundingClientRect()
@@ -322,9 +299,7 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     contenedor.addEventListener('pointermove', alMover)
     contenedor.addEventListener('pointerleave', alSalir)
 
-    // Giro al cambiar de método: la cara se redibuja cuando la tarjeta está de espaldas
     const giro = { inicio: 0, activo: false, termino: false, redibujado: true, datos: null }
-    // Si está de espaldas (código de seguridad), la tarjeta apunta media vuelta
     const vista = { dorso: false }
     const reloj = new THREE.Clock()
     let cuadro = 0
@@ -350,7 +325,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
       const mediaVuelta = vista.dorso ? Math.PI : 0
       const balanceo = vista.dorso ? 0 : Math.sin(t * 0.6) * 0.18 * movimiento
       tarjeta.rotation.y += ((mouse.x * 0.45 + balanceo + vuelta + mediaVuelta) - tarjeta.rotation.y) * (giro.activo ? 1 : 0.08)
-      // Al terminar la vuelta completa se descuenta, así no vuelve a girar para atrás
       if (giro.activo && giro.termino) {
         giro.activo = false
         tarjeta.rotation.y -= Math.PI * 2
@@ -364,8 +338,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
 
     escenaRef.current = {
       darVuelta: (dorso) => { vista.dorso = dorso },
-      // Si cambió el método, la tarjeta gira y cambia de colores.
-      // Si solo cambió un texto (por ejemplo el titular), se redibuja sin girar.
       actualizar: (datos) => {
         cuerpoMat.color.set(datos.tema.hasta)
         particulasMat.color.setHex(datos.tema.particulas)
@@ -398,7 +370,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
     }
   }, [soportado])
 
-  // Cada vez que cambia el método (o los datos), se actualiza la tarjeta
   useEffect(() => {
     const datos = {
       tema: TEMAS[metodo.valor] || TEMA_POR_DEFECTO,
@@ -408,7 +379,6 @@ const MetodoPago3D = ({ metodo, titular, total, datosTarjeta, mostrarDorso = fal
       total: formatoPrecio(total),
       tarjeta: metodo.valor === METODO_TARJETA ? datosTarjeta : null,
     }
-    // Espera a que carguen las fuentes para que los textos del canvas salgan bien
     let vigente = true
     document.fonts.ready.then(() => { vigente && escenaRef.current && escenaRef.current.actualizar(datos) })
     return () => { vigente = false }

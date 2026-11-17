@@ -38,7 +38,6 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // cerrarSesion limpia el localStorage y logout limpia el estado global
   const handleLogout = () => {
     cerrarSesion();
     dispatch(logout());
@@ -47,23 +46,19 @@ function App() {
 
   return (
     <>
-      {/* Al cambiar de página, la vista vuelve arriba */}
       <ScrollArriba />
       <Routes>
         <Route element={<TiendaLayout onLogout={handleLogout} />}>
-          {/* RUTAS PÚBLICAS */}
           <Route path="/" element={<Home />} />
           <Route path="/producto/:id" element={<ProductDetailPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
 
-          {/* CATÁLOGO: VISITANTES, COMPRADORES Y ADMIN (EL VENDEDOR VUELVE A SU PANEL) */}
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR', 'ADMIN']} permitirVisitantes />}>
             <Route path="/categorias" element={<CategoryPage />}/>
             <Route path="/categorias/:idCategoria" element={<CategoryPage />} />
           </Route>
 
-          {/* EXCLUSIVAS DEL COMPRADOR */}
           <Route element={<ProtectedRoute rolesPermitidos={['COMPRADOR']} />}>
             <Route path="/favoritos" element={<MisFavoritos />} />
             <Route path="/carrito" element={<MiCarrito />} />
@@ -72,14 +67,12 @@ function App() {
           </Route>
         </Route>
 
-        {/* PANEL DEL ADMIN: layout propio con sidebar, sin navbar ni footer de la tienda */}
         <Route element={<ProtectedRoute rolesPermitidos={['ADMIN']} />}>
           <Route path="/admin" element={<AdminLayout onLogout={handleLogout} />}>
             <Route index element={<Navigate to="tickets" replace />} />
             <Route path="tickets" element={<TicketsAdmin />} />
             <Route path="tickets/:id" element={<TicketDetalleAdmin />} />
 
-            {/* Gestión: reutiliza las piezas del panel del vendedor */}
             <Route element={<AdminPanel />}>
               <Route path="productos" element={<AdminProductos />} />
               <Route path="productos/:id/editar" element={<EditarProducto />} />
@@ -90,7 +83,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* PANEL DEL VENDEDOR: layout propio, sin navbar ni footer de la tienda */}
         <Route element={<ProtectedRoute rolesPermitidos={['VENDEDOR']} />}>
           <Route path="/vendedor" element={<SellerLayout onLogout={handleLogout} />}>
             <Route index element={<DashboardVendedor />} />
@@ -105,7 +97,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* Redirección por defecto a Home si la ruta no existe */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatFlotante />

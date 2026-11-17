@@ -61,7 +61,6 @@
   }
 }
 
-/* Uni saluda: saltito moviéndose de un lado al otro */
 .chat-flotante-boton-saludo {
   animation: uni-saludo 0.6s ease-in-out;
 }
@@ -73,7 +72,6 @@
   75%      { transform: translateY(-0.375rem) rotate(-4deg); }
 }
 
-/* El globito del saludo aparece suave, desde abajo */
 .chat-flotante-globo-saludo {
   animation: uni-globo 0.25s ease-out;
 }
@@ -83,7 +81,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Si la persona pidió menos movimiento en su compu, no se anima */
 @media (prefers-reduced-motion: reduce) {
   .chat-flotante-boton-saludo,
   .chat-flotante-globo-saludo {
@@ -91,7 +88,6 @@
   }
 }
 
-/* Al saludar, Uni guiña: la imagen del guiño aparece un momento y se va */
 .chat-flotante-boton-saludo .carita-uni-guino {
   animation: uni-guino 0.9s ease-in-out;
 }

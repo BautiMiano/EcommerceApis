@@ -6,10 +6,6 @@ import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import { inicialesDe } from '../utils/formato'
 import './MiPerfilVendedor.css'
 
-// Datos del vendedor (GET /usuarios/me): a la izquierda el resumen de la cuenta y a la derecha
-// las mismas tarjetas que el perfil del comprador (datos personales y cambio de contraseña).
-// Datos de la tienda y notificaciones no existen en el backend, por eso no se muestran.
-// El perfil lo pide SellerLayout una vez por sesión; acá se lee de la store.
 const MiPerfilVendedor = () => {
   const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
   const cargandoPerfil = statusPerfil === 'idle' || loadingPerfil
@@ -22,7 +18,6 @@ const MiPerfilVendedor = () => {
     return <PanelEstado tipo="error" titulo="No pudimos cargar tu perfil" texto={errorPerfil} />
   }
 
-  // La key reinicia los formularios cuando el perfil cambia después de guardar
   return (
     <PerfilVendedor
       key={`${perfil.nombre}-${perfil.apellido}-${perfil.telefono}-${perfil.nombreUsuario}`}
@@ -34,7 +29,6 @@ const MiPerfilVendedor = () => {
 const PerfilVendedor = ({ perfil }) => {
   const cuenta = usePerfilCuenta(perfil)
 
-  // Lleva al primer campo de los datos personales
   const handleEditar = () => document.getElementById('nombre')?.focus()
 
   return (
@@ -72,7 +66,6 @@ const PerfilVendedor = ({ perfil }) => {
           </button>
         </section>
 
-        {/* Datos personales arriba y cambio de contraseña abajo */}
         <div className="mi-perfil-formularios">
           <TarjetaDatosPersonales cuenta={cuenta} subtitulo="Estos datos identifican tu cuenta de vendedor." />
           <TarjetaContrasena cuenta={cuenta} />

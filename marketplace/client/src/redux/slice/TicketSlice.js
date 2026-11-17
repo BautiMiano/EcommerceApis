@@ -4,7 +4,6 @@ import {API_URL} from "../../utils/api";
 
 const URL = `${API_URL}/tickets`;
 
-//El backend pide el token en cada request
 const headers = (token) => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });

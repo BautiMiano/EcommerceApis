@@ -49,7 +49,6 @@
   grid-template-columns: minmax(0, 1fr) 25rem;
 }
 
-/* Con el detalle abierto no entra toda la tabla: las miniaturas se ven en el panel */
 .pedidos-contenido-con-detalle .pedidos-col-productos {
   display: none;
 }

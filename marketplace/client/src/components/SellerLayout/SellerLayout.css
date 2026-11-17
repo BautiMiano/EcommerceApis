@@ -1,5 +1,3 @@
-/* ---------- Identidad de UNIFORMA ----------
-   En :root para que las piezas panel-* también se puedan usar en la tienda (por ejemplo, el perfil del comprador) */
 :root {
   --uf-negro: #000000;
   --uf-blanco: #ffffff;
@@ -13,12 +11,10 @@
   --uf-sidebar: 14.5rem;
 }
 
-/* ---------- Panel del vendedor ---------- */
 .seller-layout {
   display: grid;
   grid-template-columns: var(--uf-sidebar) 1fr;
   min-height: 100vh;
-  /* La columna del sidebar es negra hasta el final de la página, aunque el contenido sea más largo */
   background: linear-gradient(to right, var(--uf-negro) var(--uf-sidebar), var(--uf-blanco) var(--uf-sidebar));
 }
 
@@ -37,7 +33,6 @@
   display: none;
 }
 
-/* ---------- Piezas compartidas por las pantallas del panel ---------- */
 .panel-pagina {
   display: flex;
   flex-direction: column;
@@ -154,8 +149,6 @@
   font-weight: 500;
 }
 
-/* Selector de período con ícono de calendario. Sin el estilo nativo (appearance: none),
-   porque Safari ignora el padding del select y el ícono quedaba encima del texto */
 .panel-periodo {
   position: relative;
   display: flex;
@@ -193,7 +186,6 @@
   outline: 0.125rem solid var(--uf-naranja);
 }
 
-/* Buscador con lupa, como en los filtros de los mockups */
 .panel-buscador {
   position: relative;
   display: flex;
@@ -246,7 +238,6 @@
   border-radius: 0 0.5rem 0.5rem 0;
 }
 
-/* Celdas en una línea: si no entran, la tabla se desplaza dentro de su tarjeta */
 .panel-tabla td {
   padding: 0.75rem;
   border-bottom: 0.0625rem solid var(--uf-borde);
@@ -254,7 +245,6 @@
   white-space: nowrap;
 }
 
-/* Badge con punto de color: estados de pedidos y de publicaciones */
 .panel-badge {
   display: inline-flex;
   align-items: center;
@@ -299,7 +289,6 @@
   color: var(--uf-texto-suave);
 }
 
-/* Miniatura de producto en tablas y listas */
 .panel-miniatura {
   display: grid;
   flex-shrink: 0;
@@ -354,7 +343,6 @@
   cursor: not-allowed;
 }
 
-/* Texto solo para lectores de pantalla */
 .visually-hidden {
   position: absolute;
   width: 0.0625rem;
@@ -369,7 +357,6 @@
   font-size: 0.8125rem;
 }
 
-/* ---------- Móvil: el sidebar pasa a ser un menú desplegable ---------- */
 @media (max-width: 56.25em) {
   .seller-layout {
     grid-template-columns: minmax(0, 1fr);

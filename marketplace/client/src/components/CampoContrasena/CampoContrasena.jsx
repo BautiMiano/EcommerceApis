@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import './CampoContrasena.css'
 
-// Campo de contraseña con el botón del ojo para mostrarla u ocultarla
 const CampoContrasena = ({ label, name, value, placeholder, onChange, error }) => {
   const [visible, setVisible] = useState(false)
   const idError = `${name}-error`

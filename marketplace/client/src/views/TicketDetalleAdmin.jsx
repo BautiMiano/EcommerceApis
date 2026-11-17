@@ -20,7 +20,6 @@ const TicketDetalleAdmin = () => {
         dispatch(fetchTicketById(id))
     }, [dispatch, id])
 
-    // Reacciona a cómo terminó la respuesta
     useEffect(() => {
         if (answerStatus === "succeeded") {
             toast.success('Respuesta enviada.')

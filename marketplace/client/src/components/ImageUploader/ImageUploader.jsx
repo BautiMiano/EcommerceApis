@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import './ImageUploader.css'
 
-// Fotos actuales (al editar) + fotos nuevas todavía sin subir. La primera de la grilla es la principal,
-// porque es la primera que muestra la tienda.
 const ImageUploader = ({ archivos, onAgregarArchivos, onEliminarArchivo, imagenesActuales = [], onQuitarActual }) => {
   const [previsualizaciones, setPrevisualizaciones] = useState([])
 
@@ -71,7 +69,6 @@ const ImageUploader = ({ archivos, onAgregarArchivos, onEliminarArchivo, imagene
         </div>
       ))}
 
-      {/* El input va antes del label para que el foco con teclado se vea en el recuadro */}
       <input
         id="imagenes"
         className="visually-hidden"

@@ -10,18 +10,14 @@ import './LoginForm.css';
 export default function LoginForm() {
 const dispatch = useDispatch();
 const navigate = useNavigate();
-// Lo que se escribe en los inputs es estado local: solo lo usa este formulario
 const [mail, setMail] = useState('');
 const [contrasena, setContrasena] = useState('');
-// La sesión es estado global
 const { token, rol, loading, error } = useSelector((state) => state.auth);
 
-// Cuando el login sale bien aparece el token: cada rol va a su inicio
 useEffect(() => {
     token && navigate(rutaInicioPorRol(rol));
   }, [token, rol, navigate]);
 
-// Al salir de la pantalla se borra el error, así el formulario arranca limpio cuando el usuario vuelve
 useEffect(() => {
     return () => {
       dispatch(clearError());
@@ -30,7 +26,6 @@ useEffect(() => {
 
 const handleSubmit = (e) => {
     e.preventDefault();
-    // Evita mandar dos logins si el usuario hace doble clic mientras se procesa el primero
     if (loading) return;
     dispatch(loginUser({ mail, contrasena }));
   };
@@ -62,7 +57,6 @@ return (
         full={true}
     />
 
-    {/* El botón ocupa todo el ancho y el error aparece debajo */}
     <div className="login-acciones">
         <Button
             texto={loading ? "Ingresando..." : "Ingresar"}

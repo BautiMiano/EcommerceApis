@@ -8,14 +8,12 @@ import HomeComprador from "../HomeComprador"
 
 const Home = () => {
 
-    // La sesión sale de Redux (slice auth)
     const { token, rol } = useSelector((state) => state.auth)
 
     if(token && rol === 'COMPRADOR'){
         return <HomeComprador />
     }
 
-    // El vendedor tiene su propio inicio en el panel
     if(token && rol === 'VENDEDOR'){
         return <Navigate to="/vendedor" replace />
     }

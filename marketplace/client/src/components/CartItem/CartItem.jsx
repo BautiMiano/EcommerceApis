@@ -5,7 +5,6 @@ import { etiquetaTalle } from '../../utils/talles'
 import { formatoPrecio } from '../../utils/formato'
 import './CartItem.css'
 
-// Un ítem del carrito (producto + talle). Cambia la cantidad o se elimina con un dispatch.
 const CartItem = ({ item, indice, bloqueado }) => {
   const dispatch = useDispatch()
   const itemEnAccion = useSelector((state) => state.carrito.itemEnAccion)
@@ -38,7 +37,6 @@ const CartItem = ({ item, indice, bloqueado }) => {
         <div className="cart-item-etiquetas">
           {item.categoria && <span className="cart-item-etiqueta">{item.categoria}</span>}
           <span className="cart-item-etiqueta">Talle {etiquetaTalle(talle)}</span>
-          {/* Con descuento: porcentaje y precio de lista tachado (los manda el back) */}
           {item.descuentoPorcentaje > 0 && (
             <span className="cart-item-descuento">-{item.descuentoPorcentaje}%</span>
           )}

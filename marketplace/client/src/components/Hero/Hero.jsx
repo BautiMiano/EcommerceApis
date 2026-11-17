@@ -6,11 +6,9 @@ import CaritaUni from "../CaritaUni/CaritaUni"
 import Orb from "../ReactBits/Orb/Orb"
 import './Hero.css'
 
-// Colores de UNIFORMA para el Orb de React Bits
 const COLORES_ORB = ['#e0702c', '#ffb37a', '#4a1d06']
 
 const Hero = () => {
-    // Las categorías ya están en el store (las pide el layout una sola vez): se muestran orbitando
     const categorias = useSelector((state) => state.categorias.items).slice(0, 6)
 
     return(

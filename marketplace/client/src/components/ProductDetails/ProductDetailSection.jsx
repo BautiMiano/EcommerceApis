@@ -24,8 +24,6 @@ export const ProductDetailSection = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Estado local: solo lo usa esta pantalla
-  // Si el producto ofrece un solo talle con stock, ya queda elegido
   const [selectedSize, setSelectedSize] = useState(() => {
     const conStock = (product.talles || []).filter((t) => t.stockDisponible > 0);
     return conStock.length === 1 ? conStock[0].talle : null;
@@ -33,7 +31,6 @@ export const ProductDetailSection = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Estado global: la sesión, los favoritos y el carrito vienen de Redux
   const { token, rol, usuarioId } = useSelector((state) => state.auth);
   const isFavorite = useSelector(selectEsFavorito(product.id));
   const statusFavoritos = useSelector((state) => state.favoritos.status);
@@ -44,12 +41,9 @@ export const ProductDetailSection = ({ product }) => {
   const esVendedor = estaAutenticado && rol.includes('VENDEDOR');
   const esComprador = estaAutenticado && !esVendedor;
 
-  // Los favoritos del comprador se piden una sola vez por sesión
   useEffect(() => {
     esComprador && statusFavoritos === 'idle' && dispatch(fetchFavoritos());
   }, [dispatch, esComprador, statusFavoritos]);
-
-
 
   const handleAddToCart = () => {
     if (!estaAutenticado) {
@@ -72,12 +66,9 @@ export const ProductDetailSection = ({ product }) => {
       return;
     }
 
-    // Si ya hay un pedido en camino, no se manda otro
     statusAgregar !== 'loading' &&
       dispatch(agregarAlCarrito({ productoId: product.id, talle: selectedSize, cantidad: quantity }));
   };
-
-
 
   const handleToggleFavorite = () => {
     if (!estaAutenticado) {
@@ -90,15 +81,12 @@ export const ProductDetailSection = ({ product }) => {
       return;
     }
 
-    // Si ya hay un pedido en camino para este producto, no se manda otro
     if (favoritoEnAccion === product.id) return;
 
     isFavorite && dispatch(quitarFavorito(product.id));
     !isFavorite && dispatch(agregarFavorito(product));
   };
 
-  // La cantidad no puede superar el stock disponible del talle elegido
-  // (stockDisponible viene calculado desde el backend)
   const talleElegido = (product.talles || []).find((t) => t.talle === selectedSize);
   const stockDelTalle = talleElegido ? talleElegido.stockDisponible : 0;
 
@@ -149,7 +137,6 @@ export const ProductDetailSection = ({ product }) => {
             onClick={handleAddToCart}
             disabled={statusAgregar === 'loading'}
           />
-
 
           <FavoriteCheckbox
             isFavorite={isFavorite}

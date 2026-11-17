@@ -7,13 +7,11 @@ import { SizeFilter } from '../Filtros/SizeFilter';
 import { limpiarFiltros, selectHayFiltros } from '../../redux/slice/ProductSlice';
 import './SidebarFilters.css';
 
-// Barra lateral de la página de categorías: cada filtro le pide sus datos a Redux
 export const SidebarFilters = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const hayFiltros = useSelector(selectHayFiltros);
 
-  // Solo despacha si hay algún filtro elegido: si no, no hay nada que limpiar
   const handleReset = () => {
     hayFiltros && dispatch(limpiarFiltros());
     navigate('/categorias');

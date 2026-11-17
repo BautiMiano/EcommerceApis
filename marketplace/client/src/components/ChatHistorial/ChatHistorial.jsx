@@ -15,7 +15,6 @@ const ChatHistorial = ({ onSeleccionarConversacion, onNueva }) => {
 
     return (
         <section className="chat-historial">
-            {/* Con charlas, el botón va arriba de la lista; sin charlas, va en el centro */}
             {conversaciones.length > 0 && (
                 <button type="button" className="chat-historial-nueva" onClick={onNueva}>
                     Nueva conversación

@@ -11,9 +11,6 @@ import useProductoFormulario from '../hooks/useProductoFormulario'
 import { fetchProductoPorId, guardarPublicacion, reiniciarGuardado } from '../redux/slice/ProductSlice'
 import { armarPublicacion, formularioDesdeProducto } from '../utils/productoFormulario'
 
-// Editar producto: mismo formulario que Publicar, precargado. Actualiza el producto existente (PUT).
-// La usan el vendedor (sus productos) y el admin (productos de cualquier vendedor).
-// El producto sale de Redux (el mismo detalle que usa la tienda) y se pide una sola vez.
 const EditarProducto = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -28,11 +25,9 @@ const EditarProducto = () => {
   const { statusGuardar } = useSelector((state) => state.productos)
   const categorias = useSelector((state) => state.categorias.items)
 
-  // Estado local: qué fotos actuales se quitaron y si el formulario ya se completó con el producto
   const [imagenesQuitadas, setImagenesQuitadas] = useState([])
   const [precargadoId, setPrecargadoId] = useState(null)
   const precargado = precargadoId === id
-  // Al guardar se borra el detalle del store: esto evita volver a pedirlo justo antes de salir
   const saliendo = useRef(false)
 
   const esAdmin = rol === 'ADMIN'
@@ -43,7 +38,6 @@ const EditarProducto = () => {
     !estado && !saliendo.current && dispatch(fetchProductoPorId(id))
   }, [dispatch, id, estado])
 
-  // Cuando llega el producto, se completa el formulario una sola vez
   useEffect(() => {
     producto && !precargado && setFormulario(formularioDesdeProducto(producto))
     producto && !precargado && setPrecargadoId(id)
@@ -75,7 +69,6 @@ const EditarProducto = () => {
     return <PanelEstado tipo="cargando" titulo="Cargando el producto..." />
   }
 
-  // El backend también rechaza el PUT si no es el dueño (o admin): esto evita mostrar un formulario ajeno
   const esPropio = producto && String(producto.vendedorId) === String(usuarioId)
   const errorCarga = estado === 'failed'
     ? errorDetalle

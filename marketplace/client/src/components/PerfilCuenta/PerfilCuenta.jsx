@@ -2,16 +2,12 @@ import CampoFormulario from '../CampoFormulario/CampoFormulario'
 import CampoContrasena from '../CampoContrasena/CampoContrasena'
 import './PerfilCuenta.css'
 
-// Tarjetas "Información personal" y "Cambiar contraseña", iguales en el perfil del comprador y el del vendedor.
-// Reciben "cuenta", lo que devuelve usePerfilCuenta, y cada vista decide dónde ubicarlas.
-
 const RECOMENDACIONES = [
   'Usá al menos 8 caracteres.',
   'Incluí letras, números y un símbolo.',
   'No uses datos personales.',
 ]
 
-// Etiqueta con el asterisco naranja de los campos obligatorios
 const obligatorio = (texto) => <>{texto} <span className="perfil-cuenta-requerido">*</span></>
 
 export const TarjetaDatosPersonales = ({ cuenta, subtitulo }) => {

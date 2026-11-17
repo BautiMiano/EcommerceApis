@@ -3,8 +3,6 @@ import { inicialesDe } from '../../utils/formato';
 
 const ETIQUETAS = ['', 'Malo', 'Regular', 'Bueno', 'Muy bueno', 'Excelente'];
 
-// Formulario de reseña. Solo se muestra si el back dice que el comprador puede reseñar.
-// Al publicarse con éxito el back ya no lo permite, así que el formulario desaparece solo.
 export const ProductReviewForm = ({ perfil, enviando, onSubmitReview }) => {
   const [calificacion, setCalificacion] = useState(5);
   const [comentario, setComentario] = useState('');

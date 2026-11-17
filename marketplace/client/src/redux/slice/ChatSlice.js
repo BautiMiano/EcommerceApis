@@ -4,7 +4,6 @@ import { API_URL } from "../../utils/api";
 
 const URL = `${API_URL}/chat`;
 
-// El backend pide el token en cada pedido
 const headers = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
@@ -88,7 +87,6 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.pending, (state, action) => {
         state.sendStatus = "pending";
-        // Tu mensaje aparece enseguida, sin esperar a Uni
         state.messages.push({ autor: "USUARIO", texto: action.meta.arg.mensaje });
       })
       .addCase(sendMessage.fulfilled, (state, action) => {

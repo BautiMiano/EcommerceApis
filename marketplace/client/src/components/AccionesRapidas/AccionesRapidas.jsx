@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import './AccionesRapidas.css'
 
-// Cada acción es un enlace ({ ruta }) o un botón ({ onClick })
 const AccionesRapidas = ({ descripcion, acciones }) => {
   return (
     <section className="panel-tarjeta acciones-rapidas">

@@ -1,4 +1,3 @@
-/* Avatar, nombre y menú del usuario: lo usan el header del vendedor y el navbar de la tienda */
 .usuario-menu {
   position: relative;
   display: flex;
@@ -87,7 +86,6 @@
   background-color: var(--uf-fondo);
 }
 
-/* En pantallas chicas queda solo el círculo con las iniciales */
 @media (max-width: 56.25em) {
   .usuario-menu-avatar {
     width: 2.625rem;

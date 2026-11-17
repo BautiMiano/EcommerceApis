@@ -2,8 +2,6 @@ import { TALLES_SELECCIONABLES } from '../../utils/talles'
 import { MODO_SELECCIONABLES, MODO_UNICO } from '../../utils/productoFormulario'
 import './SizeSelector.css'
 
-// Rango S a XXL (uno o varios talles, cada uno con su stock) o talle único: son excluyentes.
-// En talle único el stock se carga debajo de esa opción. "reservados" (al editar) avisa lo reservado.
 const SizeSelector = ({ formulario, reservados = {}, error, onChange }) => {
   const esUnico = formulario.modoTalle === MODO_UNICO
 

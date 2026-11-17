@@ -1,9 +1,6 @@
 import { formatoPrecio } from '../../utils/formato'
 import './Precio.css'
 
-// Precio de un producto. Si tiene descuento muestra el precio final, el de lista tachado y el
-// porcentaje. Todo sale del back: precio, descuentoPorcentaje y precioFinal (ya con el descuento).
-// tamano: 'chico' (tarjetas y carrito) o 'grande' (detalle del producto)
 const Precio = ({ precio, precioFinal, descuento, unidad = 'ARS', tamano = 'chico' }) => {
   const final = precioFinal ?? precio
   const tieneDescuento = Boolean(descuento) && final < precio

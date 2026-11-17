@@ -12,8 +12,6 @@ import '../SellerLayout/SellerLayout.css'
 import '../SellerHeader/SellerHeader.css'
 import './TiendaPanelLayout.css'
 
-// Estructura de la tienda para el visitante y el comprador:
-// sidebar negro a la izquierda, header arriba y la pantalla en el Outlet (como el panel del vendedor)
 const TiendaPanelLayout = ({ logueado, onLogout }) => {
   const dispatch = useDispatch()
   const perfil = useSelector((state) => state.usuarios.perfil)
@@ -26,14 +24,10 @@ const TiendaPanelLayout = ({ logueado, onLogout }) => {
   const usuarioId = useSelector((state) => state.auth.usuarioId)
   const [menuAbierto, setMenuAbierto] = useState(false)
 
-  // Las categorías las usan los filtros del catálogo y el buscador del Home.
-  // Este layout es el ÚNICO que las pide, y solo si nunca se pidieron.
   useEffect(() => {
     statusCategorias === 'idle' && dispatch(fetchCategorias())
   }, [dispatch, statusCategorias])
 
-  // El sidebar marca Favoritos y Carrito cuando tienen productos: el comprador los necesita desde
-  // que entra. Se piden una sola vez; las pantallas de favoritos y carrito usan los mismos datos.
   useEffect(() => {
     logueado && statusFavoritos === 'idle' && dispatch(fetchFavoritos())
   }, [dispatch, logueado, statusFavoritos])
@@ -42,8 +36,6 @@ const TiendaPanelLayout = ({ logueado, onLogout }) => {
     logueado && usuarioId && statusCarrito === 'idle' && dispatch(fetchCarrito(usuarioId))
   }, [dispatch, logueado, usuarioId, statusCarrito])
 
-  // El carrito y los favoritos se modifican desde varias pantallas (detalle, favoritos, carrito):
-  // sus avisos se muestran acá, una sola vez, y se limpian
   useEffect(() => {
     avisoCarrito && toast[avisoCarrito.tipo](avisoCarrito.texto)
     avisoCarrito && dispatch(limpiarAvisoCarrito())
@@ -81,17 +73,14 @@ const TiendaPanelLayout = ({ logueado, onLogout }) => {
 
           <Search />
 
-          {/* Comprador: avatar con su nombre (sale del perfil que manda el back) */}
           {logueado && perfil && (
             <UsuarioMenu rutaPerfil="/perfil" textoEnlace="Mi perfil" onLogout={onLogout} />
           )}
 
-          {/* Mientras llega el perfil se muestra un bloque que "brilla" */}
           {logueado && !perfil && <span className="tienda-panel-esqueleto" aria-label="Cargando perfil" />}
         </header>
 
         <main className="seller-layout-contenido">
-          {/* La key cambia con la ruta: cada pantalla nueva entra con la animación de aparecer */}
           <div key={location.pathname} className="tienda-panel-pagina">
             <Outlet />
           </div>

@@ -26,7 +26,6 @@
   cursor: pointer;
 }
 
-/* El radio se dibuja como un circulo negro con tilde, igual que el diseño */
 .filter-option input[type="radio"] {
   appearance: none;
   -webkit-appearance: none;

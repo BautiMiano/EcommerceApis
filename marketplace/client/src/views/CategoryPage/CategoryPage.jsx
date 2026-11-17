@@ -12,7 +12,6 @@ import {
 import PageTitle from '../../components/PageTitle/PageTitle';
 import './CategoryPage.css';
 
-
 const PAGE_SIZE = 6;
 
 export const CategoryPage = () => {
@@ -22,7 +21,6 @@ export const CategoryPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
 
-  // Estado global: los productos ya filtrados, sus 3 estados y los filtros vienen de Redux
   const products = useSelector((state) => state.productos.items);
   const loading = useSelector((state) => state.productos.loading);
   const error = useSelector((state) => state.productos.error);
@@ -40,17 +38,14 @@ export const CategoryPage = () => {
     texto !== filtros.busqueda && dispatch(setBusqueda(texto));
   }, [dispatch, query, filtros.busqueda]);
 
-  // Talles para el filtro: se piden una sola vez
   useEffect(() => {
     statusTalles === 'idle' && dispatch(fetchTalles());
   }, [dispatch, statusTalles]);
 
-  // Cada vez que cambian los filtros, el thunk decide qué llamados faltan
   useEffect(() => {
     dispatch(aplicarFiltros());
   }, [dispatch, filtros]);
 
-  // Paginación del front: al cambiar un filtro se vuelve a la página 1
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -70,7 +65,6 @@ export const CategoryPage = () => {
 
   return (
     <div className="category-page-wrapper">
-      {/* Mismo encabezado que Mis favoritos y el carrito */}
       <PageTitle
         variante="seccion"
         etiqueta="CATÁLOGO"
@@ -110,7 +104,6 @@ export const CategoryPage = () => {
                 onSelectProduct={(id) => navigate(`/producto/${id}`)}
               />
               
-
               {pageCount > 1 && (
                 <div className="catalog-pagination-container">
                   <button

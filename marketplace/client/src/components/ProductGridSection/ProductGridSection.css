@@ -30,7 +30,6 @@
   color: #5e5e60; 
 }
 
-/* GRILLA DE 3 COLUMNAS RÍGIDAS (Desktop) */
 .products-grid-layout { 
   display: grid; 
   grid-template-columns: repeat(3, minmax(0, 1fr)); 
@@ -39,7 +38,6 @@
   box-sizing: border-box;
 }
 
-/* OBLIGA A LA TARJETA A OCUPAR EL 100% DE ANCHO DE SU CELDA EN LA GRILLA */
 .products-grid-layout article,
 .products-grid-layout .product-card-kinetic {
   width: 100%;
@@ -47,15 +45,12 @@
   box-sizing: border-box;
 }
 
-/* MEDIA QUERIES RESPONSIVAS EN REM */
-/* TABLET (1024px o menor): 2 columnas */
 @media (max-width: 64rem) { 
   .products-grid-layout { 
     grid-template-columns: repeat(2, minmax(0, 1fr)); 
   } 
 }
 
-/* MOBILE (640px o menor): 1 columna */
 @media (max-width: 40rem) {
   .products-grid-layout { 
     grid-template-columns: minmax(0, 1fr); 

@@ -13,7 +13,6 @@ const NuevoTicket = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    // Reacciona a cómo terminó la creación del ticket
     useEffect(() => {
         if (createStatus === "succeeded") {
             toast.success('Ticket enviado. Te vamos a responder a la brevedad.')

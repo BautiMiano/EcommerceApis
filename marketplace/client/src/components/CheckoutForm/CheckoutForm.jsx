@@ -7,13 +7,10 @@ import TarjetaForm from '../TarjetaForm/TarjetaForm'
 import { METODO_TARJETA, tarjetaVacia, validarTarjeta } from '../../utils/tarjeta'
 import './CheckoutForm.css'
 
-// three.js pesa bastante: la tarjeta 3D se descarga recién cuando el comprador elige un método
 const MetodoPago3D = lazy(() => import('../MetodoPago3D/MetodoPago3D'))
 
-// Ícono de cada método de pago (solo visual: los métodos y sus nombres salen del back)
 const ICONOS_METODO = { MERCADOPAGO: 'account_balance_wallet', TARJETA: 'credit_card', TRANSFERENCIA: 'account_balance' }
 
-// Los datos de contacto del perfil (que vienen del back) completan de entrada quién recibe
 const datosIniciales = (perfil) => ({
   nombreReceptor: perfil ? `${perfil.nombre || ''} ${perfil.apellido || ''}`.trim() : '',
   telefono: perfil?.telefono || '',
@@ -37,14 +34,11 @@ const validar = (datos, metodo) => {
   return errores
 }
 
-// Errores de la tarjeta con sus propios nombres (para no mezclarlos con los del envío)
 const validarPago = (metodo, tarjeta) => {
   const errores = metodo === METODO_TARJETA ? validarTarjeta(tarjeta) : {}
   return Object.fromEntries(Object.entries(errores).map(([campo, mensaje]) => [`tarjeta-${campo}`, mensaje]))
 }
 
-// Pasos 2 y 3 del checkout: datos de envío y método de pago.
-// El botón "Confirmar compra" está en el resumen y envía este formulario (form="checkout-form").
 const CheckoutForm = () => {
   const dispatch = useDispatch()
   const perfil = useSelector((state) => state.usuarios.perfil)
@@ -54,11 +48,9 @@ const CheckoutForm = () => {
   const [datos, setDatos] = useState(() => datosIniciales(perfil))
   const [metodo, setMetodo] = useState('')
   const [errores, setErrores] = useState({})
-  // Datos de la tarjeta: solo se usan en el front (ver utils/tarjeta.js), nunca se mandan al back
   const [tarjeta, setTarjeta] = useState(tarjetaVacia)
   const [campoTarjeta, setCampoTarjeta] = useState('')
 
-  // Este componente es el ÚNICO que pide los métodos de pago, y solo si nunca se pidieron
   useEffect(() => {
     statusMetodos === 'idle' && dispatch(fetchMetodosDePago())
   }, [dispatch, statusMetodos])
@@ -70,7 +62,6 @@ const CheckoutForm = () => {
     errores[target.name] && setErrores({ ...errores, [target.name]: undefined })
   }
 
-  // Cada campo de la tarjeta llega ya formateado desde TarjetaForm
   const cambiarTarjeta = (campo, valor) => {
     setTarjeta((anterior) => ({ ...anterior, [campo]: valor }))
     errores[`tarjeta-${campo}`] && setErrores({ ...errores, [`tarjeta-${campo}`]: undefined })
@@ -86,7 +77,6 @@ const CheckoutForm = () => {
     const nuevos = { ...validar(datos, metodo), ...validarPago(metodo, tarjeta) }
     setErrores(nuevos)
     const valido = Object.keys(nuevos).length === 0
-    // Mientras la compra está en camino no se vuelve a enviar
     valido && statusCompra !== 'loading' && dispatch(finalizarCompra({
       metodoDePago: metodo,
       datosEnvio: Object.fromEntries(Object.entries(datos).map(([campo, valor]) => [campo, valor.trim()])),
@@ -166,7 +156,6 @@ const CheckoutForm = () => {
           </Suspense>
         )}
 
-        {/* Con tarjeta, sus datos son obligatorios y se van viendo en la tarjeta 3D */}
         {metodo === METODO_TARJETA && (
           <TarjetaForm
             tarjeta={tarjeta}

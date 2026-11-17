@@ -31,7 +31,6 @@ const RegisterForm = () => {
   const { token, rol, registerStatus, registerRol, registerError } = useSelector((state) => state.auth)
   const enviando = registerStatus === 'pending'
 
-  // Reacciona al resultado del registro que guardó el slice
   useEffect(() => {
     if (registerStatus === 'succeeded') {
       if (registerRol === 'VENDEDOR') {
@@ -44,7 +43,6 @@ const RegisterForm = () => {
       dispatch(resetRegisterStatus())
     }
     if (registerStatus === 'failed') {
-      // Muestra el motivo que mandó el backend (mail o usuario ya registrado, etc.)
       toast.error(registerError || 'No se pudo crear la cuenta.')
       dispatch(resetRegisterStatus())
     }
@@ -67,7 +65,6 @@ const RegisterForm = () => {
   }
 
   const registrar = (rol) => {
-    // Evita mandar dos registros si el usuario hace doble clic mientras se procesa el primero
     if (enviando) return
     if (Object.values(form).some((valor) => valor.trim() === '')) {
       toast.error('Completá todos los campos.')

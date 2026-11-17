@@ -4,8 +4,6 @@ import { toast } from 'react-toastify'
 import { limpiarAvisoProductos, limpiarAvisoCategorias } from '../../redux/slice/ProductSlice'
 import { limpiarAvisoOrdenes } from '../../redux/slice/CarritoSlice'
 
-// Muestra los avisos que dejan los slices del panel (productos, categorías y ventas) cuando
-// termina un llamado, y los limpia. No dibuja nada: va una sola vez en el layout del panel.
 const AvisosPanel = () => {
   const dispatch = useDispatch()
   const avisoProductos = useSelector((state) => state.productos.aviso)

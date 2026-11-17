@@ -1,6 +1,5 @@
 import './CaritaUni.css'
 
-// Dibuja las dos versiones encimadas: la del guiño queda oculta hasta que una animación la muestra
 const CaritaUni = ({ tamano }) => {
     return (
         <span className="carita-uni" style={{ width: tamano, height: tamano }}>

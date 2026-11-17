@@ -2,9 +2,6 @@ import CampoFormulario from '../CampoFormulario/CampoFormulario'
 import { formatearNumero, formatearTitular, formatearVencimiento, largoCvv, marcaTarjeta, soloDigitos } from '../../utils/tarjeta'
 import './TarjetaForm.css'
 
-// Campos de la tarjeta. Cada valor se formatea al escribir (espacios en el número, barra en el
-// vencimiento, mayúsculas en el titular) y se avisa qué campo está activo para que la tarjeta 3D
-// se dé vuelta al escribir el código de seguridad.
 const TarjetaForm = ({ tarjeta, errores, onCambiar, onEnfocar }) => {
   const marca = marcaTarjeta(tarjeta.numero)
 

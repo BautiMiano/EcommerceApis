@@ -16,19 +16,15 @@ const POR_PAGINA = 10
 const MAX_MINIATURAS = 2
 const DIA = 24 * 60 * 60 * 1000
 
-// Órdenes con productos del vendedor. Cantidad y total son solo de sus productos (los calcula el backend).
-// /vendedor/pedidos/:id abre el detalle en el panel lateral.
 const PedidosRecibidos = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // Ventas y publicaciones salen de Redux; cada lista se pide una sola vez
   const { items: ventas, status: statusVentas, error: errorVentas } = useSelector((state) => state.ordenes)
   const { misProductos, statusMisProductos } = useSelector((state) => state.productos)
   const [pestana, setPestana] = useState('TODOS')
   const [busqueda, setBusqueda] = useState('')
   const [dias, setDias] = useState(0)
-  // Fecha desde la que se muestran pedidos; se calcula al elegir el período, no en cada render
   const [desde, setDesde] = useState(null)
   const [pagina, setPagina] = useState(1)
   const cargando = statusVentas === 'idle' || statusVentas === 'loading'
@@ -41,10 +37,8 @@ const PedidosRecibidos = () => {
     statusMisProductos === 'idle' && dispatch(fetchMisProductos())
   }, [dispatch, statusMisProductos])
 
-  // Las órdenes no traen imágenes: se toman de los productos del vendedor
   const imagenes = Object.fromEntries(misProductos.map((p) => [p.id, p.imagenes && p.imagenes[0]]))
 
-  // Primero el período y la búsqueda; las pestañas cuentan sobre ese resultado
   const ventasBuscadas = ventas.filter((venta) => {
     const texto = `#${venta.ordenId} ${venta.comprador} ${venta.compradorMail}`.toLowerCase()
     return texto.includes(busqueda.trim().toLowerCase()) && (!desde || new Date(venta.fechaCompra) >= desde)

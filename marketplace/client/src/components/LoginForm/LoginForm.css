@@ -1,4 +1,3 @@
-/* Botón de ingreso a todo el ancho (igual que en registro) y el error debajo */
 .login-acciones {
   grid-column: 1 / -1;
   display: flex;

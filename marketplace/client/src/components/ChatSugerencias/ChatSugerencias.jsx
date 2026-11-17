@@ -1,6 +1,5 @@
 import './ChatSugerencias.css'
 
-// Preguntas para arrancar la conversación: al tocar una, se envía como si la hubieras escrito
 const ChatSugerencias = ({ sugerencias, onElegir }) => {
     return (
         <div className="chat-sugerencias">

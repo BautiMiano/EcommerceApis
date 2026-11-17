@@ -8,7 +8,6 @@ import EstadoBadge from '../components/EstadoBadge/EstadoBadge'
 import { cambiarActivoUsuario, fetchUsuarios, resetAccionStatus } from '../redux/slice/UsuarioSlice'
 import './AdminVendedores.css'
 
-// Usa la misma lista de usuarios de la store que Gestión de usuarios: si ya se cargó allá, no se vuelve a pedir.
 const AdminVendedores = () => {
   const dispatch = useDispatch()
   const { items: usuarios, status, error, accionId, accionStatus, accionError, ultimaAccion } =

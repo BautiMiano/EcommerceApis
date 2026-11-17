@@ -10,7 +10,6 @@
   object-fit: contain;
 }
 
-/* La del guiño va justo encima de la otra, invisible */
 .carita-uni-guino {
   position: absolute;
   inset: 0;

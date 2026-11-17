@@ -4,8 +4,6 @@
   gap: 1.5rem;
 }
 
-/* ---------- Contacto (sale del perfil) ---------- */
-
 .checkout-contacto {
   display: flex;
   align-items: center;
@@ -43,8 +41,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* ---------- Campos ---------- */
 
 .checkout-campos {
   display: grid;
@@ -85,8 +81,6 @@
 .checkout .panel-campo-error {
   font-size: 0.75rem;
 }
-
-/* ---------- Métodos de pago ---------- */
 
 .checkout-metodos {
   display: grid;

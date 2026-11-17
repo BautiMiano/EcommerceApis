@@ -10,11 +10,9 @@ export const ProductDetailPage = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  // Estado global: el producto y el estado de su llamado vienen de Redux
   const product = useSelector((state) => state.productos.detalles[id]);
   const estado = useSelector((state) => state.productos.estadosDetalle[id]);
 
-  // El producto se pide una sola vez: si ya se abrió antes, se usa el que está en el store
   useEffect(() => {
     !estado && dispatch(fetchProductoPorId(id));
   }, [dispatch, id, estado]);

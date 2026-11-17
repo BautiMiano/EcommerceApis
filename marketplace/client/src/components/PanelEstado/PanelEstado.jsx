@@ -6,7 +6,6 @@ const iconos = {
   vacio: 'inventory_2',
 }
 
-// Estado de carga, error o sin contenido, igual en todas las pantallas del panel
 const PanelEstado = ({ tipo, titulo, texto, children }) => {
   return (
     <div className={'panel-estado panel-estado-' + tipo} role={tipo === 'error' ? 'alert' : 'status'}>

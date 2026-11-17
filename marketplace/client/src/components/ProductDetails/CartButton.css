@@ -61,7 +61,6 @@
   text-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.5);
 }
 
-/* Estado Hover */
 .cart-button-3d:hover {
   transform: perspective(31.25rem) rotateX(0deg) translateY(-0.1875rem);
   box-shadow:
@@ -81,7 +80,6 @@
   text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
 }
 
-/* Estado Click (Active) */
 .cart-button-3d:active {
   transform: perspective(31.25rem) rotateX(2deg) translateY(0.125rem);
   box-shadow:

@@ -32,7 +32,6 @@
   grid-column: 1 / -1;
 }
 
-/* Campos más grandes que en el panel, como en el mockup */
 .perfil-cuenta-tarjeta .panel-campo {
   gap: 0.5rem;
   font-size: 1rem;

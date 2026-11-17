@@ -3,7 +3,6 @@ import { formatoPrecio } from '../../utils/formato'
 import { urlImagen } from '../../utils/http'
 import './ChatProductos.css'
 
-// Tarjetas de los productos que encontró Uni. El bot solo los muestra: comprar lo decide la persona.
 const ChatProductos = ({ productos }) => {
     return (
         <ul className="chat-productos">

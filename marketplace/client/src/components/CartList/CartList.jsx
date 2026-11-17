@@ -4,7 +4,6 @@ import { selectUnidadesCarrito } from '../../redux/slice/CarritoSlice'
 import CartItem from '../CartItem/CartItem'
 import './CartList.css'
 
-// Paso 1 del checkout: los productos del carrito (salen del store, que los trajo del back)
 const CartList = () => {
   const { items, estado } = useSelector((state) => state.carrito.carrito)
   const unidades = useSelector(selectUnidadesCarrito)
@@ -39,7 +38,6 @@ const CartList = () => {
         </Link>
       </header>
 
-      {/* Si ya se reservó el stock, el back no deja modificar el carrito hasta pagar o que venza la reserva */}
       {estado === 'PENDIENTE_PAGO' && (
         <p className="carrito-alerta">
           <span className="material-symbols-outlined" aria-hidden="true">schedule</span>

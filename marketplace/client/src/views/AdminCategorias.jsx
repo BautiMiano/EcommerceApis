@@ -14,10 +14,8 @@ import {
 } from '../redux/slice/ProductSlice'
 import './AdminCategorias.css'
 
-// Categorías del admin: crear nuevas y activar o desactivar las existentes
 const AdminCategorias = () => {
   const dispatch = useDispatch()
-  // Categorías (activas e inactivas) y publicaciones salen de Redux; cada lista se pide una sola vez
   const {
     todas: categorias,
     statusTodas,
@@ -26,7 +24,6 @@ const AdminCategorias = () => {
     categoriaEnAccion,
   } = useSelector((state) => state.categorias)
   const { todosLosProductos: productos, statusTodosLosProductos } = useSelector((state) => state.productos)
-  // Lo que se escribe en el campo es estado local
   const [nombre, setNombre] = useState('')
   const cargando = statusTodas === 'idle' || statusTodas === 'loading'
   const creando = statusCrear === 'loading'
@@ -39,12 +36,10 @@ const AdminCategorias = () => {
     statusTodosLosProductos === 'idle' && dispatch(fetchTodosLosProductos())
   }, [dispatch, statusTodosLosProductos])
 
-  // Cuando la categoría se creó, se vacía el campo
   useEffect(() => {
     statusCrear === 'succeeded' && setNombre('')
   }, [statusCrear])
 
-  // Cuántas publicaciones tiene cada categoría (activas y pausadas)
   const contarProductos = (categoria) =>
     productos.filter((producto) => producto.categoryId === categoria.idCategoria).length
 
@@ -56,7 +51,6 @@ const AdminCategorias = () => {
       return
     }
 
-    // La categoría nueva se agrega a la lista sin volver a pedirla; el aviso lo muestra el layout
     !creando && dispatch(crearCategoria(nombre.trim()))
   }
 

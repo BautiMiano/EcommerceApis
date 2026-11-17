@@ -17,7 +17,6 @@ const ChatEntrada = ({ onEnviar, deshabilitado }) => {
 
     return (
         <form className="chat-entrada" onSubmit={manejarEnvio}>
-            {/* La "pastilla": carita, campo de texto y flecha, todo en una sola barra */}
             <div className="chat-entrada-barra">
                 <CaritaUni tamano={32} />
                 <label htmlFor="chat-entrada-texto" className="chat-entrada-etiqueta">

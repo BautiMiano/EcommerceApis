@@ -1,14 +1,9 @@
-// Datos de la tarjeta que carga el comprador al pagar con tarjeta.
-// Se validan en el front y NO se mandan al back: por seguridad, un número de tarjeta nunca se guarda
-// en nuestra base (eso lo hace una pasarela de pago). Al back solo va el método de pago elegido.
-
 export const METODO_TARJETA = 'TARJETA'
 
 export const tarjetaVacia = { numero: '', titular: '', vencimiento: '', cvv: '' }
 
 export const soloDigitos = (texto) => texto.replace(/\D/g, '')
 
-// Marca según los primeros números (rangos públicos de cada red)
 export const marcaTarjeta = (numero) => {
   const digitos = soloDigitos(numero)
   if (/^3[47]/.test(digitos)) return 'AMEX'
@@ -20,7 +15,6 @@ export const marcaTarjeta = (numero) => {
 const largoNumero = (marca) => (marca === 'AMEX' ? 15 : 16)
 export const largoCvv = (marca) => (marca === 'AMEX' ? 4 : 3)
 
-// "4111111111111111" → "4111 1111 1111 1111" (AMEX: 4-6-5)
 export const formatearNumero = (texto) => {
   const marca = marcaTarjeta(texto)
   const digitos = soloDigitos(texto).slice(0, largoNumero(marca))
@@ -30,7 +24,6 @@ export const formatearNumero = (texto) => {
   return grupos.filter(Boolean).join(' ')
 }
 
-// "1228" → "12/28"
 export const formatearVencimiento = (texto) => {
   const digitos = soloDigitos(texto).slice(0, 4)
   return digitos.length > 2 ? `${digitos.slice(0, 2)}/${digitos.slice(2)}` : digitos
@@ -38,7 +31,6 @@ export const formatearVencimiento = (texto) => {
 
 export const formatearTitular = (texto) => texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ' ]/g, '').toUpperCase().slice(0, 26)
 
-// Algoritmo de Luhn: el dígito verificador que tienen todas las tarjetas
 const pasaLuhn = (digitos) => {
   const suma = digitos.split('').reverse().reduce((total, caracter, indice) => {
     const valor = Number(caracter) * (indice % 2 === 1 ? 2 : 1)
@@ -52,12 +44,10 @@ const vencimientoValido = (vencimiento) => {
   if (!mes || anio === undefined || Number.isNaN(anio) || vencimiento.length !== 5 || mes < 1 || mes > 12) {
     return false
   }
-  // Vence el último día de ese mes
   const finDelMes = new Date(2000 + anio, mes, 1)
   return finDelMes > new Date()
 }
 
-// Errores por campo ({} si está todo bien)
 export const validarTarjeta = (tarjeta) => {
   const errores = {}
   const marca = marcaTarjeta(tarjeta.numero)

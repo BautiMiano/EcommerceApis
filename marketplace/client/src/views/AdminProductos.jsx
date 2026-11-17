@@ -15,11 +15,9 @@ import './AdminProductos.css'
 
 const POR_PAGINA = 10
 
-// Productos del admin: igual que Mis productos del vendedor, pero con las publicaciones de todos los vendedores
 const AdminProductos = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // Las publicaciones salen de Redux; las categorías las pide el Navbar una sola vez
   const {
     todosLosProductos: productos,
     statusTodosLosProductos: status,
@@ -37,12 +35,10 @@ const AdminProductos = () => {
   const [pagina, setPagina] = useState(1)
   const cargando = status === 'idle' || status === 'loading'
 
-  // Se piden una sola vez; después de editar el slice las marca para pedirlas de nuevo
   useEffect(() => {
     status === 'idle' && dispatch(fetchTodosLosProductos())
   }, [dispatch, status])
 
-  // Vendedores que tienen al menos una publicación, sin repetir, para el filtro
   const vendedores = []
   productos.forEach((producto) => {
     const yaEsta = vendedores.some((vendedor) => vendedor.id === producto.vendedorId)
@@ -66,7 +62,6 @@ const AdminProductos = () => {
     const coincideEstado = filtros.estado === 'TODOS'
       || (filtros.estado === 'ACTIVOS' && producto.activo)
       || (filtros.estado === 'INACTIVOS' && !producto.activo)
-    // "Stock bajo" incluye a los agotados: los dos necesitan reposición
     const coincideStock = filtros.stock === 'TODOS'
       || (filtros.stock === 'agotado' && nivel === 'agotado')
       || (filtros.stock === 'bajo' && nivel !== 'ok')
@@ -76,7 +71,6 @@ const AdminProductos = () => {
 
   const productosPagina = productosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
-  // El slice actualiza la publicación en la lista sin volver a pedirla; el aviso lo muestra el layout
   const handleCambiarActivo = (producto) => {
     !productoEnAccion && dispatch(cambiarActivoProducto(producto))
   }

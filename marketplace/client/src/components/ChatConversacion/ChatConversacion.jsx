@@ -22,7 +22,6 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
     const finRef = useRef(null)
     const { rol } = useSelector((state) => state.auth)
 
-    // Al abrir: se limpia la charla anterior y, si no es nueva, se traen sus mensajes
     useEffect(() => {
         dispatch(openConversation(conversacionId))
         if (conversacionId !== null) {
@@ -30,7 +29,6 @@ const ChatConversacion = ({ conversacionId, onVolver }) => {
         }
     }, [dispatch, conversacionId])
 
-    // Cada vez que cambian los mensajes, baja hasta el último
     useEffect(() => {
         finRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [mensajes, enviando])

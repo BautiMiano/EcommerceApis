@@ -1,4 +1,3 @@
-// "Mostrando 1 a 10 de 23 productos" + botones de página. La lista se pagina en el front.
 const Paginacion = ({ pagina, porPagina, total, nombre, onCambiar }) => {
   const paginas = Math.max(1, Math.ceil(total / porPagina))
   const desde = total === 0 ? 0 : (pagina - 1) * porPagina + 1

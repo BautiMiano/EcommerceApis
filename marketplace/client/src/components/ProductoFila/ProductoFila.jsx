@@ -4,7 +4,6 @@ import { estadoPublicacion, formatoPrecio } from '../../utils/formato'
 import { rangoTalles, stockDisponibleTotal } from '../../utils/talles'
 import './ProductoFila.css'
 
-// Una publicación en la tabla de Mis productos (y en la de Productos del admin, que suma la columna Vendedor)
 const ProductoFila = ({ producto, mostrarVendedor, ocupado, onEditar, onCambiarActivo }) => {
   const imagen = producto.imagenes && producto.imagenes[0]
 

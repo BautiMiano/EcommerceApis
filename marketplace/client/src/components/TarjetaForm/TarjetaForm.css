@@ -36,7 +36,6 @@
   grid-column: 1 / -1;
 }
 
-/* El número va con letra monoespaciada, como en la tarjeta */
 .tarjeta-form input[name='tarjeta-numero'],
 .tarjeta-form input[name='tarjeta-vencimiento'],
 .tarjeta-form input[name='tarjeta-cvv'] {

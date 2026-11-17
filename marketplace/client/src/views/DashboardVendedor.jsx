@@ -15,16 +15,13 @@ import './DashboardVendedor.css'
 const MAX_RECIENTES = 5
 const DIA = 24 * 60 * 60 * 1000
 
-// Pedidos que todavía no salieron
 const ESTADOS_SIN_ENVIAR = ['PENDIENTE', 'CONFIRMADA']
 
-// Total vendido (sin cancelados) entre dos fechas
 const totalVendido = (ventas, desde, hasta) => ventas
   .filter((v) => v.estado !== 'CANCELADA')
   .filter((v) => new Date(v.fechaCompra) >= desde && new Date(v.fechaCompra) < hasta)
   .reduce((total, v) => total + v.total, 0)
 
-// Variación contra el período anterior; si antes no hubo ventas no hay contra qué comparar
 const variacion = (actual, anterior) => {
   if (anterior === 0) {
     return null
@@ -33,13 +30,10 @@ const variacion = (actual, anterior) => {
   return { positiva: porcentaje >= 0, texto: `${porcentaje >= 0 ? '+' : ''}${porcentaje}%` }
 }
 
-// Todo lo que muestra sale de mis-productos y mis-ventas: no hay métricas inventadas
 const DashboardVendedor = () => {
   const dispatch = useDispatch()
-  // Publicaciones y ventas salen de Redux: si ya se pidieron en otra pantalla, no se vuelven a pedir
   const { misProductos: productos, statusMisProductos, errorMisProductos } = useSelector((state) => state.productos)
   const { items: ventas, status: statusVentas, error: errorVentas } = useSelector((state) => state.ordenes)
-  // El período elegido es estado local
   const [dias, setDias] = useState(30)
 
   useEffect(() => {

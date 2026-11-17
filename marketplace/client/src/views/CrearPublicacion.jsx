@@ -10,21 +10,16 @@ import useProductoFormulario from '../hooks/useProductoFormulario'
 import { guardarPublicacion, reiniciarGuardado } from '../redux/slice/ProductSlice'
 import { armarPublicacion } from '../utils/productoFormulario'
 
-// Un producto recién creado no tiene descuento y está activo
 const PRODUCTO_NUEVO = { descuentoPorcentaje: null, descuentoAplicadoPorAdmin: false, activo: true }
 
-// Publicar producto: crea la publicación y después guarda descuento, estado y fotos (todo con Redux)
 const CrearPublicacion = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const form = useProductoFormulario()
-  // Las categorías las pide SellerLayout una sola vez
   const { items: categorias, status: statusCategorias, error: errorCategorias } = useSelector((state) => state.categorias)
   const { statusGuardar, publicacionGuardada } = useSelector((state) => state.productos)
   const publicando = statusGuardar === 'loading'
 
-  // Cuando termina de guardar: si todo salió bien va a la lista; si el producto se creó pero falló
-  // algo de lo demás (descuento, estado o fotos), lo lleva a editarlo para corregirlo
   useEffect(() => {
     statusGuardar === 'succeeded' && navigate(publicacionGuardada.advertencia
       ? `/vendedor/productos/${publicacionGuardada.id}/editar`
@@ -40,7 +35,6 @@ const CrearPublicacion = () => {
       return
     }
 
-    // Si ya se está publicando, no se manda otra vez
     !publicando && dispatch(guardarPublicacion({
       productoId: null,
       ...armarPublicacion(form.formulario, PRODUCTO_NUEVO),

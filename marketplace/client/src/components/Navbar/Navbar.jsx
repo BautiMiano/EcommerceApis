@@ -14,7 +14,6 @@ export const Navbar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // El vendedor usa su propio panel: este navbar es para visitantes, compradores y el admin
   const { token, rol } = useSelector((state) => state.auth);
   const logueado = Boolean(token);
   const esAdmin = rol === 'ADMIN';
@@ -110,12 +109,10 @@ export const Navbar = ({ onLogout }) => {
         <Search />
 
         <div className="navbar-actions">
-          {/* Con sesión: nombre y menú, como en el panel del vendedor */}
           {logueado && perfil && (
             <UsuarioMenu rutaPerfil={rutaPerfil} textoEnlace="Mi perfil" onLogout={onLogout} />
           )}
 
-          {/* Mientras carga el perfil (o si falló), igual se puede cerrar sesión */}
           {logueado && !perfil && (
             <button className="btn-pill btn-pill-outline" onClick={onLogout}>
               Cerrar sesión

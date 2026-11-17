@@ -1,5 +1,3 @@
-// Funciones auxiliares para las pantallas de tickets.
-
 export const formatearFecha = (fecha) =>
   new Date(fecha).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
 

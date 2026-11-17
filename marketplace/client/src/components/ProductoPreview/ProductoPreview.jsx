@@ -4,8 +4,6 @@ import { MODO_UNICO, stockTotalFormulario } from '../../utils/productoFormulario
 import { TALLES_SELECCIONABLES } from '../../utils/talles'
 import './ProductoPreview.css'
 
-// Cómo se va a ver la publicación, armada con lo que el vendedor va cargando en el formulario.
-// "imagenUrl" es la primera foto ya subida; si no hay, se usa la primera foto nueva ("archivo").
 const ProductoPreview = ({ formulario, categorias, imagenUrl, archivo }) => {
   const urlArchivo = useMemo(() => (archivo ? URL.createObjectURL(archivo) : null), [archivo])
 

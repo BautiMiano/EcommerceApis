@@ -36,7 +36,6 @@
   border-color: #000;
 }
 
-/* Talles no disponibles para este producto */
 .size-btn.disabled,
 .size-btn:disabled {
   background-color: #f2f2f2;

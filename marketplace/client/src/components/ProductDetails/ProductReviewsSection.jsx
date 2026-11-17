@@ -18,7 +18,6 @@ const SIN_RESENAS = [];
 export const ProductReviewsSection = ({ productoId }) => {
   const dispatch = useDispatch();
 
-  // Estado global: las reseñas de este producto vienen de Redux
   const resenas = useSelector((state) => state.comentarios.porProducto[productoId]) || SIN_RESENAS;
   const estado = useSelector((state) => state.comentarios.estados[productoId]);
   const permiso = useSelector((state) => state.comentarios.permisos[productoId]);
@@ -29,28 +28,23 @@ export const ProductReviewsSection = ({ productoId }) => {
   const perfil = useSelector((state) => state.usuarios.perfil);
   const esComprador = Boolean(token) && rol === 'COMPRADOR';
 
-  // Las reseñas se piden una sola vez por producto
   useEffect(() => {
     !estado && dispatch(fetchComentariosPorProducto(productoId));
   }, [dispatch, productoId, estado]);
 
-  // Solo el comprador puede reseñar: el back dice si este producto lo compró (una vez por producto)
   useEffect(() => {
     esComprador && !estadoPermiso && dispatch(fetchPermisoComentario(productoId));
   }, [dispatch, productoId, esComprador, estadoPermiso]);
 
-  // Cuando se publica una reseña, el slice deja un aviso: se muestra y se limpia
   useEffect(() => {
     aviso && toast[aviso.tipo](aviso.texto);
     aviso && dispatch(limpiarAvisoComentarios());
   }, [dispatch, aviso]);
 
   const handleCreateReview = ({ calificacion, comentario }) => {
-    // Si ya hay una reseña en camino, no se manda otra
     statusCrear !== 'loading' && dispatch(crearComentario({ productoId, calificacion, comentario }));
   };
 
-  // Promedio y cantidad calculados con las reseñas que mandó el back
   const total = resenas.length;
   const promedio = total > 0
     ? resenas.reduce((suma, resena) => suma + (resena.calificacion || 0), 0) / total

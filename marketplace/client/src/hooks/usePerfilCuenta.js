@@ -6,12 +6,8 @@ import { actualizarPerfil, cambiarContrasena, limpiarAvisoPerfil } from '../redu
 const LARGO_MINIMO_CONTRASENA = 8
 const contrasenasVacias = { actual: '', nueva: '', confirmar: '' }
 const FORMATO_MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
-// Mismo criterio que el backend: números, espacios, +, - y paréntesis
 const FORMATO_TELEFONO = /^[0-9 +()-]{6,20}$/
 
-// Datos de la cuenta y cambio de contraseña, compartidos por el perfil del vendedor y el del comprador.
-// Lo que se escribe es estado local; guardar se hace con dispatch y el resultado llega por Redux.
-// Todos los datos son obligatorios menos el teléfono, igual para los dos perfiles.
 const usePerfilCuenta = (perfil) => {
   const dispatch = useDispatch()
   const { statusGuardarPerfil, avisoPerfil } = useSelector((state) => state.usuarios)
@@ -28,8 +24,6 @@ const usePerfilCuenta = (perfil) => {
   const [erroresDatos, setErroresDatos] = useState({})
   const [erroresContrasena, setErroresContrasena] = useState({})
 
-  // Cuando termina un guardado, el slice deja un aviso: se muestra, se limpia
-  // y si se cambió la contraseña se vacían sus campos
   useEffect(() => {
     avisoPerfil && toast[avisoPerfil.tipo](avisoPerfil.texto)
     avisoPerfil?.accion === 'contrasena' && setContrasenas(contrasenasVacias)
@@ -55,7 +49,6 @@ const usePerfilCuenta = (perfil) => {
     if (!datos.apellido.trim()) {
       errores.apellido = 'Ingresá tu apellido.'
     }
-    // El teléfono es opcional: solo se valida si lo completó
     if (datos.telefono.trim() && !FORMATO_TELEFONO.test(datos.telefono.trim())) {
       errores.telefono = 'Ingresá un teléfono válido (solo números, espacios, + y -).'
     }

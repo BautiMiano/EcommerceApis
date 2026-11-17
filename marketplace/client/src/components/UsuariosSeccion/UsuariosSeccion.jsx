@@ -8,8 +8,6 @@ import UsuarioFila from '../UsuarioFila/UsuarioFila'
 const POR_PAGINA = 10
 const FILTROS_INICIALES = { busqueda: '', rol: 'TODOS', estado: 'TODOS' }
 
-// Tabla de usuarios con filtros y paginación. Filtra y pagina en el front, sobre la lista de la store.
-// Los filtros y la página son estado local: solo le importan a esta pantalla.
 const UsuariosSeccion = () => {
   const usuarios = useSelector((state) => state.usuarios.items)
   const [filtros, setFiltros] = useState(FILTROS_INICIALES)
@@ -28,7 +26,6 @@ const UsuariosSeccion = () => {
       && (filtros.estado === 'TODOS' || (filtros.estado === 'ACTIVOS') === usuario.activo)
   })
 
-  // Si al desactivar queda vacía la última página, se muestra la anterior
   const paginas = Math.max(1, Math.ceil(usuariosFiltrados.length / POR_PAGINA))
   const paginaActual = Math.min(pagina, paginas)
   const usuariosPagina = usuariosFiltrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA)

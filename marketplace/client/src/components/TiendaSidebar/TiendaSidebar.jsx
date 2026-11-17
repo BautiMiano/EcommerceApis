@@ -5,8 +5,6 @@ import { selectUnidadesCarrito } from '../../redux/slice/CarritoSlice'
 import '../SellerSidebar/SellerSidebar.css'
 import './TiendaSidebar.css'
 
-// Opciones de navegación (rutas de la app, no datos del back).
-// Favoritos y Carrito se ven siempre: si el visitante los toca, ProtectedRoute lo lleva al login.
 const OPCIONES_VISITANTE = [
   { ruta: '/', texto: 'Inicio', icono: 'home', exacta: true },
   { ruta: '/categorias', texto: 'Todo el catálogo', icono: 'apps', exacta: true, esCatalogo: true },
@@ -19,21 +17,17 @@ const OPCIONES_COMPRADOR = [
   { ruta: '/perfil', texto: 'Mi perfil', icono: 'person' },
 ]
 
-// Sidebar de la tienda: mismo diseño que el del vendedor. Cambian las opciones según haya sesión.
 const TiendaSidebar = ({ logueado, onLogout, onCerrarMenu }) => {
   const dispatch = useDispatch()
   const hayFiltros = useSelector(selectHayFiltros)
   const opciones = logueado ? OPCIONES_COMPRADOR : OPCIONES_VISITANTE
 
-  // Cuántos favoritos y cuántas unidades hay en el carrito (salen del store, que los trajo del back)
   const cantidadFavoritos = useSelector((state) => state.favoritos.items.length)
   const unidadesCarrito = useSelector(selectUnidadesCarrito)
   const contadores = { favoritos: logueado ? cantidadFavoritos : 0, carrito: logueado ? unidadesCarrito : 0 }
 
   const claseLink = ({ isActive }) => `seller-sidebar-link ${isActive ? 'seller-sidebar-link-activo' : ''}`
 
-  // "Todo el catálogo" muestra todos los productos: borra los filtros elegidos (no llama al back).
-  // Solo despacha si hay algún filtro elegido: si no, no hay nada que limpiar.
   const handleClick = (opcion) => {
     opcion.esCatalogo && hayFiltros && dispatch(limpiarFiltros())
     onCerrarMenu()
@@ -52,7 +46,6 @@ const TiendaSidebar = ({ logueado, onLogout, onCerrarMenu }) => {
 
       <nav className="seller-sidebar-nav">
         {opciones.map((opcion, i) => {
-          // Con productos, el ícono se rellena de naranja y aparece la cantidad
           const cantidad = opcion.contador ? contadores[opcion.contador] : 0
           return (
             <NavLink
@@ -75,7 +68,6 @@ const TiendaSidebar = ({ logueado, onLogout, onCerrarMenu }) => {
 
       <hr className="seller-sidebar-divisor" />
 
-      {/* Comprador: cerrar sesión */}
       {logueado && (
         <button type="button" className="seller-sidebar-link" onClick={onLogout}>
           <span className="material-symbols-outlined" aria-hidden="true">logout</span>
@@ -83,7 +75,6 @@ const TiendaSidebar = ({ logueado, onLogout, onCerrarMenu }) => {
         </button>
       )}
 
-      {/* Visitante: aviso y accesos (ya no están en el header) */}
       {!logueado && (
         <>
           <p className="tienda-sidebar-aviso">

@@ -14,7 +14,6 @@ const ROLES = {
 const ESTADO_ACTIVO = { texto: 'Activo', tono: 'verde' }
 const ESTADO_INACTIVO = { texto: 'Inactivo', tono: 'gris' }
 
-// Un usuario en la tabla. Activa o desactiva despachando la acción directamente.
 const UsuarioFila = ({ usuario }) => {
   const dispatch = useDispatch()
   const ocupado = useSelector((state) => state.usuarios.accionId === usuario.id)

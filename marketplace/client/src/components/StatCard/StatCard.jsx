@@ -1,6 +1,5 @@
 import './StatCard.css'
 
-// Métrica con ícono, etiqueta y valor. "tendencia" solo se pasa cuando se puede calcular con datos reales.
 const StatCard = ({ icono, etiqueta, valor, tendencia, detalle }) => {
   return (
     <article className="stat-card">

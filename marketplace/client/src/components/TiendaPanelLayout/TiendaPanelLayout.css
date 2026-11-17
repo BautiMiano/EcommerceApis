@@ -1,9 +1,3 @@
-/* Tienda con diseño de panel (visitante y comprador).
-   Todo está dentro de .tienda-panel, así no cambia nada del panel del vendedor.
-   Todas las medidas en rem (1rem = 16px). */
-
-/* ---------- Animaciones ---------- */
-
 @keyframes tienda-aparecer {
   from { opacity: 0; transform: translateY(0.75rem); }
   to { opacity: 1; transform: translateY(0); }
@@ -14,12 +8,9 @@
   to { background-position: -200% 0; }
 }
 
-/* Cada pantalla entra subiendo un poco y apareciendo */
 .tienda-panel-pagina {
   animation: tienda-aparecer 0.45s ease both;
 }
-
-/* ---------- Header ---------- */
 
 .tienda-panel-header {
   justify-content: space-between;
@@ -33,7 +24,6 @@
   max-width: 28rem;
 }
 
-/* Pisa los estilos del buscador del Navbar (que están en px) */
 .tienda-panel-header .navbar-search {
   display: flex;
   align-items: center;
@@ -76,7 +66,6 @@
   gap: 0.75rem;
 }
 
-/* Bloque gris que brilla mientras carga el perfil */
 .tienda-panel-esqueleto {
   display: block;
   width: 10rem;
@@ -86,8 +75,6 @@
   background-size: 200% 100%;
   animation: tienda-brillo 1.4s linear infinite;
 }
-
-/* ---------- Botones ---------- */
 
 .tienda-panel .panel-boton {
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
@@ -102,8 +89,6 @@
   transform: translateY(0);
   box-shadow: none;
 }
-
-/* ---------- Tarjetas de productos ---------- */
 
 .tienda-panel .product-card-kinetic {
   border-radius: 1rem;
@@ -125,7 +110,6 @@
   transform: scale(1.06);
 }
 
-/* Las tarjetas aparecen una detrás de la otra */
 .tienda-panel .products-grid-layout > :nth-child(2) { animation-delay: 0.06s; }
 .tienda-panel .products-grid-layout > :nth-child(3) { animation-delay: 0.12s; }
 .tienda-panel .products-grid-layout > :nth-child(4) { animation-delay: 0.18s; }
@@ -140,8 +124,6 @@
   background-color: var(--uf-naranja);
   transform: translateY(-0.125rem);
 }
-
-/* ---------- Filtros ---------- */
 
 .tienda-panel .filter-option input {
   accent-color: var(--uf-naranja);
@@ -184,16 +166,12 @@
   margin-top: auto;
 }
 
-/* ---------- Pantallas chicas ---------- */
-
 @media (max-width: 56.25em) {
-  /* El visitante tiene los accesos en el sidebar */
   .tienda-panel-acceso {
     display: none;
   }
 }
 
-/* Si la persona pidió menos movimiento en su sistema, se apagan las animaciones */
 @media (prefers-reduced-motion: reduce) {
   .tienda-panel *,
   .tienda-panel *::before {

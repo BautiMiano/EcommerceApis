@@ -12,8 +12,6 @@ const RECOMENDACIONES = [
   'Evitá datos de contacto en la descripción.',
 ]
 
-// Formulario de producto que comparten Publicar y Editar. "imagenes" es la sección de fotos
-// y "vistaPrevia" la tarjeta de la derecha; la vista decide qué hace al guardar.
 const ProductoForm = ({
   formulario,
   categorias,

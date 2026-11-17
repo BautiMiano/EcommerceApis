@@ -6,7 +6,6 @@ import FavoritesGrid from "../FavoritesGrid/FavoritesGrid"
 import { armarFavorito } from "../../utils/favoritos"
 import './FavoritesSection.css'
 
-// Favoritos en el inicio del comprador: misma lista de Redux que Mis favoritos (no se pide dos veces)
 const FavoritesSection = () => {
 
     const dispatch = useDispatch()
@@ -17,7 +16,6 @@ const FavoritesSection = () => {
         status === 'idle' && dispatch(fetchFavoritos())
     }, [dispatch, status])
 
-    // Agrega 1 unidad con Redux: el carrito del store queda actualizado y el aviso lo muestra el layout
     const moverAlCarrito = (productoId, talle) => {
         statusAgregar !== 'loading' && dispatch(agregarAlCarrito({ productoId, talle, cantidad: 1 }))
     }

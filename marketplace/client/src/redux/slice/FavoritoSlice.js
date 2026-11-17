@@ -2,15 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { pedir } from '../../utils/http'
 import { loginUser, logout } from './UsuarioSlice'
 
-// ---------- Thunks ----------
-
-// Favoritos del comprador (GET /favoritos/mis-favoritos). Se piden una sola vez por sesión.
 export const fetchFavoritos = createAsyncThunk(
   'favoritos/fetchFavoritos',
   async () => pedir('get', '/favoritos/mis-favoritos')
 )
 
-// Guarda un producto (POST /favoritos/{id}). El back no devuelve nada: se guarda el producto que ya tenemos.
 export const agregarFavorito = createAsyncThunk(
   'favoritos/agregarFavorito',
   async (producto) => {
@@ -19,7 +15,6 @@ export const agregarFavorito = createAsyncThunk(
   }
 )
 
-// Quita un producto (DELETE /favoritos/{id})
 export const quitarFavorito = createAsyncThunk(
   'favoritos/quitarFavorito',
   async (productoId) => {
@@ -28,23 +23,18 @@ export const quitarFavorito = createAsyncThunk(
   }
 )
 
-// ---------- Estado inicial ----------
-
 const initialState = {
-  items: [],           // [{ id, producto }] como los manda el back
+  items: [],
   loading: false,
   error: null,
-  status: 'idle',      // 'idle' (nunca se pidió) | 'loading' | 'succeeded' | 'failed'
-  idEnAccion: null,    // producto que se está agregando o quitando (evita el doble clic)
-  aviso: null,         // mensaje para mostrar con toast: { tipo, texto }
+  status: 'idle',
+  idEnAccion: null,
+  aviso: null,
 }
 
 const esDelProducto = (productoId) => (favorito) => String(favorito.producto?.id) === String(productoId)
 
-// Al iniciar o cerrar sesión, los favoritos anteriores ya no sirven
 const reiniciar = () => initialState
-
-// ---------- Slice ----------
 
 const favoritosSlice = createSlice({
   name: 'favoritos',
@@ -59,7 +49,6 @@ const favoritosSlice = createSlice({
       .addCase(loginUser.fulfilled, reiniciar)
       .addCase(logout, reiniciar)
 
-      // Lista de favoritos
       .addCase(fetchFavoritos.pending, (state) => {
         state.status = 'loading'
         state.loading = true
@@ -76,7 +65,6 @@ const favoritosSlice = createSlice({
         state.error = action.error.message
       })
 
-      // Agregar: se suma a la lista sin volver a pedirla
       .addCase(agregarFavorito.pending, (state, action) => {
         state.idEnAccion = action.meta.arg.id
       })
@@ -90,7 +78,6 @@ const favoritosSlice = createSlice({
         state.aviso = { tipo: 'error', texto: action.error.message }
       })
 
-      // Quitar: se saca de la lista sin volver a pedirla
       .addCase(quitarFavorito.pending, (state, action) => {
         state.idEnAccion = action.meta.arg
       })
@@ -106,7 +93,6 @@ const favoritosSlice = createSlice({
   },
 })
 
-// ¿Este producto está en favoritos?
 export const selectEsFavorito = (productoId) => (state) =>
   state.favoritos.items.some(esDelProducto(productoId))
 

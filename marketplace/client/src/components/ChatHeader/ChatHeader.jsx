@@ -1,7 +1,6 @@
 import CaritaUni from '../CaritaUni/CaritaUni'
 import './ChatHeader.css'
 
-// En el historial muestra la presentación de Uni; dentro de una conversación, solo el título
 const ChatHeader = ({ onCerrar, enConversacion }) => {
     return (
         <header className="chat-header">

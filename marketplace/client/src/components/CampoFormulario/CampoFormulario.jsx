@@ -1,7 +1,5 @@
 import './CampoFormulario.css'
 
-// Campo controlado (input, textarea o select) con su etiqueta, ayuda y mensaje de error.
-// variante 'panel': pantallas del vendedor y del comprador. variante 'formulario': login y registro.
 const CampoFormulario = ({
   label,
   name,
@@ -18,7 +16,6 @@ const CampoFormulario = ({
   const idError = `${name}-error`
   const esSelect = type === 'select'
 
-  // Atributos comunes a los tres tipos de control.
   const propsControl = {
     id: name,
     name,
@@ -51,7 +48,6 @@ const CampoFormulario = ({
       {renderizarControl()}
       {ayuda && <small className="form-field-help">{ayuda}</small>}
       {error && <small id={idError} className="panel-campo-error">{error}</small>}
-      {/* En un select los hijos son las opciones; en los demás se muestran debajo (por ejemplo, la fuerza de la contraseña) */}
       {!esSelect && children}
     </div>
   )

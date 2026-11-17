@@ -4,7 +4,6 @@ import SelectTrigger from "../SelectTrigger/SelectTrigger"
 import CategoryOption from "../CategoryOption/CategoryOption"
 import './CategorySelect.css'
 
-// Las categorías salen de Redux: las pide el layout de la tienda una sola vez
 const CategorySelect = ({seleccionarCategoria}) => {
 
     const categorias = useSelector((state) => state.categorias.items)

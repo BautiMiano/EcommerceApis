@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom"
 import Precio from "../Precio/Precio"
 import './FavoriteCard.css'
 
-// Tarjeta de un producto guardado en favoritos. Todos los datos salen del back (FavoritoSlice).
 const FavoriteCard = ({id, nombre, descripcion, precio, precioFinal, talles = [], talleUnico, categoria, estado, descuento, vendedor, imagen, quitarFavorito, moverAlCarrito}) => {
 
     const navigate = useNavigate()
@@ -16,7 +15,6 @@ const FavoriteCard = ({id, nombre, descripcion, precio, precioFinal, talles = []
                     ? <img className="fav-card-foto" src={imagen} alt={nombre} onClick={verProducto} />
                     : <span className="fav-card-sin-foto material-symbols-outlined" aria-hidden="true" onClick={verProducto}>apparel</span>}
 
-                {/* Arriba a la izquierda: descuento (si tiene) o la categoría */}
                 {descuento
                     ? <span className="fav-card-etiqueta fav-card-etiqueta-descuento">{descuento}% OFF</span>
                     : categoria && <span className="fav-card-etiqueta">{categoria}</span>}
@@ -49,7 +47,6 @@ const FavoriteCard = ({id, nombre, descripcion, precio, precioFinal, talles = []
                     </div>
                 )}
 
-                {/* Con talle único se agrega directo; si tiene varios talles, se elige en el detalle */}
                 <button
                     type="button"
                     className="fav-card-boton"

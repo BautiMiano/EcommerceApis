@@ -1,4 +1,3 @@
-/* Variante 'formulario' (login y registro). La variante 'panel' usa .panel-campo de SellerLayout.css */
 .form-field {
   display: flex;
   flex-direction: column;

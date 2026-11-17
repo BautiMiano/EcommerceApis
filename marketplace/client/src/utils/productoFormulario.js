@@ -1,14 +1,10 @@
-// Lógica compartida entre Publicar producto y Editar producto.
 import { TALLES_SELECCIONABLES, TALLE_UNICO } from './talles'
 
 export const MODO_SELECCIONABLES = 'SELECCIONABLES'
 export const MODO_UNICO = 'UNICO'
 
-// Límite por defecto de Spring Boot para cada archivo subido (1 MB).
 export const TAMANIO_MAXIMO_IMAGEN = 1024 * 1024
 
-// "stocks" guarda solo los talles elegidos: { S: '5', M: '3' }
-// Debe coincidir con el largo de la columna "descripcion" en el backend
 export const MAX_DESCRIPCION = 1000
 
 export const formularioVacio = {
@@ -46,7 +42,6 @@ export const formularioDesdeProducto = (producto) => {
 
 const esStockValido = (valor) => valor !== '' && Number.isInteger(Number(valor)) && Number(valor) >= 0
 
-// Stock total que se muestra en "Precio y stock"
 export const stockTotalFormulario = (formulario) => (formulario.modoTalle === MODO_UNICO
   ? Number(formulario.stockUnico) || 0
   : Object.values(formulario.stocks).reduce((total, stock) => total + (Number(stock) || 0), 0))
@@ -93,7 +88,6 @@ export const validarFormulario = (formulario) => {
   return errores
 }
 
-// Arma el cuerpo de POST /productos y PUT /productos/{id}
 export const armarProductoRequest = (formulario) => ({
   nombre: formulario.nombre.trim(),
   descripcion: formulario.descripcion.trim(),
@@ -108,13 +102,9 @@ export const armarProductoRequest = (formulario) => ({
       .map((talle) => ({ talle, stock: Number(formulario.stocks[talle]) })),
 })
 
-// Lo que necesita el thunk guardarPublicacion (ProductSlice) además del producto:
-// si cambia el descuento y el estado de publicación, que en el back se guardan con sus propios endpoints.
-// "anterior" es el producto antes de guardar (al publicar: sin descuento y activo).
 export const armarPublicacion = (formulario, anterior, esAdmin = false) => {
   const descuentoNuevo = Number(formulario.descuento) || null
   const descuentoAnterior = anterior.descuentoPorcentaje || null
-  // Un descuento que puso un admin no lo puede tocar el vendedor
   const puedeCambiarDescuento = esAdmin || !anterior.descuentoAplicadoPorAdmin
 
   return {

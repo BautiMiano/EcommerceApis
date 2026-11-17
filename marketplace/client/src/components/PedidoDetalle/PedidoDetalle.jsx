@@ -7,17 +7,12 @@ import { ACCION_ESTADO, estadoPedido, formatoFecha, formatoPrecio } from '../../
 import { etiquetaTalle } from '../../utils/talles'
 import './PedidoDetalle.css'
 
-// Panel lateral con el detalle de un pedido: solo los productos del vendedor, con el talle y el precio
-// que quedaron guardados en la orden. El cambio de estado lo valida el backend.
-// La venta sale de Redux (órdenes en CarritoSlice) y se pide una sola vez; al cambiar el estado, el slice
-// actualiza el detalle y la lista sin volver a pedirlos.
 const PedidoDetalle = ({ ordenId, imagenes, onCerrar }) => {
   const dispatch = useDispatch()
   const venta = useSelector((state) => state.ordenes.detalles[ordenId])
   const estado = useSelector((state) => state.ordenes.estadosDetalle[ordenId])
   const error = useSelector((state) => state.ordenes.erroresDetalle[ordenId])
   const guardando = useSelector((state) => state.ordenes.statusCambio === 'loading')
-  // El estado elegido en el select es local; si no eligió nada, se usa el primero posible
   const [elegido, setElegido] = useState('')
   const nuevoEstado = venta && venta.estadosSiguientes.includes(elegido) ? elegido : venta?.estadosSiguientes[0] || ''
 
@@ -83,7 +78,6 @@ const PedidoDetalle = ({ ordenId, imagenes, onCerrar }) => {
         )}
       </section>
 
-      {/* A dónde enviar el pedido (las órdenes viejas no lo tienen) */}
       {venta.datosEnvio && (
         <section className="pedido-detalle-seccion">
           <h3 className="pedido-detalle-subtitulo">

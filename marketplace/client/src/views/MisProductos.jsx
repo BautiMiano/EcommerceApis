@@ -20,7 +20,6 @@ const MisProductos = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
-  // Las publicaciones y las categorías salen de Redux (las categorías las pide SellerLayout)
   const {
     misProductos: productos,
     statusMisProductos: status,
@@ -28,7 +27,6 @@ const MisProductos = () => {
     productoEnAccion,
   } = useSelector((state) => state.productos)
   const categorias = useSelector((state) => state.categorias.items)
-  // El dashboard puede abrir esta pantalla ya filtrada por stock (?stock=bajo)
   const [filtros, setFiltros] = useState({
     busqueda: '',
     categoria: '',
@@ -38,7 +36,6 @@ const MisProductos = () => {
   const [pagina, setPagina] = useState(1)
   const cargando = status === 'idle' || status === 'loading'
 
-  // Se piden una sola vez; después de publicar o editar el slice las marca para pedirlas de nuevo
   useEffect(() => {
     status === 'idle' && dispatch(fetchMisProductos())
   }, [dispatch, status])
@@ -57,7 +54,6 @@ const MisProductos = () => {
     const coincideEstado = filtros.estado === 'TODOS'
       || (filtros.estado === 'ACTIVOS' && producto.activo)
       || (filtros.estado === 'INACTIVOS' && !producto.activo)
-    // "Stock bajo" incluye a los agotados: los dos necesitan reposición
     const coincideStock = filtros.stock === 'TODOS'
       || (filtros.stock === 'agotado' && nivel === 'agotado')
       || (filtros.stock === 'bajo' && nivel !== 'ok')
@@ -67,7 +63,6 @@ const MisProductos = () => {
 
   const productosPagina = productosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
-  // El slice actualiza la publicación en la lista sin volver a pedirla; el aviso lo muestra el layout
   const handleCambiarActivo = (producto) => {
     !productoEnAccion && dispatch(cambiarActivoProducto(producto))
   }

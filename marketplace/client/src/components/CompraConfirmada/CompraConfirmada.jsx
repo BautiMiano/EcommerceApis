@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom'
 import { formatoPrecio } from '../../utils/formato'
 import './CompraConfirmada.css'
 
-// Pantalla de compra confirmada. Muestra el resumen que guardó el slice al confirmar,
-// con el contacto de cada vendedor (lo manda el back) para coordinar el envío.
 const CompraConfirmada = ({ compra }) => {
   const { datosEnvio, ordenes } = compra
 

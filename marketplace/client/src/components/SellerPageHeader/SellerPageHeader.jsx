@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import './SellerPageHeader.css'
 
-// Título de cada pantalla del panel, con migas de pan opcionales y las acciones principales a la derecha
 const SellerPageHeader = ({ titulo, descripcion, migas, children }) => {
   return (
     <div className="seller-page-header">

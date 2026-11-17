@@ -6,10 +6,6 @@ import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
 import PageTitle from "../components/PageTitle/PageTitle"
 
-
-
-// Perfil del comprador: sus datos (el email es solo de lectura) y el cambio de contraseña.
-// El perfil lo pide TiendaLayout y se lee de la store; las tarjetas y la lógica son las mismas que las del vendedor.
 const MiPerfilComprador = () => {
   const { perfil, loadingPerfil, errorPerfil, statusPerfil } = useSelector((state) => state.usuarios)
   const cargandoPerfil = statusPerfil === 'idle' || loadingPerfil
@@ -30,7 +26,6 @@ const MiPerfilComprador = () => {
           <PanelEstado tipo="error" titulo="No pudimos cargar tu perfil" texto={errorPerfil} />
         )}
         {!cargandoPerfil && !errorPerfil && perfil && (
-          // La key reinicia los formularios cuando el perfil cambia después de guardar
           <PerfilComprador
             key={`${perfil.nombre}-${perfil.apellido}-${perfil.telefono}-${perfil.nombreUsuario}`}
             perfil={perfil}

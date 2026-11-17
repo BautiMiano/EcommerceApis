@@ -1,5 +1,4 @@
 // Orb de React Bits (https://reactbits.dev) - Copyright (c) 2026 David Haz, licencia MIT + Commons Clause.
-// Copiado sin cambios: se configura con props desde nuestros componentes.
 'use client';
 
 import { useEffect, useRef } from 'react';

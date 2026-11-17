@@ -17,7 +17,6 @@
   margin-bottom: 1.75rem;
 }
 
-/* El logo original tiene fondo blanco: invertido y con el tono corregido queda blanco y naranja sobre negro */
 .seller-sidebar-logo {
   position: relative;
   display: block;
@@ -100,9 +99,6 @@
   border-top: 0.0625rem solid #3a3a3a;
 }
 
-/* ---------- Mismo diseño para el comprador, el vendedor y el admin ----------
-   El nav ocupa todo el alto, así "Cerrar sesión" queda abajo de todo. */
-
 @keyframes seller-sidebar-deslizar {
   from { opacity: 0; transform: translateX(-0.75rem); }
   to { opacity: 1; transform: translateX(0); }
@@ -120,7 +116,6 @@
   transform: scale(1.04);
 }
 
-/* Los links entran uno detrás del otro (--i es la posición de cada link) */
 .seller-sidebar-link {
   position: relative;
   transition: background-color 0.2s ease, transform 0.2s ease;
@@ -132,7 +127,6 @@
   transform: translateX(0.25rem);
 }
 
-/* Barrita naranja a la izquierda del link activo */
 .seller-sidebar-link::before {
   content: '';
   position: absolute;
@@ -154,7 +148,6 @@
   transition: color 0.2s ease;
 }
 
-/* Al pasar el mouse (también en "Cerrar sesión") y en el link activo, el ícono se pone naranja */
 .seller-sidebar-link-activo .material-symbols-outlined,
 .seller-sidebar-link:hover .material-symbols-outlined {
   color: var(--uf-naranja);

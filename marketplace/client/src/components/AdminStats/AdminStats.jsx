@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux'
 import StatCard from '../StatCard/StatCard'
 import './AdminStats.css'
 
-// Métricas calculadas con la lista de usuarios que ya está en la store
 const AdminStats = () => {
   const usuarios = useSelector((state) => state.usuarios.items)
   const cantidadDeRol = (rol) => usuarios.filter((usuario) => usuario.rolUsuario === rol).length

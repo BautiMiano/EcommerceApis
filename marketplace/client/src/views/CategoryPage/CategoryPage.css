@@ -13,7 +13,6 @@
   align-items: flex-start;
 }
 
-/* ÁREA PRINCIPAL QUE CONTIENE LA GRILLA Y MANTIENE EL 100% DE ANCHO */
 .catalog-content-area {
   flex: 1;
   width: 100%;
@@ -33,7 +32,6 @@
   color: #d32f2f; 
 }
 
-/* MEDIA QUERIES EN REM */
 @media (max-width: 64rem) {
   .catalog-main-layout { 
     flex-direction: column; 

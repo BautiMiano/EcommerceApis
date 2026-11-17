@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Promedio y cantidad de reseñas: los calcula ProductReviewsSection con lo que manda el back
 export const ProductReviewsHeader = ({ promedio, totalResenas }) => {
   const estrellas = Math.round(promedio);
 
