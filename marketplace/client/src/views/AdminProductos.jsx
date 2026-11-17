@@ -57,7 +57,7 @@ const AdminProductos = () => {
   }
 
   const productosFiltrados = productos.filter((producto) => {
-    const texto = `${producto.nombre} ${producto.descripcion || ''} ${producto.sku || ''} ${producto.vendedor || ''}`.toLowerCase()
+    const texto = `${producto.nombre} ${producto.descripcion || ''} ${producto.vendedor || ''}`.toLowerCase()
     const nivel = nivelStock(producto.talles)
 
     const coincideBusqueda = texto.includes(filtros.busqueda.trim().toLowerCase())
@@ -85,7 +85,6 @@ const AdminProductos = () => {
     exportarCsv('productos.csv', [
       { titulo: 'Producto', valor: (p) => p.nombre },
       { titulo: 'Vendedor', valor: (p) => p.vendedor },
-      { titulo: 'SKU', valor: (p) => p.sku },
       { titulo: 'Marca', valor: (p) => p.marca },
       { titulo: 'Categoría', valor: (p) => p.categoria },
       { titulo: 'Talles', valor: (p) => rangoTalles(p.talles) },
@@ -151,7 +150,6 @@ const AdminProductos = () => {
                       <tr>
                         <th scope="col">Producto</th>
                         <th scope="col">Vendedor</th>
-                        <th scope="col">SKU</th>
                         <th scope="col">Categoría</th>
                         <th scope="col">Talles</th>
                         <th scope="col">Precio</th>

@@ -8,12 +8,14 @@ export const MODO_UNICO = 'UNICO'
 export const TAMANIO_MAXIMO_IMAGEN = 1024 * 1024
 
 // "stocks" guarda solo los talles elegidos: { S: '5', M: '3' }
+// Debe coincidir con el largo de la columna "descripcion" en el backend
+export const MAX_DESCRIPCION = 1000
+
 export const formularioVacio = {
   nombre: '',
   descripcion: '',
   categoryId: '',
   marca: '',
-  sku: '',
   estado: '',
   precio: '',
   descuento: '',
@@ -32,7 +34,6 @@ export const formularioDesdeProducto = (producto) => {
     descripcion: producto.descripcion || '',
     categoryId: producto.categoryId ? String(producto.categoryId) : '',
     marca: producto.marca || '',
-    sku: producto.sku || '',
     estado: producto.estado || '',
     precio: producto.precio ?? '',
     descuento: producto.descuentoPorcentaje ? String(producto.descuentoPorcentaje) : '',
@@ -63,9 +64,8 @@ export const validarFormulario = (formulario) => {
   }
   if (!formulario.descripcion.trim()) {
     errores.descripcion = 'Ingresá una descripción.'
-  }
-  if (!formulario.sku.trim()) {
-    errores.sku = 'Ingresá el SKU (código interno del producto).'
+  } else if (formulario.descripcion.length > MAX_DESCRIPCION) {
+    errores.descripcion = `Máximo ${MAX_DESCRIPCION} caracteres.`
   }
   if (!formulario.estado) {
     errores.estado = 'Seleccioná si el producto es nuevo o usado.'
@@ -99,7 +99,6 @@ export const armarProductoRequest = (formulario) => ({
   descripcion: formulario.descripcion.trim(),
   categoryId: Number(formulario.categoryId),
   marca: formulario.marca.trim(),
-  sku: formulario.sku.trim(),
   estado: formulario.estado,
   precio: Number(formulario.precio),
   talles: formulario.modoTalle === MODO_UNICO
