@@ -1,8 +1,3 @@
-/* El admin no tiene sidebar: la pantalla puede ser más ancha que la del vendedor */
-.admin-panel .admin-productos {
-  max-width: 90rem;
-}
-
 /* La tabla suma la columna Vendedor: se ajusta para que entre sin desplazarse al costado */
 .admin-productos .panel-tabla th,
 .admin-productos .panel-tabla td {

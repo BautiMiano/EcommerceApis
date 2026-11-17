@@ -19,7 +19,7 @@ const POR_PAGINA = 10
 const AdminProductos = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // Las publicaciones salen de Redux; las categorías las pide el Navbar una sola vez
+  // Las publicaciones salen de Redux; las categorías las pide AdminLayout una sola vez
   const {
     todosLosProductos: productos,
     statusTodosLosProductos: status,

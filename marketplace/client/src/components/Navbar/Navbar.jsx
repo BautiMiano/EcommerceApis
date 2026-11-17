@@ -14,10 +14,10 @@ export const Navbar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // El vendedor usa su propio panel: este navbar es para visitantes, compradores y el admin
+  // Visitantes, compradores y el admin usan el sidebar: este navbar solo lo ve el vendedor
+  // cuando abre el detalle de un producto
   const { token, rol } = useSelector((state) => state.auth);
   const logueado = Boolean(token);
-  const esAdmin = rol === 'ADMIN';
 
   const rutasPerfil = { COMPRADOR: '/perfil', VENDEDOR: '/vendedor/perfil' };
   const rutaPerfil = rutasPerfil[rol];
@@ -90,21 +90,8 @@ export const Navbar = ({ onLogout }) => {
             )}
           </div>
 
-          {!esAdmin && (
-            <>
-              <NavLink to="/favoritos">Favoritos</NavLink>
-              <NavLink to="/carrito">Carrito</NavLink>
-            </>
-          )}
-
-          {esAdmin && (
-            <>
-              <NavLink to="/admin/usuarios">Usuarios</NavLink>
-              <NavLink to="/admin/productos">Productos</NavLink>
-              <NavLink to="/admin/vendedores">Vendedores</NavLink>
-              <NavLink to="/admin/tickets">Tickets</NavLink>
-            </>
-          )}
+          <NavLink to="/favoritos">Favoritos</NavLink>
+          <NavLink to="/carrito">Carrito</NavLink>
         </nav>
 
         <Search />

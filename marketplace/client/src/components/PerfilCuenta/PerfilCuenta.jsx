@@ -3,13 +3,39 @@ import CampoContrasena from '../CampoContrasena/CampoContrasena'
 import './PerfilCuenta.css'
 
 // Tarjetas "Información personal" y "Cambiar contraseña", iguales en el perfil del comprador y el del vendedor.
-// Reciben "cuenta", lo que devuelve usePerfilCuenta, y cada vista decide dónde ubicarlas.
+// Reciben "cuenta", lo que devuelve usePerfilCuenta. Se muestra una a la vez, según lo elegido en MenuPerfil.
 
 const RECOMENDACIONES = [
   'Usá al menos 8 caracteres.',
   'Incluí letras, números y un símbolo.',
   'No uses datos personales.',
 ]
+
+// Opciones del menú de Mi perfil: cada una muestra su tarjeta
+const OPCIONES_PERFIL = [
+  { valor: 'datos', texto: 'Información personal', icono: 'person' },
+  { valor: 'contrasena', texto: 'Cambiar contraseña', icono: 'lock' },
+]
+
+// Menú de la izquierda en Mi perfil (vendedor y comprador): elige qué tarjeta se ve a la derecha
+export const MenuPerfil = ({ opcion, onElegir }) => {
+  return (
+    <nav className="panel-tarjeta perfil-cuenta-menu" aria-label="Opciones de mi perfil">
+      {OPCIONES_PERFIL.map((item) => (
+        <button
+          key={item.valor}
+          type="button"
+          className={`perfil-cuenta-opcion ${opcion === item.valor ? 'perfil-cuenta-opcion-activa' : ''}`}
+          aria-pressed={opcion === item.valor}
+          onClick={() => onElegir(item.valor)}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">{item.icono}</span>
+          {item.texto}
+        </button>
+      ))}
+    </nav>
+  )
+}
 
 // Etiqueta con el asterisco naranja de los campos obligatorios
 const obligatorio = (texto) => <>{texto} <span className="perfil-cuenta-requerido">*</span></>

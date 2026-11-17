@@ -3,11 +3,12 @@ import { Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../Navbar/Navbar'
 import TiendaPanelLayout from '../TiendaPanelLayout/TiendaPanelLayout'
-import AvisosPanel from '../AvisosPanel/AvisosPanel'
+import AdminLayout from '../AdminLayout/AdminLayout'
 import { fetchPerfil } from '../../redux/slice/UsuarioSlice'
 
 // Tienda: el visitante y el comprador la ven con el diseño del panel (sidebar a la izquierda).
-// El admin la sigue viendo con el Navbar arriba.
+// El admin la ve dentro de su panel, con su sidebar. El vendedor (que solo llega al detalle
+// de un producto) la ve con el Navbar arriba.
 const TiendaLayout = ({ onLogout }) => {
   const dispatch = useDispatch()
 
@@ -30,10 +31,12 @@ const TiendaLayout = ({ onLogout }) => {
     )
   }
 
+  if (rol === 'ADMIN') {
+    return <AdminLayout onLogout={onLogout} />
+  }
+
   return (
     <div className="app-container">
-      {/* El admin gestiona productos y categorías desde acá */}
-      <AvisosPanel />
       <Navbar onLogout={onLogout} />
       <main className="main-content">
         <Outlet />

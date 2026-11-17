@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import SellerPageHeader from '../components/SellerPageHeader/SellerPageHeader'
 import PanelEstado from '../components/PanelEstado/PanelEstado'
-import { TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
+import { MenuPerfil, TarjetaDatosPersonales, TarjetaContrasena } from '../components/PerfilCuenta/PerfilCuenta'
 import usePerfilCuenta from '../hooks/usePerfilCuenta'
 import './MiPerfilComprador.css'
 
@@ -38,11 +39,17 @@ const MiPerfilComprador = () => {
 
 const PerfilComprador = ({ perfil }) => {
   const cuenta = usePerfilCuenta(perfil)
+  // Qué tarjeta se ve a la derecha (estado de pantalla, no va a la store)
+  const [opcion, setOpcion] = useState('datos')
 
   return (
     <div className="mi-perfil-comprador-grilla">
-      <TarjetaDatosPersonales cuenta={cuenta} subtitulo="Estos datos se utilizan para tus compras y envíos." />
-      <TarjetaContrasena cuenta={cuenta} />
+      <MenuPerfil opcion={opcion} onElegir={setOpcion} />
+
+      {opcion === 'datos' && (
+        <TarjetaDatosPersonales cuenta={cuenta} subtitulo="Estos datos se utilizan para tus compras y envíos." />
+      )}
+      {opcion === 'contrasena' && <TarjetaContrasena cuenta={cuenta} />}
     </div>
   )
 }

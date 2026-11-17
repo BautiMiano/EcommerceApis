@@ -93,6 +93,11 @@
   accent-color: var(--uf-negro);
 }
 
+/* Talle único: mismo recuadro que un talle elegido, pero no se puede destildar */
+.size-selector-check-fijo {
+  cursor: default;
+}
+
 .size-selector-check:focus-within {
   outline: 0.125rem solid var(--uf-naranja);
 }
